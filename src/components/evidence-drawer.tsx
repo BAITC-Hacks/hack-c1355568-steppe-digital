@@ -44,7 +44,7 @@ export function EvidenceDrawer({ result, finding, onClose, onReview }: {
   </dialog>;
 }
 
-function Source({ evidence }: { evidence: Evidence }) {
+export function Source({ evidence }: { evidence: Evidence }) {
   const range = quoteRange(evidence.fragmentText, evidence.quote);
   const at = range?.[0] ?? 0;
   const end = range?.[1] ?? 0;

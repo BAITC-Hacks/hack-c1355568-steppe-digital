@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type { AnalysisJob, AnalysisResult, Finding } from "../shared/contract";
 import { createAnalysis, getAnalysis, USE_MOCK } from "../lib/api";
 import { UploadForm } from "./upload-form";
+import { ResultViews } from "./result-views";
 import { EvidenceDrawer } from "./evidence-drawer";
 
 export const findingLabels = { LOSS: "Возможная потеря", DUPLICATION: "Дублирование", CONFLICT: "Конфликт ролей", REORGANIZATION: "Изменение структуры" };
@@ -59,6 +60,7 @@ function Workspace() {
 function Dashboard({ result, onReview }: { result: AnalysisResult; onReview: (finding: Finding) => void }) {
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState<string | null>(null);
+  const [view, setView] = useState("overview");
   const active = result.findings.find(item => item.id === selected);
   const cards = [
     { key: "REORGANIZATION", title: "Изменения структуры", count: result.summary.findingsByType.REORGANIZATION, caption: "Подтверждённые замечания" },
@@ -70,9 +72,11 @@ function Dashboard({ result, onReview }: { result: AnalysisResult; onReview: (fi
   const visible = result.findings.filter(item => filter === "all" || (filter === "diagnostics" ? !item.verified : item.verified && item.type === filter));
   return <><div className="eyebrow">ОБЗОР АНАЛИЗА</div><div className="heading-row"><h1>Изменения под контролем</h1>{result.isMock && <span className="demo-badge">DEMO / MOCK DATA</span>}</div><p className="intro">Документы ДО: {result.documents.filter(doc => doc.side === "before").length} <span className="divider">/</span> Документы ПОСЛЕ: {result.documents.filter(doc => doc.side === "after").length}</p>
     {result.isMock && <div className="info">{USE_MOCK ? "Синтетический пример. Загруженные файлы не анализировались. Решения сохраняются только в этом браузере." : "Сервер вернул демонстрационный результат. Проверьте ограничения ниже. Решения сохраняются на сервере."}</div>}
-    <div className="metrics">{cards.map(card => <button key={card.key} className={`metric ${filter === card.key ? "selected" : ""}`} onClick={() => setFilter(card.key)} aria-pressed={filter === card.key}><span>{card.title}</span><strong>{card.count}</strong><small>{card.caption}</small></button>)}</div>
+    <div className="metrics">{cards.map(card => <button key={card.key} className={`metric ${filter === card.key ? "selected" : ""}`} onClick={() => { setFilter(card.key); setView(card.key === "transferred" ? "functions" : "overview"); }} aria-pressed={filter === card.key}><span>{card.title}</span><strong>{card.count}</strong><small>{card.caption}</small></button>)}</div>
     {(result.warnings.length > 0 || result.documents.some(doc => doc.warnings.length > 0)) && <details className="warning" open><summary>Ограничения и предупреждения</summary><ul>{result.warnings.map((warning, i) => <li key={i}>{warning}</li>)}{result.documents.flatMap(doc => doc.warnings.map((warning, i) => <li key={`${doc.id}-${i}`}>{doc.name}: {warning}</li>))}</ul></details>}
-    <section className="findings"><div className="section-heading"><h2>Замечания и источники</h2><div className="tabs"><button aria-pressed={filter === "all"} onClick={() => setFilter("all")}>Все</button><button aria-pressed={filter === "diagnostics"} onClick={() => setFilter("diagnostics")}>Проверка источников</button></div></div>
-      {filter === "transferred" ? <div className="empty"><h3>Выбраны переданные функции</h3><p>Таблица связей функций запланирована в следующем задании. Фильтр сохранён.</p><button onClick={() => setFilter("all")}>К замечаниям</button></div> : !visible.length ? <div className="empty"><h3>В этой категории нет замечаний</h3><p>Это не подтверждает отсутствие рисков за пределами загруженных документов.</p></div> : <div className="finding-list">{visible.map(finding => <button key={finding.id} className={`finding-card ${!finding.verified ? "unverified" : ""}`} onClick={() => setSelected(finding.id)}><span className={`type-badge ${finding.type.toLowerCase()}`}>{findingLabels[finding.type]}</span><strong>{finding.title}</strong><p>{finding.explanation}</p><div className="card-bottom"><span>{finding.verified ? "Источники подтверждены" : "не подтверждено источником"}</span><span>{reviewLabels[finding.review.status]}</span><span className="source-link">Открыть источники ↗</span></div></button>)}</div>}
-    </section>{active && <EvidenceDrawer key={active.id} result={result} finding={active} onClose={() => setSelected(null)} onReview={onReview} />}</>;
+    <nav className="result-nav" aria-label="Разделы результата">{Object.entries({ overview: "Сводка", structure: "Изменения структуры", functions: "Сравнение функций", conclusion: "Заключение" }).map(([key, label]) => <button key={key} aria-pressed={view === key} onClick={() => { setView(key); setFilter("all"); }}>{label}</button>)}</nav>
+    {view !== "overview" && <ResultViews key={`${view}-${filter}`} view={view} result={result} transferredOnly={filter === "transferred"} onFinding={setSelected} />}
+    {view === "overview" && <section className="findings"><div className="section-heading"><h2>Замечания и источники</h2><div className="tabs"><button aria-pressed={filter === "all"} onClick={() => setFilter("all")}>Все</button><button aria-pressed={filter === "diagnostics"} onClick={() => setFilter("diagnostics")}>Проверка источников</button></div></div>
+      {!visible.length ? <div className="empty"><h3>В этой категории нет замечаний</h3><p>Это не подтверждает отсутствие рисков за пределами загруженных документов.</p></div> : <div className="finding-list">{visible.map(finding => <button key={finding.id} className={`finding-card ${!finding.verified ? "unverified" : ""}`} onClick={() => setSelected(finding.id)}><span className={`type-badge ${finding.type.toLowerCase()}`}>{findingLabels[finding.type]}</span><strong>{finding.title}</strong><p>{finding.explanation}</p><div className="card-bottom"><span>{finding.verified ? "Источники подтверждены" : "не подтверждено источником"}</span><span>{reviewLabels[finding.review.status]}</span><span className="source-link">Открыть источники ↗</span></div></button>)}</div>}
+    </section>}{active && <EvidenceDrawer key={active.id} result={result} finding={active} onClose={() => setSelected(null)} onReview={onReview} />}</>;
 }
