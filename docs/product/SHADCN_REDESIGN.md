@@ -65,3 +65,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## Проверка перед публикацией в main
+
+Перед push получен актуальный `origin/main` (`014fd46`) и объединён с frontend-коммитом `69ad4c9` без конфликтов. Новые серверные изменения main сохранены полностью; diff относительно этого main содержит только frontend и документацию.
+
+Проверки объединённой версии: `npm test` exit 0 (**46/46**, 9 файлов), `npm run lint` exit 0, `npm run typecheck` exit 0, `npm run build` exit 0, `git diff --check` exit 0.
+
+Production smoke через HTTP: POST контрольной TXT-пары → GET done (10/10 этапов, 87 замечаний, 488 записей сравнения) → PATCH review → повторный GET. Комментарий восстановлен, summary и verified не изменены. Локальный ID `114ecdc7-f7f4-4c73-9682-e01a0cff67a6`. Обзор проверен в браузере, console errors отсутствуют. AI отключён; live provider не проверялся.
