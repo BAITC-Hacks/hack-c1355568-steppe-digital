@@ -1,11 +1,3 @@
-export default function Home() {
-  return (
-    <main>
-      <h1>OrgTrace AI</h1>
-      <p>Каркас API готов. Интерфейс анализа разрабатывается.</p>
-      <p>DEMO / MOCK DATA — семантические этапы пока являются заглушками.</p>
-      <p>Контракт для фронтенда: docs/api/CONTRACT.md</p>
-      <p>Выводы носят рекомендательный характер и требуют проверки ответственным сотрудником.</p>
-    </main>
-  );
-}
+import { AnalysisWorkspace } from "../components/analysis-workspace";
+
+export default function Home() { return <AnalysisWorkspace />; }

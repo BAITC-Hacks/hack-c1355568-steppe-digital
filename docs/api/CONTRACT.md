@@ -30,6 +30,8 @@ For future AI stages, the user sets `OPENAI_API_KEY` and `OPENAI_MODEL` locally 
 
 Optional server-only paths: `ORGTRACE_DATA_DIR` (default `.data`) and `ORGTRACE_CACHE_DIR` (default `.cache`). They are not API fields. Keep generated storage outside tracked source. Jobs and reviews live in `.data/jobs/<id>.json`; original extracted fragments live in `.data/fragments/<id>.json`. Source files are parsed in memory and are not retained as downloadable originals.
 
+The frontend baseline now uses `NEXT_PUBLIC_USE_MOCK=true` for its explicit synthetic browser demo; missing/false uses the real API. This public flag is documented in `.env.example`. Restart development or rebuild production when changing it. It is independent of the server result's `isMock`: the real API still returns labeled stub results in this scaffold. The frontend screens from `main` are retained when merging this backend baseline.
+
 ## Endpoints
 
 | Method | Path | Successful response |
@@ -180,3 +182,16 @@ QA evaluation interface: `runAnalysis({ id, files, onStage? })` from `src/server
 Next backend task: real evidence-backed unit/function extraction, then matching/lineage/findings/conclusion according to PLAN. Keep the existing contract stable or document a coordinated version change here and in the shared schemas. This scaffold does not yet satisfy the case's full audit demonstration.
 
 Implementation references: [Next.js after](https://nextjs.org/docs/app/api-reference/functions/after), [OpenAI structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs), [OpenAI embeddings](https://developers.openai.com/api/docs/guides/embeddings).
+
+## Frontend integration check — 2026-09-23
+
+The frontend contribution from commit `6c6eeda` was merged while preserving its layout, page, components and adapter. Its existing mock passes `AnalysisResultSchema`; the requested runtime/type exports and JSON import support are available. The public mock-mode flag is now in `.env.example`.
+
+Backend tests, backend-scoped lint, merged-app typecheck and production build pass. HTTP checks exercised all three routes with synthetic DOCX/PDF/XLSX uploads and confirmed review persistence across a real production-server restart. No live OpenAI requests or organizer-data evaluation were run.
+
+Full-repository `npm run lint` exits 1 for two issues in frontend-owned `src/components/analysis-workspace.tsx`, preserved from the incoming contribution:
+
+- Line 21: `react-hooks/set-state-in-effect` for synchronous URL-to-state initialization in the mount effect. Frontend should choose a URL state integration compatible with its navigation and server-rendering behavior.
+- Line 42: `@next/next/no-html-link-for-pages` for the brand anchor to `/`. Frontend should use Next.js navigation while preserving its intended reset behavior.
+
+These are requests for the frontend lane, not disabled checks or a claim of passing repository-wide lint. Browser interaction acceptance and the four screen handoffs remain frontend/QA work. The backend API scaffold is ready for integration; full audit functionality still requires the semantic stages described above.
