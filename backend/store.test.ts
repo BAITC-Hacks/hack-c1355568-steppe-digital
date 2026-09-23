@@ -1,14 +1,14 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import example from "@/shared/analysis-result.example.json";
 import { AnalysisResultSchema } from "@/shared/contract";
-import { JobStore } from "./store";
+import { getJobStore, JobStore } from "./store";
 
 let directory: string;
 beforeEach(async () => { directory = await mkdtemp(path.join(os.tmpdir(), "orgtrace-store-")); });
-afterEach(async () => { await rm(directory, { recursive: true, force: true }); });
+afterEach(async () => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); await rm(directory, { recursive: true, force: true }); });
 describe("persistent jobs and review", () => {
   it("persists simultaneous reviews and keeps verification unchanged after restart", async () => {
     const store = new JobStore(directory); const job = await store.seedDemo(AnalysisResultSchema.parse(example));
@@ -42,4 +42,26 @@ describe("persistent jobs and review", () => {
     await expect(store.get("../../other")).rejects.toMatchObject({ status: 404 });
     await expect(store.review(job.id, "finding-loss", { status: "CONFIRMED" })).rejects.toMatchObject({ status: 409 });
   });
+  it("refreshes a retained pre-reload store without losing running jobs or rejecting new result fields", async () => {
+    const store = new JobStore(path.join(directory, "jobs"));
+    const job = await store.create();
+    await store.update(job.id, j => { j.status = "running"; j.stages.forEach(s => { s.status = "done"; }); });
+    // A retained instance still points at methods closed over the old strict schema.
+    const stalePrototype = Object.create(JobStore.prototype);
+    stalePrototype.complete = async () => { throw new Error("Old schema rejects analysisMode/method"); };
+    Object.setPrototypeOf(store, stalePrototype);
+    vi.stubEnv("ORGTRACE_DATA_DIR", directory);
+    vi.stubGlobal("orgtraceJobStore", { directory: path.join(directory, "jobs"), store });
+    const current = getJobStore();
+    expect(current).toBe(store);
+    expect((await current.get(job.id)).status).toBe("running");
+    const result = AnalysisResultSchema.parse({ ...example, id: job.id });
+    expect(result.analysisMode).toBeDefined();
+    await current.complete(job.id, result);
+    const restored = await new JobStore(path.join(directory, "jobs")).get(job.id);
+    expect(restored.status).toBe("done");
+    expect(restored.result?.analysisMode).toEqual(result.analysisMode);
+    expect(restored.result?.lineage.map(l => l.method)).toEqual(result.lineage.map(l => l.method));
+  });
+
 });

@@ -102,5 +102,9 @@ export function getJobStore(): JobStore {
   if (!globalStore.orgtraceJobStore || globalStore.orgtraceJobStore.directory !== directory) {
     globalStore.orgtraceJobStore = { directory, store: new JobStore(directory) };
   }
-  return globalStore.orgtraceJobStore.store;
+  const store = globalStore.orgtraceJobStore.store;
+  // Next dev retains globalThis across module reloads. Refresh methods (and their
+  // contract imports) without reloading disk or interrupting in-flight jobs.
+  if (Object.getPrototypeOf(store) !== JobStore.prototype) Object.setPrototypeOf(store, JobStore.prototype);
+  return store;
 }
