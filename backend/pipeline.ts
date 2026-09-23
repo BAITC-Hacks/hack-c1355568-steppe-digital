@@ -1,13 +1,14 @@
 import path from "node:path";
-import { AnalysisResultSchema, StageKeySchema, type AnalysisResult, type Stage, type StageKey } from "@/shared/contract";
+import { AnalysisResultSchema, StageKeySchema, type AnalysisResult, type Evidence, type Stage, type StageKey } from "@/shared/contract";
 import { ingestDocument, validateUploads, type Fragment, type UploadInput } from "./ingest";
 import { AppError, publicError } from "./errors";
 import { atomicJson, dataDirectory } from "./files";
 import { STAGE_LABELS } from "./stages";
 import type { JobStore } from "./store";
-import { parseClauses, alignClauses, type ParsedClauses } from "./clauses";
+import { parseClauses, alignClauses, evidenceFor, type ParsedClauses } from "./clauses";
 import { extractUnits, extractFunctions, traceFunctions, checkDocuments, deriveFindings, summarize, conclude } from "./regulation";
 import { refineAlignment, tagChangedRoles } from "./semantic";
+import * as generic from "./semantic-pipeline";
 
 export const EMPTY_SUMMARY = {
   unitsByStatus: { PRESERVED: 0, RENAMED: 0, MERGED: 0, SPLIT: 0, CREATED: 0, REMOVED: 0 },
@@ -26,6 +27,8 @@ export async function runAnalysis({ id, files, onStage }: RunAnalysisInput): Pro
     warnings: ["Извлечение владельцев настроено на структуру положений БВА. Сопоставление функций — кандидаты по содержанию; косвенное покрытие и переименования требуют проверки. Не является полным юридическим аудитом."],
   };
   const fragments: Fragment[] = [];
+  let genericMode = false;
+  let assignments: ReturnType<typeof generic.extract> = [];
   let parsed: ParsedClauses = { clauses: [], sources: new Map(), warnings: [] };
   const stage = async (key: StageKey, status: Stage["status"], detail: string) => onStage?.({ key, status, label: STAGE_LABELS[key], detail });
   for (const key of StageKeySchema.options) {
@@ -42,18 +45,33 @@ export async function runAnalysis({ id, files, onStage }: RunAnalysisInput): Pro
       }
       if (key === "clauses") { parsed = parseClauses(fragments); result.clauses = parsed.clauses; result.warnings.push(...parsed.warnings); }
       if (key === "alignment") { result.alignments = alignClauses(result.clauses); await refineAlignment(result, parsed); }
-      if (key === "units") extractUnits(result, parsed);
-      if (key === "functions") { extractFunctions(result, parsed); await tagChangedRoles(result, parsed); }
-      if (key === "lineage") traceFunctions(result, parsed);
+      if (key === "units") {
+        extractUnits(result, parsed);
+        // Keep the regulation path; explicit headings cover documents outside its template.
+        genericMode = result.units.length === 0;
+        if (genericMode) assignments = generic.extract(result, fragments);
+      }
+      if (key === "functions") {
+        if (genericMode) generic.extractFunctions(result, assignments, parsed);
+        else { extractFunctions(result, parsed); await tagChangedRoles(result, parsed); }
+      }
+      if (key === "lineage") { if (genericMode) generic.match(result); else traceFunctions(result, parsed); }
       if (key === "checks") checkDocuments(result, parsed);
-      if (key === "findings") deriveFindings(result, parsed);
+      if (key === "findings") { if (genericMode) generic.findings(result, fragments); else deriveFindings(result, parsed); }
       if (key === "verify") {
         // Validate every source against the actual ingest registry, not merely model text.
+        const sources = new Map<string, Pick<Evidence, "quote" | "fragmentText" | "side" | "documentName" | "locator">>([
+          ...fragments.map(f => [f.id, { ...f, quote: f.text, fragmentText: f.text }] as const),
+          ...parsed.clauses.map(c => { const e = evidenceFor(c, parsed); return [e.fragmentId, e] as const; }),
+        ]);
         const evidence = [...result.units, ...result.unitChanges, ...result.functions, ...result.findings].flatMap(x => x.evidence);
-        for (const e of evidence) if (!fragments.some(f => e.fragmentId.startsWith(`${f.id}:`) && f.text === e.fragmentText && f.side === e.side && f.documentName === e.documentName && f.text.includes(e.quote))) throw new AppError(500, "Источник не прошёл проверку исходного фрагмента.");
-        summarize(result); conclude(result); AnalysisResultSchema.parse(result);
+        for (const e of evidence) {
+          const source = sources.get(e.fragmentId);
+          if (!source || source.fragmentText !== e.fragmentText || source.side !== e.side || source.documentName !== e.documentName || !source.quote.includes(e.quote) || JSON.stringify(source.locator) !== JSON.stringify(e.locator)) throw new AppError(500, "Источник не прошёл проверку исходного фрагмента.");
+        }
+        summarize(result); if (genericMode) generic.conclude(result); else conclude(result); AnalysisResultSchema.parse(result);
       }
-      if (key === "conclusion") conclude(result);
+      if (key === "conclusion") { if (genericMode) generic.conclude(result); else conclude(result); }
       const detail = { ingest: `Документов: ${result.documents.length}; фрагментов: ${fragments.length}.`, clauses: `Пунктов и заголовков: ${result.clauses.length}.`, alignment: `Записей сравнения: ${result.alignments.length}.`, units: `Сущностей: ${result.units.length}.`, functions: `Функций и полномочий: ${result.functions.length}.`, lineage: `Связей: ${result.lineage.length}.`, checks: "Ссылки, названия ролей и неоднозначные связи проверены.", findings: `Замечаний и кандидатов: ${result.findings.length}.`, verify: "Цитаты, ссылки и счётчики проверены.", conclusion: "Сформированы разделы с ограничениями и ссылками на замечания." };
       await stage(key, "done", detail[key]);
     } catch (error) { await stage(key, "failed", publicError(error)); throw error; }
