@@ -1,0 +1,9 @@
+.env*
+!.env.example
+.data/
+.cache/
+node_modules/
+.next/
+coverage/
+*.tsbuildinfo
+.DS_Store

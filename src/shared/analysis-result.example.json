@@ -1,0 +1,399 @@
+{
+  "id": "demo-example",
+  "isMock": true,
+  "documents": [
+    {
+      "id": "doc-before",
+      "name": "demo-before.docx",
+      "side": "before",
+      "docType": "regulation",
+      "fragmentCount": 3,
+      "warnings": [
+        "Синтетический документ для демонстрации, не данные организатора."
+      ]
+    },
+    {
+      "id": "doc-after",
+      "name": "demo-after.docx",
+      "side": "after",
+      "docType": "regulation",
+      "fragmentCount": 2,
+      "warnings": [
+        "Синтетический документ для демонстрации, не данные организатора."
+      ]
+    }
+  ],
+  "summary": {
+    "unitsByStatus": {
+      "PRESERVED": 1,
+      "RENAMED": 0,
+      "MERGED": 0,
+      "SPLIT": 0,
+      "CREATED": 0,
+      "REMOVED": 0
+    },
+    "functionsByStatus": {
+      "UNCHANGED": 1,
+      "TRANSFERRED": 0,
+      "MODIFIED": 0,
+      "NEW": 0,
+      "POSSIBLE_LOSS": 1
+    },
+    "findingsByType": {
+      "LOSS": 1,
+      "DUPLICATION": 0,
+      "CONFLICT": 0,
+      "REORGANIZATION": 1
+    }
+  },
+  "units": [
+    {
+      "id": "unit-before",
+      "side": "before",
+      "name": "Отдел договорной работы",
+      "normalizedName": "отдел договорной работы",
+      "evidence": [
+        {
+          "fragmentId": "before-fragment-1",
+          "documentName": "demo-before.docx",
+          "side": "before",
+          "locator": {
+            "section": "1",
+            "label": "Пункт 1"
+          },
+          "quote": "Отдел договорной работы",
+          "fragmentText": "1. Отдел договорной работы",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "unit-after",
+      "side": "after",
+      "name": "Отдел договорной работы",
+      "normalizedName": "отдел договорной работы",
+      "evidence": [
+        {
+          "fragmentId": "after-fragment-1",
+          "documentName": "demo-after.docx",
+          "side": "after",
+          "locator": {
+            "section": "1",
+            "label": "Пункт 1"
+          },
+          "quote": "Отдел договорной работы",
+          "fragmentText": "1. Отдел договорной работы",
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "unitChanges": [
+    {
+      "id": "change-preserved",
+      "beforeUnitIds": [
+        "unit-before"
+      ],
+      "afterUnitIds": [
+        "unit-after"
+      ],
+      "status": "PRESERVED",
+      "rationale": "Название подразделения сохранено в синтетических версиях.",
+      "evidence": [
+        {
+          "fragmentId": "before-fragment-1",
+          "documentName": "demo-before.docx",
+          "side": "before",
+          "locator": {
+            "section": "1",
+            "label": "Пункт 1"
+          },
+          "quote": "Отдел договорной работы",
+          "fragmentText": "1. Отдел договорной работы",
+          "verified": true
+        },
+        {
+          "fragmentId": "after-fragment-1",
+          "documentName": "demo-after.docx",
+          "side": "after",
+          "locator": {
+            "section": "1",
+            "label": "Пункт 1"
+          },
+          "quote": "Отдел договорной работы",
+          "fragmentText": "1. Отдел договорной работы",
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "id": "registry-before",
+      "unitId": "unit-before",
+      "side": "before",
+      "text": "ведение реестра договоров",
+      "action": "ведение",
+      "object": "договорная документация",
+      "process": "договорная работа",
+      "role": "support",
+      "evidence": [
+        {
+          "fragmentId": "before-fragment-3",
+          "documentName": "demo-before.docx",
+          "side": "before",
+          "locator": {
+            "section": "3",
+            "label": "Пункт 3"
+          },
+          "quote": "ведение реестра договоров",
+          "fragmentText": "3. ведение реестра договоров",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "archive-before",
+      "unitId": "unit-before",
+      "side": "before",
+      "text": "архивирование договорной документации",
+      "action": "архивирование",
+      "object": "договорная документация",
+      "process": "договорная работа",
+      "role": "support",
+      "evidence": [
+        {
+          "fragmentId": "before-fragment-2",
+          "documentName": "demo-before.docx",
+          "side": "before",
+          "locator": {
+            "section": "2",
+            "label": "Пункт 2"
+          },
+          "quote": "архивирование договорной документации",
+          "fragmentText": "2. архивирование договорной документации",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "archive-after",
+      "unitId": "unit-after",
+      "side": "after",
+      "text": "архивирование договорной документации",
+      "action": "архивирование",
+      "object": "договорная документация",
+      "process": "договорная работа",
+      "role": "support",
+      "evidence": [
+        {
+          "fragmentId": "after-fragment-2",
+          "documentName": "demo-after.docx",
+          "side": "after",
+          "locator": {
+            "section": "2",
+            "label": "Пункт 2"
+          },
+          "quote": "архивирование договорной документации",
+          "fragmentText": "2. архивирование договорной документации",
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "lineage": [
+    {
+      "id": "lineage-archive",
+      "beforeFunctionIds": [
+        "archive-before"
+      ],
+      "afterFunctionIds": [
+        "archive-after"
+      ],
+      "status": "UNCHANGED",
+      "rationale": "Формулировка функции сохранена.",
+      "candidatesChecked": []
+    },
+    {
+      "id": "lineage-registry",
+      "beforeFunctionIds": [
+        "registry-before"
+      ],
+      "afterFunctionIds": [],
+      "status": "POSSIBLE_LOSS",
+      "rationale": "В синтетическом ПОСЛЕ нет эквивалентной функции.",
+      "candidatesChecked": [
+        {
+          "functionId": "archive-after",
+          "reason": "Архивирование документов не эквивалентно ведению реестра."
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "finding-loss",
+      "type": "LOSS",
+      "reviewPriority": "HIGH",
+      "confidence": "medium",
+      "title": "Возможная потеря ведения реестра",
+      "explanation": "В синтетическом наборе ПОСЛЕ эквивалентная функция не найдена. Это не доказательство её отсутствия вне набора.",
+      "unitIds": [
+        "unit-before"
+      ],
+      "functionIds": [
+        "registry-before"
+      ],
+      "evidence": [
+        {
+          "fragmentId": "before-fragment-3",
+          "documentName": "demo-before.docx",
+          "side": "before",
+          "locator": {
+            "section": "3",
+            "label": "Пункт 3"
+          },
+          "quote": "ведение реестра договоров",
+          "fragmentText": "3. ведение реестра договоров",
+          "verified": true
+        }
+      ],
+      "searchTrace": {
+        "checkedCount": 1,
+        "topCandidates": [
+          {
+            "functionId": "archive-after",
+            "reason": "Архивирование документов не эквивалентно ведению реестра."
+          }
+        ]
+      },
+      "recommendation": "Проверьте полный комплект документов и ответственного за реестр.",
+      "verified": true,
+      "review": {
+        "status": "NOT_REVIEWED"
+      }
+    },
+    {
+      "id": "finding-preserved",
+      "type": "REORGANIZATION",
+      "reviewPriority": "LOW",
+      "confidence": "high",
+      "title": "Подразделение и архивирование сохранены",
+      "explanation": "Название подразделения и функция архивирования присутствуют в обеих синтетических версиях.",
+      "unitIds": [
+        "unit-before",
+        "unit-after"
+      ],
+      "functionIds": [
+        "archive-before",
+        "archive-after"
+      ],
+      "evidence": [
+        {
+          "fragmentId": "before-fragment-1",
+          "documentName": "demo-before.docx",
+          "side": "before",
+          "locator": {
+            "section": "1",
+            "label": "Пункт 1"
+          },
+          "quote": "Отдел договорной работы",
+          "fragmentText": "1. Отдел договорной работы",
+          "verified": true
+        },
+        {
+          "fragmentId": "after-fragment-1",
+          "documentName": "demo-after.docx",
+          "side": "after",
+          "locator": {
+            "section": "1",
+            "label": "Пункт 1"
+          },
+          "quote": "Отдел договорной работы",
+          "fragmentText": "1. Отдел договорной работы",
+          "verified": true
+        },
+        {
+          "fragmentId": "before-fragment-2",
+          "documentName": "demo-before.docx",
+          "side": "before",
+          "locator": {
+            "section": "2",
+            "label": "Пункт 2"
+          },
+          "quote": "архивирование договорной документации",
+          "fragmentText": "2. архивирование договорной документации",
+          "verified": true
+        },
+        {
+          "fragmentId": "after-fragment-2",
+          "documentName": "demo-after.docx",
+          "side": "after",
+          "locator": {
+            "section": "2",
+            "label": "Пункт 2"
+          },
+          "quote": "архивирование договорной документации",
+          "fragmentText": "2. архивирование договорной документации",
+          "verified": true
+        }
+      ],
+      "recommendation": "Подтвердите соответствие подразделений.",
+      "verified": true,
+      "review": {
+        "status": "NOT_REVIEWED"
+      }
+    }
+  ],
+  "conclusion": {
+    "sections": [
+      {
+        "key": "orgChanges",
+        "title": "Изменения структуры",
+        "text": "В примере подразделение сохранено.",
+        "findingIds": [
+          "finding-preserved"
+        ]
+      },
+      {
+        "key": "functionPreservation",
+        "title": "Сохранение функций",
+        "text": "Архивирование документации сохранено.",
+        "findingIds": [
+          "finding-preserved"
+        ]
+      },
+      {
+        "key": "possibleLosses",
+        "title": "Возможные потери",
+        "text": "Проверьте передачу ведения реестра.",
+        "findingIds": [
+          "finding-loss"
+        ]
+      },
+      {
+        "key": "duplication",
+        "title": "Дублирование",
+        "text": "В этом демонстрационном примере нет замечаний этого типа.",
+        "findingIds": []
+      },
+      {
+        "key": "conflicts",
+        "title": "Конфликты",
+        "text": "В этом демонстрационном примере нет замечаний этого типа.",
+        "findingIds": []
+      },
+      {
+        "key": "needsHumanReview",
+        "title": "Требуется проверка человеком",
+        "text": "Необходимо проверить возможную потерю функции.",
+        "findingIds": [
+          "finding-loss"
+        ]
+      }
+    ]
+  },
+  "warnings": [
+    "DEMO / MOCK DATA — полностью синтетический пример для интеграции интерфейса, не результат ИИ."
+  ]
+}
