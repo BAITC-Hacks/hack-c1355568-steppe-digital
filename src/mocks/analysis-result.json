@@ -1,0 +1,1518 @@
+{
+  "id": "demo-example",
+  "isMock": true,
+  "documents": [
+    {
+      "id": "doc-before",
+      "name": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+      "side": "before",
+      "docType": "regulation",
+      "fragmentCount": 11,
+      "warnings": []
+    },
+    {
+      "id": "doc-after",
+      "name": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+      "side": "after",
+      "docType": "regulation",
+      "fragmentCount": 21,
+      "warnings": [
+        "Схема структуры не включена; учебный пример ограничен текстом положения."
+      ]
+    }
+  ],
+  "summary": {
+    "unitsByStatus": {
+      "PRESERVED": 1,
+      "RENAMED": 1,
+      "MERGED": 1,
+      "SPLIT": 1,
+      "CREATED": 1,
+      "REMOVED": 1
+    },
+    "functionsByStatus": {
+      "UNCHANGED": 1,
+      "TRANSFERRED": 1,
+      "MODIFIED": 1,
+      "NEW": 5,
+      "POSSIBLE_LOSS": 2
+    },
+    "findingsByType": {
+      "LOSS": 2,
+      "DUPLICATION": 2,
+      "CONFLICT": 1,
+      "REORGANIZATION": 2
+    }
+  },
+  "units": [
+    {
+      "id": "b0-0",
+      "side": "before",
+      "name": "Отдел учёта",
+      "normalizedName": "отдел учёта",
+      "evidence": [
+        {
+          "fragmentId": "fragment-1",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 1",
+            "label": "Положение, п. 1"
+          },
+          "quote": "В структуру входит Отдел учёта.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел учёта.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "a0-0",
+      "side": "after",
+      "name": "Отдел учёта",
+      "normalizedName": "отдел учёта",
+      "evidence": [
+        {
+          "fragmentId": "fragment-2",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 2",
+            "label": "Положение, п. 2"
+          },
+          "quote": "В структуру входит Отдел учёта.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел учёта.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "b1-0",
+      "side": "before",
+      "name": "Отдел кадров",
+      "normalizedName": "отдел кадров",
+      "evidence": [
+        {
+          "fragmentId": "fragment-4",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 4",
+            "label": "Положение, п. 4"
+          },
+          "quote": "В структуру входит Отдел кадров.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел кадров.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "a1-0",
+      "side": "after",
+      "name": "Служба персонала",
+      "normalizedName": "служба персонала",
+      "evidence": [
+        {
+          "fragmentId": "fragment-5",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 5",
+            "label": "Положение, п. 5"
+          },
+          "quote": "В структуру входит Служба персонала.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Служба персонала.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "b2-0",
+      "side": "before",
+      "name": "Отдел закупок",
+      "normalizedName": "отдел закупок",
+      "evidence": [
+        {
+          "fragmentId": "fragment-7",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 7",
+            "label": "Положение, п. 7"
+          },
+          "quote": "В структуру входит Отдел закупок.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел закупок.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "b2-1",
+      "side": "before",
+      "name": "Отдел снабжения",
+      "normalizedName": "отдел снабжения",
+      "evidence": [
+        {
+          "fragmentId": "fragment-8",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 8",
+            "label": "Положение, п. 8"
+          },
+          "quote": "В структуру входит Отдел снабжения.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел снабжения.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "a2-0",
+      "side": "after",
+      "name": "Дирекция ресурсов",
+      "normalizedName": "дирекция ресурсов",
+      "evidence": [
+        {
+          "fragmentId": "fragment-9",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 9",
+            "label": "Положение, п. 9"
+          },
+          "quote": "В структуру входит Дирекция ресурсов.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Дирекция ресурсов.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "b3-0",
+      "side": "before",
+      "name": "Операционный отдел",
+      "normalizedName": "операционный отдел",
+      "evidence": [
+        {
+          "fragmentId": "fragment-11",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 11",
+            "label": "Положение, п. 11"
+          },
+          "quote": "В структуру входит Операционный отдел.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Операционный отдел.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "a3-0",
+      "side": "after",
+      "name": "Отдел исполнения",
+      "normalizedName": "отдел исполнения",
+      "evidence": [
+        {
+          "fragmentId": "fragment-12",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 12",
+            "label": "Положение, п. 12"
+          },
+          "quote": "В структуру входит Отдел исполнения.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел исполнения.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "a3-1",
+      "side": "after",
+      "name": "Отдел контроля",
+      "normalizedName": "отдел контроля",
+      "evidence": [
+        {
+          "fragmentId": "fragment-13",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 13",
+            "label": "Положение, п. 13"
+          },
+          "quote": "В структуру входит Отдел контроля.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел контроля.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "a4-0",
+      "side": "after",
+      "name": "Служба развития",
+      "normalizedName": "служба развития",
+      "evidence": [
+        {
+          "fragmentId": "fragment-15",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 15",
+            "label": "Положение, п. 15"
+          },
+          "quote": "В структуру входит Служба развития.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Служба развития.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "b5-0",
+      "side": "before",
+      "name": "Архивный отдел",
+      "normalizedName": "архивный отдел",
+      "evidence": [
+        {
+          "fragmentId": "fragment-17",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 17",
+            "label": "Положение, п. 17"
+          },
+          "quote": "В структуру входит Архивный отдел.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Архивный отдел.",
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "unitChanges": [
+    {
+      "id": "change-0",
+      "beforeUnitIds": [
+        "b0-0"
+      ],
+      "afterUnitIds": [
+        "a0-0"
+      ],
+      "status": "PRESERVED",
+      "rationale": "Соотношение задано синтетическим учебным приказом.",
+      "evidence": [
+        {
+          "fragmentId": "fragment-1",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 1",
+            "label": "Положение, п. 1"
+          },
+          "quote": "В структуру входит Отдел учёта.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел учёта.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-2",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 2",
+            "label": "Положение, п. 2"
+          },
+          "quote": "В структуру входит Отдел учёта.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел учёта.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-3",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 3",
+            "label": "Положение, п. 3"
+          },
+          "quote": "Учебный приказ: Отдел учёта → Отдел учёта.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Учебный приказ: Отдел учёта → Отдел учёта.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "change-1",
+      "beforeUnitIds": [
+        "b1-0"
+      ],
+      "afterUnitIds": [
+        "a1-0"
+      ],
+      "status": "RENAMED",
+      "rationale": "Соотношение задано синтетическим учебным приказом.",
+      "evidence": [
+        {
+          "fragmentId": "fragment-4",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 4",
+            "label": "Положение, п. 4"
+          },
+          "quote": "В структуру входит Отдел кадров.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел кадров.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-5",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 5",
+            "label": "Положение, п. 5"
+          },
+          "quote": "В структуру входит Служба персонала.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Служба персонала.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-6",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 6",
+            "label": "Положение, п. 6"
+          },
+          "quote": "Учебный приказ: Отдел кадров → Служба персонала.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Учебный приказ: Отдел кадров → Служба персонала.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "change-2",
+      "beforeUnitIds": [
+        "b2-0",
+        "b2-1"
+      ],
+      "afterUnitIds": [
+        "a2-0"
+      ],
+      "status": "MERGED",
+      "rationale": "Соотношение задано синтетическим учебным приказом.",
+      "evidence": [
+        {
+          "fragmentId": "fragment-7",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 7",
+            "label": "Положение, п. 7"
+          },
+          "quote": "В структуру входит Отдел закупок.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел закупок.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-8",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 8",
+            "label": "Положение, п. 8"
+          },
+          "quote": "В структуру входит Отдел снабжения.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел снабжения.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-9",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 9",
+            "label": "Положение, п. 9"
+          },
+          "quote": "В структуру входит Дирекция ресурсов.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Дирекция ресурсов.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-10",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 10",
+            "label": "Положение, п. 10"
+          },
+          "quote": "Учебный приказ: Отдел закупок, Отдел снабжения → Дирекция ресурсов.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Учебный приказ: Отдел закупок, Отдел снабжения → Дирекция ресурсов.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "change-3",
+      "beforeUnitIds": [
+        "b3-0"
+      ],
+      "afterUnitIds": [
+        "a3-0",
+        "a3-1"
+      ],
+      "status": "SPLIT",
+      "rationale": "Соотношение задано синтетическим учебным приказом.",
+      "evidence": [
+        {
+          "fragmentId": "fragment-11",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 11",
+            "label": "Положение, п. 11"
+          },
+          "quote": "В структуру входит Операционный отдел.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Операционный отдел.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-12",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 12",
+            "label": "Положение, п. 12"
+          },
+          "quote": "В структуру входит Отдел исполнения.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел исполнения.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-13",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 13",
+            "label": "Положение, п. 13"
+          },
+          "quote": "В структуру входит Отдел контроля.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел контроля.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-14",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 14",
+            "label": "Положение, п. 14"
+          },
+          "quote": "Учебный приказ: Операционный отдел → Отдел исполнения, Отдел контроля.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Учебный приказ: Операционный отдел → Отдел исполнения, Отдел контроля.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "change-4",
+      "beforeUnitIds": [],
+      "afterUnitIds": [
+        "a4-0"
+      ],
+      "status": "CREATED",
+      "rationale": "Соотношение задано синтетическим учебным приказом.",
+      "evidence": [
+        {
+          "fragmentId": "fragment-15",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 15",
+            "label": "Положение, п. 15"
+          },
+          "quote": "В структуру входит Служба развития.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Служба развития.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-16",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 16",
+            "label": "Положение, п. 16"
+          },
+          "quote": "Учебный приказ: нет подразделения → Служба развития.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Учебный приказ: нет подразделения → Служба развития.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "change-5",
+      "beforeUnitIds": [
+        "b5-0"
+      ],
+      "afterUnitIds": [],
+      "status": "REMOVED",
+      "rationale": "Соотношение задано синтетическим учебным приказом.",
+      "evidence": [
+        {
+          "fragmentId": "fragment-17",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 17",
+            "label": "Положение, п. 17"
+          },
+          "quote": "В структуру входит Архивный отдел.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Архивный отдел.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-18",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 18",
+            "label": "Положение, п. 18"
+          },
+          "quote": "Учебный приказ: Архивный отдел → подразделение исключено.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Учебный приказ: Архивный отдел → подразделение исключено.",
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "id": "b-account",
+      "unitId": "b0-0",
+      "side": "before",
+      "text": "Ведёт реестр основных средств.",
+      "action": "Ведёт",
+      "object": "учёт",
+      "process": "учёт",
+      "role": "execute",
+      "evidence": [
+        {
+          "fragmentId": "fragment-19",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 19",
+            "label": "Положение, п. 19"
+          },
+          "quote": "Ведёт реестр основных средств.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Ведёт реестр основных средств.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "a-account",
+      "unitId": "a0-0",
+      "side": "after",
+      "text": "Ведёт реестр основных средств.",
+      "action": "Ведёт",
+      "object": "учёт",
+      "process": "учёт",
+      "role": "execute",
+      "evidence": [
+        {
+          "fragmentId": "fragment-20",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 20",
+            "label": "Положение, п. 20"
+          },
+          "quote": "Ведёт реестр основных средств.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Ведёт реестр основных средств.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "b-hiring",
+      "unitId": "b1-0",
+      "side": "before",
+      "text": "Оформляет приём сотрудников.",
+      "action": "Оформляет",
+      "object": "персонал",
+      "process": "персонал",
+      "role": "execute",
+      "evidence": [
+        {
+          "fragmentId": "fragment-21",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 21",
+            "label": "Положение, п. 21"
+          },
+          "quote": "Оформляет приём сотрудников.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Оформляет приём сотрудников.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "a-hiring",
+      "unitId": "a1-0",
+      "side": "after",
+      "text": "Оформляет приём сотрудников с электронной подписью.",
+      "action": "Оформляет",
+      "object": "персонал",
+      "process": "персонал",
+      "role": "execute",
+      "evidence": [
+        {
+          "fragmentId": "fragment-22",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 22",
+            "label": "Положение, п. 22"
+          },
+          "quote": "Оформляет приём сотрудников с электронной подписью.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Оформляет приём сотрудников с электронной подписью.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "b-purchase",
+      "unitId": "b2-0",
+      "side": "before",
+      "text": "Формирует годовой план закупок.",
+      "action": "Формирует",
+      "object": "закупки",
+      "process": "закупки",
+      "role": "execute",
+      "evidence": [
+        {
+          "fragmentId": "fragment-23",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 23",
+            "label": "Положение, п. 23"
+          },
+          "quote": "Формирует годовой план закупок.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Формирует годовой план закупок.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "a-purchase",
+      "unitId": "a2-0",
+      "side": "after",
+      "text": "Формирует годовой план закупок.",
+      "action": "Формирует",
+      "object": "закупки",
+      "process": "закупки",
+      "role": "execute",
+      "evidence": [
+        {
+          "fragmentId": "fragment-24",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 24",
+            "label": "Положение, п. 24"
+          },
+          "quote": "Формирует годовой план закупок.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Формирует годовой план закупок.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "b-loss1",
+      "unitId": "b5-0",
+      "side": "before",
+      "text": "Обеспечивает экспертизу ценности архивных документов.",
+      "action": "Обеспечивает",
+      "object": "архив",
+      "process": "архив",
+      "role": "execute",
+      "evidence": [
+        {
+          "fragmentId": "fragment-25",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 25",
+            "label": "Положение, п. 25"
+          },
+          "quote": "Обеспечивает экспертизу ценности архивных документов.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Обеспечивает экспертизу ценности архивных документов.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "b-loss2",
+      "unitId": "b3-0",
+      "side": "before",
+      "text": "Ведёт реестр аварийных обращений.",
+      "action": "Ведёт",
+      "object": "аварии",
+      "process": "аварии",
+      "role": "execute",
+      "evidence": [
+        {
+          "fragmentId": "fragment-26",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 26",
+            "label": "Положение, п. 26"
+          },
+          "quote": "Ведёт реестр аварийных обращений.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Ведёт реестр аварийных обращений.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "a-duplicate1",
+      "unitId": "a3-0",
+      "side": "after",
+      "text": "Формирует годовой план закупок.",
+      "action": "Формирует",
+      "object": "закупки",
+      "process": "закупки",
+      "role": "execute",
+      "evidence": [
+        {
+          "fragmentId": "fragment-27",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 27",
+            "label": "Положение, п. 27"
+          },
+          "quote": "Формирует годовой план закупок.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Формирует годовой план закупок.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "a-report1",
+      "unitId": "a2-0",
+      "side": "after",
+      "text": "Составляет ежемесячный отчёт об исполнении договоров.",
+      "action": "Составляет",
+      "object": "договоры",
+      "process": "договоры",
+      "role": "execute",
+      "evidence": [
+        {
+          "fragmentId": "fragment-28",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 28",
+            "label": "Положение, п. 28"
+          },
+          "quote": "Составляет ежемесячный отчёт об исполнении договоров.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Составляет ежемесячный отчёт об исполнении договоров.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "a-report2",
+      "unitId": "a3-0",
+      "side": "after",
+      "text": "Составляет ежемесячный отчёт об исполнении договоров.",
+      "action": "Составляет",
+      "object": "договоры",
+      "process": "договоры",
+      "role": "execute",
+      "evidence": [
+        {
+          "fragmentId": "fragment-29",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 29",
+            "label": "Положение, п. 29"
+          },
+          "quote": "Составляет ежемесячный отчёт об исполнении договоров.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Составляет ежемесячный отчёт об исполнении договоров.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "a-approve",
+      "unitId": "a2-0",
+      "side": "after",
+      "text": "Утверждает годовой план закупок.",
+      "action": "Утверждает",
+      "object": "закупки",
+      "process": "закупки",
+      "role": "approve",
+      "evidence": [
+        {
+          "fragmentId": "fragment-30",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 30",
+            "label": "Положение, п. 30"
+          },
+          "quote": "Утверждает годовой план закупок.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Утверждает годовой план закупок.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "a-new",
+      "unitId": "a4-0",
+      "side": "after",
+      "text": "Готовит предложения по новым направлениям деятельности.",
+      "action": "Готовит",
+      "object": "развитие",
+      "process": "развитие",
+      "role": "execute",
+      "evidence": [
+        {
+          "fragmentId": "fragment-31",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 31",
+            "label": "Положение, п. 31"
+          },
+          "quote": "Готовит предложения по новым направлениям деятельности.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Готовит предложения по новым направлениям деятельности.",
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "lineage": [
+    {
+      "id": "lineage-0",
+      "beforeFunctionIds": [
+        "b-account"
+      ],
+      "afterFunctionIds": [
+        "a-account"
+      ],
+      "status": "UNCHANGED",
+      "rationale": "Синтетическое сопоставление для проверки интерфейса.",
+      "candidatesChecked": []
+    },
+    {
+      "id": "lineage-1",
+      "beforeFunctionIds": [
+        "b-hiring"
+      ],
+      "afterFunctionIds": [
+        "a-hiring"
+      ],
+      "status": "MODIFIED",
+      "rationale": "Синтетическое сопоставление для проверки интерфейса.",
+      "candidatesChecked": []
+    },
+    {
+      "id": "lineage-2",
+      "beforeFunctionIds": [
+        "b-purchase"
+      ],
+      "afterFunctionIds": [
+        "a-purchase"
+      ],
+      "status": "TRANSFERRED",
+      "rationale": "Синтетическое сопоставление для проверки интерфейса.",
+      "candidatesChecked": []
+    },
+    {
+      "id": "lineage-3",
+      "beforeFunctionIds": [],
+      "afterFunctionIds": [
+        "a-new"
+      ],
+      "status": "NEW",
+      "rationale": "Синтетическое сопоставление для проверки интерфейса.",
+      "candidatesChecked": []
+    },
+    {
+      "id": "lineage-4",
+      "beforeFunctionIds": [
+        "b-loss1"
+      ],
+      "afterFunctionIds": [],
+      "status": "POSSIBLE_LOSS",
+      "rationale": "Синтетическое сопоставление для проверки интерфейса.",
+      "candidatesChecked": [
+        {
+          "functionId": "a-account",
+          "reason": "Другой предмет функции: учёт."
+        },
+        {
+          "functionId": "a-hiring",
+          "reason": "Другой предмет функции: персонал."
+        },
+        {
+          "functionId": "a-purchase",
+          "reason": "Другой предмет функции: закупки."
+        },
+        {
+          "functionId": "a-duplicate1",
+          "reason": "Другой предмет функции: закупки."
+        },
+        {
+          "functionId": "a-report1",
+          "reason": "Другой предмет функции: договоры."
+        },
+        {
+          "functionId": "a-report2",
+          "reason": "Другой предмет функции: договоры."
+        },
+        {
+          "functionId": "a-approve",
+          "reason": "Другой предмет функции: закупки."
+        },
+        {
+          "functionId": "a-new",
+          "reason": "Другой предмет функции: развитие."
+        }
+      ]
+    },
+    {
+      "id": "lineage-5",
+      "beforeFunctionIds": [
+        "b-loss2"
+      ],
+      "afterFunctionIds": [],
+      "status": "POSSIBLE_LOSS",
+      "rationale": "Синтетическое сопоставление для проверки интерфейса.",
+      "candidatesChecked": [
+        {
+          "functionId": "a-account",
+          "reason": "Другой предмет функции: учёт."
+        },
+        {
+          "functionId": "a-hiring",
+          "reason": "Другой предмет функции: персонал."
+        },
+        {
+          "functionId": "a-purchase",
+          "reason": "Другой предмет функции: закупки."
+        },
+        {
+          "functionId": "a-duplicate1",
+          "reason": "Другой предмет функции: закупки."
+        },
+        {
+          "functionId": "a-report1",
+          "reason": "Другой предмет функции: договоры."
+        },
+        {
+          "functionId": "a-report2",
+          "reason": "Другой предмет функции: договоры."
+        },
+        {
+          "functionId": "a-approve",
+          "reason": "Другой предмет функции: закупки."
+        },
+        {
+          "functionId": "a-new",
+          "reason": "Другой предмет функции: развитие."
+        }
+      ]
+    },
+    {
+      "id": "lineage-6",
+      "beforeFunctionIds": [],
+      "afterFunctionIds": [
+        "a-duplicate1"
+      ],
+      "status": "NEW",
+      "rationale": "Синтетическое сопоставление для проверки интерфейса.",
+      "candidatesChecked": []
+    },
+    {
+      "id": "lineage-7",
+      "beforeFunctionIds": [],
+      "afterFunctionIds": [
+        "a-report1"
+      ],
+      "status": "NEW",
+      "rationale": "Синтетическое сопоставление для проверки интерфейса.",
+      "candidatesChecked": []
+    },
+    {
+      "id": "lineage-8",
+      "beforeFunctionIds": [],
+      "afterFunctionIds": [
+        "a-report2"
+      ],
+      "status": "NEW",
+      "rationale": "Синтетическое сопоставление для проверки интерфейса.",
+      "candidatesChecked": []
+    },
+    {
+      "id": "lineage-9",
+      "beforeFunctionIds": [],
+      "afterFunctionIds": [
+        "a-approve"
+      ],
+      "status": "NEW",
+      "rationale": "Синтетическое сопоставление для проверки интерфейса.",
+      "candidatesChecked": []
+    }
+  ],
+  "findings": [
+    {
+      "id": "loss-1",
+      "type": "LOSS",
+      "title": "Возможная потеря архивной экспертизы",
+      "reviewPriority": "HIGH",
+      "confidence": "high",
+      "explanation": "В учебном наборе ПОСЛЕ эквивалент не найден. Вывод ограничен загруженными документами.",
+      "unitIds": [
+        "b5-0"
+      ],
+      "functionIds": [
+        "b-loss1"
+      ],
+      "evidence": [
+        {
+          "fragmentId": "fragment-25",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 25",
+            "label": "Положение, п. 25"
+          },
+          "quote": "Обеспечивает экспертизу ценности архивных документов.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Обеспечивает экспертизу ценности архивных документов.",
+          "verified": true
+        }
+      ],
+      "recommendation": "Проверьте приведённые пункты и уточните ответственность в документах.",
+      "verified": true,
+      "review": {
+        "status": "NOT_REVIEWED"
+      },
+      "searchTrace": {
+        "checkedCount": 8,
+        "topCandidates": [
+          {
+            "functionId": "a-account",
+            "reason": "Другой предмет функции: учёт."
+          },
+          {
+            "functionId": "a-hiring",
+            "reason": "Другой предмет функции: персонал."
+          },
+          {
+            "functionId": "a-purchase",
+            "reason": "Другой предмет функции: закупки."
+          }
+        ]
+      }
+    },
+    {
+      "id": "loss-2",
+      "type": "LOSS",
+      "title": "Не найден учёт аварийных обращений",
+      "reviewPriority": "HIGH",
+      "confidence": "high",
+      "explanation": "В учебном наборе ПОСЛЕ эквивалент не найден. Вывод ограничен загруженными документами.",
+      "unitIds": [
+        "b3-0"
+      ],
+      "functionIds": [
+        "b-loss2"
+      ],
+      "evidence": [
+        {
+          "fragmentId": "fragment-26",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 26",
+            "label": "Положение, п. 26"
+          },
+          "quote": "Ведёт реестр аварийных обращений.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Ведёт реестр аварийных обращений.",
+          "verified": true
+        }
+      ],
+      "recommendation": "Проверьте приведённые пункты и уточните ответственность в документах.",
+      "verified": true,
+      "review": {
+        "status": "NOT_REVIEWED"
+      },
+      "searchTrace": {
+        "checkedCount": 8,
+        "topCandidates": [
+          {
+            "functionId": "a-account",
+            "reason": "Другой предмет функции: учёт."
+          },
+          {
+            "functionId": "a-hiring",
+            "reason": "Другой предмет функции: персонал."
+          },
+          {
+            "functionId": "a-purchase",
+            "reason": "Другой предмет функции: закупки."
+          }
+        ]
+      }
+    },
+    {
+      "id": "dup-1",
+      "type": "DUPLICATION",
+      "title": "План закупок закреплён за двумя подразделениями",
+      "reviewPriority": "MEDIUM",
+      "confidence": "high",
+      "explanation": "Два учебных пункта закрепляют формирование одного годового плана закупок.",
+      "unitIds": [
+        "a2-0",
+        "a3-0"
+      ],
+      "functionIds": [
+        "a-purchase",
+        "a-duplicate1"
+      ],
+      "evidence": [
+        {
+          "fragmentId": "fragment-24",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 24",
+            "label": "Положение, п. 24"
+          },
+          "quote": "Формирует годовой план закупок.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Формирует годовой план закупок.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-27",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 27",
+            "label": "Положение, п. 27"
+          },
+          "quote": "Формирует годовой план закупок.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Формирует годовой план закупок.",
+          "verified": true
+        }
+      ],
+      "recommendation": "Проверьте приведённые пункты и уточните ответственность в документах.",
+      "verified": true,
+      "review": {
+        "status": "NOT_REVIEWED"
+      }
+    },
+    {
+      "id": "dup-2",
+      "type": "DUPLICATION",
+      "title": "Два ответственных за отчёт по договорам",
+      "reviewPriority": "MEDIUM",
+      "confidence": "high",
+      "explanation": "В положениях двух подразделений указан один ежемесячный отчёт по договорам.",
+      "unitIds": [
+        "a2-0",
+        "a3-0"
+      ],
+      "functionIds": [
+        "a-report1",
+        "a-report2"
+      ],
+      "evidence": [
+        {
+          "fragmentId": "fragment-28",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 28",
+            "label": "Положение, п. 28"
+          },
+          "quote": "Составляет ежемесячный отчёт об исполнении договоров.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Составляет ежемесячный отчёт об исполнении договоров.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-29",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 29",
+            "label": "Положение, п. 29"
+          },
+          "quote": "Составляет ежемесячный отчёт об исполнении договоров.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Составляет ежемесячный отчёт об исполнении договоров.",
+          "verified": true
+        }
+      ],
+      "recommendation": "Проверьте приведённые пункты и уточните ответственность в документах.",
+      "verified": true,
+      "review": {
+        "status": "NOT_REVIEWED"
+      }
+    },
+    {
+      "id": "conflict-1",
+      "type": "CONFLICT",
+      "title": "Подготовка и утверждение плана в одной дирекции",
+      "reviewPriority": "HIGH",
+      "confidence": "high",
+      "explanation": "В Дирекции ресурсов совмещены исполнение и утверждение в одном процессе закупок.",
+      "unitIds": [
+        "a2-0"
+      ],
+      "functionIds": [
+        "a-purchase",
+        "a-approve"
+      ],
+      "evidence": [
+        {
+          "fragmentId": "fragment-24",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 24",
+            "label": "Положение, п. 24"
+          },
+          "quote": "Формирует годовой план закупок.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Формирует годовой план закупок.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-30",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 30",
+            "label": "Положение, п. 30"
+          },
+          "quote": "Утверждает годовой план закупок.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Утверждает годовой план закупок.",
+          "verified": true
+        }
+      ],
+      "recommendation": "Проверьте приведённые пункты и уточните ответственность в документах.",
+      "verified": true,
+      "review": {
+        "status": "NOT_REVIEWED"
+      }
+    },
+    {
+      "id": "reorg-1",
+      "type": "REORGANIZATION",
+      "title": "Закупки и снабжение объединены",
+      "reviewPriority": "LOW",
+      "confidence": "high",
+      "explanation": "Учебный приказ объединяет два отдела в Дирекцию ресурсов.",
+      "unitIds": [
+        "b2-0",
+        "b2-1",
+        "a2-0"
+      ],
+      "functionIds": [],
+      "evidence": [
+        {
+          "fragmentId": "fragment-7",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 7",
+            "label": "Положение, п. 7"
+          },
+          "quote": "В структуру входит Отдел закупок.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел закупок.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-8",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 8",
+            "label": "Положение, п. 8"
+          },
+          "quote": "В структуру входит Отдел снабжения.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел снабжения.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-9",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 9",
+            "label": "Положение, п. 9"
+          },
+          "quote": "В структуру входит Дирекция ресурсов.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Дирекция ресурсов.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-10",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 10",
+            "label": "Положение, п. 10"
+          },
+          "quote": "Учебный приказ: Отдел закупок, Отдел снабжения → Дирекция ресурсов.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Учебный приказ: Отдел закупок, Отдел снабжения → Дирекция ресурсов.",
+          "verified": true
+        }
+      ],
+      "recommendation": "Проверьте приведённые пункты и уточните ответственность в документах.",
+      "verified": true,
+      "review": {
+        "status": "NOT_REVIEWED"
+      }
+    },
+    {
+      "id": "preserve-1",
+      "type": "REORGANIZATION",
+      "title": "Реестр основных средств сохранён",
+      "reviewPriority": "LOW",
+      "confidence": "high",
+      "explanation": "Учебные положения ДО и ПОСЛЕ содержат одинаковую функцию.",
+      "unitIds": [
+        "b0-0",
+        "a0-0"
+      ],
+      "functionIds": [
+        "b-account",
+        "a-account"
+      ],
+      "evidence": [
+        {
+          "fragmentId": "fragment-19",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ДО.docx",
+          "side": "before",
+          "locator": {
+            "section": "п. 19",
+            "label": "Положение, п. 19"
+          },
+          "quote": "Ведёт реестр основных средств.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Ведёт реестр основных средств.",
+          "verified": true
+        },
+        {
+          "fragmentId": "fragment-20",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 20",
+            "label": "Положение, п. 20"
+          },
+          "quote": "Ведёт реестр основных средств.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Ведёт реестр основных средств.",
+          "verified": true
+        }
+      ],
+      "recommendation": "Проверьте приведённые пункты и уточните ответственность в документах.",
+      "verified": true,
+      "review": {
+        "status": "NOT_REVIEWED"
+      }
+    },
+    {
+      "id": "diagnostic-1",
+      "type": "DUPLICATION",
+      "title": "Кандидат: пересечение контрольных полномочий",
+      "reviewPriority": "MEDIUM",
+      "confidence": "low",
+      "explanation": "Пример ошибки проверки: заявленная цитата не найдена в исходном фрагменте.",
+      "unitIds": [],
+      "functionIds": [],
+      "evidence": [
+        {
+          "fragmentId": "fragment-32",
+          "documentName": "СИНТЕТИЧЕСКИЙ ПРИМЕР — ПОСЛЕ.docx",
+          "side": "after",
+          "locator": {
+            "section": "п. 32",
+            "label": "Положение, п. 32"
+          },
+          "quote": "Служба развития контролирует все закупки.",
+          "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Служба развития готовит предложения по развитию.",
+          "verified": false
+        }
+      ],
+      "recommendation": "Проверьте приведённые пункты и уточните ответственность в документах.",
+      "verified": false,
+      "review": {
+        "status": "NOT_REVIEWED"
+      }
+    }
+  ],
+  "conclusion": {
+    "sections": [
+      {
+        "key": "orgChanges",
+        "title": "Организационные изменения",
+        "text": "Два отдела объединены в Дирекцию ресурсов.",
+        "findingIds": [
+          "reorg-1"
+        ]
+      },
+      {
+        "key": "functionPreservation",
+        "title": "Сохранение функций",
+        "text": "Функция ведения реестра основных средств сохранена.",
+        "findingIds": [
+          "preserve-1"
+        ]
+      },
+      {
+        "key": "possibleLosses",
+        "title": "Возможные потери",
+        "text": "В учебном наборе ПОСЛЕ не найдены эквиваленты двух функций.",
+        "findingIds": [
+          "loss-1",
+          "loss-2"
+        ]
+      },
+      {
+        "key": "duplication",
+        "title": "Дублирование",
+        "text": "Две пары функций требуют проверки ответственности.",
+        "findingIds": [
+          "dup-1",
+          "dup-2"
+        ]
+      },
+      {
+        "key": "conflicts",
+        "title": "Конфликты ролей",
+        "text": "Совмещение подготовки и утверждения плана требует проверки.",
+        "findingIds": [
+          "conflict-1"
+        ]
+      },
+      {
+        "key": "needsHumanReview",
+        "title": "Требует проверки сотрудником",
+        "text": "Проверьте ответственность и полноту набора документов.",
+        "findingIds": [
+          "loss-1",
+          "dup-1",
+          "conflict-1"
+        ]
+      }
+    ]
+  },
+  "warnings": [
+    "Синтетический учебный пример. Все названия и фрагменты вымышлены.",
+    "Неподтверждённый диагностический кандидат исключён из итогов."
+  ]
+}
