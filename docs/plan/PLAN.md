@@ -1,195 +1,266 @@
-# OrgTrace AI — five-hour delivery plan
+# OrgTrace AI — план реализации за пять часов
 
-## Product and authority
+## Продукт, источники и состояние реализации
 
-OrgTrace AI is an advisory AI reorganization auditor: upload BEFORE/AFTER documents, identify changed units, compare their functions, show what was retained or transferred, flag possible losses, duplication and conflicts, and justify every finding with source clauses. A responsible employee makes the decision.
+OrgTrace AI сравнивает документы ДО / ПОСЛЕ реорганизации, прослеживает подразделения, должности и функции, показывает возможные потери, дублирование, конфликты и дефекты документов с проверяемыми источниками. Выводы рекомендательные; решение принимает ответственный сотрудник.
 
-Team: three people at HackAlem AI, five hours. Read `docs/case/case.txt` in full; it is authoritative and immutable. This plan implements the case rather than replacing it. Documentation and task reports are in English; the product UI and control documents retain the required Russian text.
+Команда — три человека, HackAlem AI, пять часов. Полностью прочитать [официальный кейс](../case/case.txt), затем [исследование образцов](../research/DATA_ANALYSIS.md) и [пользовательский сценарий](../product/USER_FLOW.md). Кейс неизменяем и имеет приоритет; противоречия сообщать, а не устранять редактированием кейса. Этот план и обновляемые документы пишутся по-русски, идентификаторы, поля, пути и enum — по-английски. Это уточнение заменяет прежнее языковое правило в исторических prompts для последующих задач по этому плану.
 
-## Stack and scope
+**Статус: ниже целевая спецификация следующей итерации, не отчёт о готовности кода.** Текущий контракт `v0.1.0` описан в [docs/api/CONTRACT.md](../api/CONTRACT.md) и `src/shared/contract.ts`: семь этапов, четыре типа находок, загрузка PDF/DOCX/XLSX. В текущем scaffold реализован ingest, семантические этапы — заглушки, результаты помечены `isMock=true`. TXT, `Clause`, alignment, новые проверки и экран сравнения пунктов требуют реализации. В этой документационной задаче код не меняется. Предлагаемая версия нового контракта — `v0.2.0`; её публикация требует согласованной миграции backend, frontend и QA.
 
-One Next.js App Router + TypeScript app at the repository root. Use Zod, OpenAI SDK for chat and embeddings, mammoth for DOCX, pdfjs-dist for PDF, xlsx (SheetJS) for Excel, Vitest and tsx. Persist JSON under gitignored `.data/`; store LLM cache under gitignored `.cache/`. Compare embeddings in memory using cosine similarity. No database, authentication, Docker, vector database, separate Python backend, agent framework or NVIDIA integration.
+## Стек и границы
 
-Confirm the stack at T=0 after inspecting actual file formats and checking chat and embeddings access. Secrets exist only in `.env.local`; tools and task reports must never read or print that file or its values. The running app reads environment variables; `.env.example` has empty placeholders. Record the selected chat and embedding models in non-secret configuration and README. QA requests any fixture-generation dependency from backend; xlsx can generate XLSX, while DOCX generation requires a backend-approved writer dependency or another reproducible method.
+Одно приложение Next.js App Router + TypeScript в корне. Zod, OpenAI SDK для chat и embeddings, mammoth для DOCX, pdfjs-dist для PDF, SheetJS для XLSX, Vitest и tsx. TXT читается как текст с обработкой BOM. JSON хранится в игнорируемой `.data/`, cache — в `.cache/`; embeddings сравниваются в памяти через cosine similarity. Серверная логика находится в `backend/`, тонкие маршруты — в `src/app/api/`; отдельный процесс backend не нужен. Без БД, авторизации, Docker, Python-сервера, векторной БД, agent framework и NVIDIA-интеграции.
 
-## Repository layout and lanes
+Проверить фактические форматы, доступ к chat/embeddings, время и лимиты на старте итерации. Модели указывать в несекретной конфигурации и README. Не читать и не выводить `.env.local` и ключи; только приложение потребляет переменные окружения. `.env.example` содержит placeholders. Зависимости генерации контрольных DOCX согласует backend; TXT-пара не требует конвертации.
 
-| Path | Purpose / owner |
+## Репозиторий и ответственность
+
+| Путь | Назначение / владелец |
 | --- | --- |
-| `src/app/api/**` | Thin Next.js route exports to `backend/handlers.ts` / backend |
-| `backend/**` | Parsers, LLM client, cache, jobs, pipeline, colocated tests / backend |
-| `src/shared/contract.ts` | Zod schemas and inferred types / backend |
-| `src/shared/analysis-result.example.json` | Schema-valid example with `isMock=true` / backend |
-| `src/app/**` except API, `src/components/**` | Application shell, screens and evidence UI / frontend |
-| `src/lib/api.ts`, `src/mocks/**` | Only UI data access layer and labeled mocks / frontend |
-| `tests/fixtures/**`, `eval/**`, `scripts/**` | Control set, evaluation and checks / QA |
-| `docs/product/**` | Product behavior / frontend |
-| `docs/qa/**`, `DATA_NOTES.md`, `README.md` | QA, data inventory, launch instructions and architecture / QA |
-| `docs/case/case.txt` | Official scope; never modify |
-| `docs/plan/**`, `docs/prompts/**`, `AGENTS.md` | Shared planning package; propose coordinated changes, do not assume lane ownership |
-| `data/` | Organizer input; inspect read-only and do not assume its presence or contents |
-| `.data/`, `.cache/` | Ignored runtime storage and cache |
-| `package.json`, root configuration, dependency lockfile | Stack, scripts, dependencies and tooling / backend |
+| `backend/**`, `src/app/api/**` | Парсеры, AI, jobs, pipeline, серверные тесты, маршруты / backend |
+| `src/shared/**` | Zod-схемы, типы и пример результата с `isMock=true` / backend |
+| `package.json`, корневая конфигурация, lockfile | Зависимости и tooling / backend |
+| `src/app/**`, кроме API; `src/components/**` | Оболочка и интерфейс / frontend |
+| `src/lib/api.ts`, `src/mocks/**`, `docs/product/**` | Доступ UI к данным, mock и спецификация / frontend |
+| `tests/fixtures/**`, `eval/**`, `scripts/**`, `docs/qa/**`, `DATA_NOTES.md`, `README.md` | Контрольные примеры, оценка, запуск и архитектура / QA |
+| `docs/case/case.txt` | Неизменяемый официальный кейс |
+| `AGENTS.md`, `docs/plan/**`, `docs/prompts/**`, `docs/research/**` | Совместно согласуемая документация |
+| `data/samples/before/`, `data/samples/after/` | Основной контроль: редакции 8 и 9, исходники только для чтения |
+| `.data/`, `.cache/` | Игнорируемые runtime-данные и cache |
 
-Server code is grouped in `backend/`; browser-safe schemas remain in `src/shared/`. The folder separation does not change API URLs or introduce a second process.
+Рабочие ветки: `lane/backend`, `lane/frontend`, `lane/qa`. Перед задачей получить актуальный `main` и включить его в свою ветку; сохранять чужую работу и авторство, не делать force-push. Изменения контракта проводит backend. Узкие исключения: первоначальная минимальная Next.js-оболочка от backend и append-only записи frontend в `docs/qa/handoff.md`. Прямое указание пользователя на совместную документационную задачу и push в `main` разрешает именно её объём, не произвольные изменения чужого кода.
 
-Branches: `lane/backend`, `lane/frontend`, `lane/qa`. Each participant commits personally. Pull `main` before every task; do not overwrite uncommitted work. Contract changes always go through backend. Two narrow exceptions resolve the supplied workflow: backend creates the initial minimal Next.js shell and publishes the first baseline to `main` before frontend begins; frontend may append handoff entries to QA's log. Thereafter normal ownership applies. Backend tests belong beside backend/shared code, avoiding QA-owned fixtures.
+## Pipeline
 
-## Pipeline and implementation method
+Порядок: `ingest → clauses → alignment → units → functions → lineage → checks → findings → verify → conclusion`.
 
-| Stage key | Method | Output and invariant |
+| Stage key | Метод | Результат и инвариант |
 | --- | --- | --- |
-| `ingest` | Parse DOCX paragraphs, PDF pages and XLSX sheets/rows into source fragments; retain headings and clause numbers | Stable fragment IDs, document identity, `side`, source text and locators; preserve original text |
-| `units` | Extract supported names and hierarchy per side; normalize names; match candidates by names, context and evidence with LLM assistance | `Unit[]`, `UnitChange[]`; deterministic code enforces relationship cardinalities and statuses |
-| `functions` | Extract action, object, process and role from source text with verbatim quotes; combine evidence across documents | `OrgFunction[]`; no invented ownership or function; preserve all supporting sources |
-| `lineage` | Embedding prefilter, in-memory cosine ranking, LLM equivalence/transfer/modification judgment | `FunctionLineage[]`; deterministic assignment and candidate history; no percentage confidence |
-| `findings` | Compare AFTER functions across units for duplication; run same-process role conflict rule; derive possible loss and reorganization candidates | `Finding[]`; server assigns types and review order from documented rules |
-| `verify` | Resolve fragment IDs and validate quotes, side, document and references; apply verified-evidence gate and recompute counts | Unsupported candidates dropped or visibly `verified=false`; warnings for incomplete coverage |
-| `conclusion` | Compose sections only from validated findings, with finding IDs | Advisory `Conclusion`; no new facts or unsupported claims |
+| `ingest` | TXT, DOCX, PDF, XLSX → исходные фрагменты; сохранять документ, сторону, текст и локаторы | Реестр фрагментов со стабильными ID; не выдумывать номера страниц и отсутствующий текст |
+| `clauses` | Делить по нумерованным пунктам и буквенным подпунктам; сохранять родителя, раздел и контекст заголовка; распознавать склеенные границы | `Clause[]`; оглавление `toc` исключено из анализа, пустые пункты `empty` отмечены предупреждением |
+| `alignment` | Детерминированно: exact normalized → fuzzy token similarity → embeddings для оставшихся кандидатов; содержание важнее номера | `ClauseAlignment[]`: `IDENTICAL`, `COSMETIC`, `SUBSTANTIVE`, `ONLY_BEFORE`, `ONLY_AFTER`; LLM только для существенных и несопоставленных пунктов |
+| `units` | Структурный раздел: блоки, департаменты, центры, должности и подчинение; контекст 1.5–1.6 помогает различать виды подчинения | `Unit[]`, `UnitChange[]`; исходные имена, аббревиатуры, доказательства принадлежности и связей |
+| `functions` | Функции БВА из 2.4, функции по ДЗО из 4.x, обязанности и права владельцев из 5.x; изменения в других разделах, включая 9.37, тоже анализируются | `OrgFunction[]`, `category=function` или `right`, `clauseId`; не превращать унаследованный запрет в разрешение |
+| `lineage` | Alignment задаёт кандидатов; смена владельца → перенос; `ONLY_BEFORE` → поиск по всему ПОСЛЕ → LLM-проверка найденных кандидатов | `TRANSFERRED` / `MODIFIED` / `POSSIBLE_LOSS`; история поиска и номера обоих пунктов; отсутствие совпавшего номера не доказывает потерю |
+| `checks` | Детерминированные проверки ссылок, необъявленных ролей, двойного подчинения и неоднозначных групповых заголовков | Кандидаты дефектов с точными пунктами и правилом; сигнал не равен доказанному конфликту |
+| `findings` | Объединить lineage и проверки; сравнить функции ПОСЛЕ между владельцами; применить правила конфликтов и приоритета | `Finding[]` всех восьми типов; косметика не создаёт находок |
+| `verify` | Проверить ID, цитаты, сторону, документ, владельца, связи и ограничения поиска; пересчитать серверные summary | Неподтверждённые кандидаты исключены из валидированных счётчиков и фактических выводов |
+| `conclusion` | Сформировать разделы по проверенным находкам и границам анализа | Рекомендательное заключение с `findingIds`, без новых фактов |
 
-Quote validation happens at every extraction/judgment boundary, not only at `verify`. The final verification stage checks the whole result. Backend persists stage transitions while processing; frontend reads those actual states.
+Цитаты проверяются на каждой границе извлечения и интерпретации, затем повторно для целого результата. Состояния этапов отражают реально выполненную работу.
 
-### Deterministic business rules
+### Разбор и выравнивание пунктов
 
-Unit matching describes a relationship, not a name-only diff: `PRESERVED` and `RENAMED` are one-to-one, `MERGED` many-to-one, `SPLIT` one-to-many, `CREATED` zero-to-one, `REMOVED` one-to-zero. An unchanged name alone does not prove unchanged functions. Uncertain matches require warnings and review. `transformed` is a UI grouping of `RENAMED`, `MERGED`, `SPLIT`, never a contract enum.
+Номера — строки, например `5.5.8`; подпункт хранит `number=2.3.3`, `letter=д`, `parentNumber=2.3.3`. Для обычного вложенного пункта `5.5.8` родитель — `5.5`. Не восстанавливать буквы по порядку: в источнике перечень может начинаться с «д» или повторно с «а». ID включает документ, сторону и устойчивое положение в исходнике; номер сам по себе не уникален. Для ненумерованного заголовка допускается пустой `number`, для неустановленного раздела — пустые `sectionNumber` / `sectionTitle` с предупреждением. Не подставлять придуманные номера.
 
-Function status: `UNCHANGED` for an equivalent function retained by its matched unit; `TRANSFERRED` for an equivalent function moved to another unit; `MODIFIED` for a supported substantive change; `NEW` for an AFTER function without a supported BEFORE counterpart; `POSSIBLE_LOSS` for a BEFORE function without a supported AFTER counterpart in the analyzed corpus. Many-to-many links are allowed in the arrays when evidence supports them. `NEW` has no BEFORE IDs; `POSSIBLE_LOSS` has no AFTER IDs. Do not force ambiguous candidates into a confident link. Duplication and conflict are findings, not lineage statuses.
+Текст пункта сохраняется без переписывания. Для сравнения строится отдельное нормализованное представление: пробелы, регистр, типографика; исходный номер не участвует в текстовой похожести. `IDENTICAL` — одинаковое нормализованное содержимое, даже при переносе номера. `COSMETIC` — только ограниченные проверяемые редакционные различия без изменения смысла. Смена владельца, модальности, объекта, области или периодичности — существенна; её нельзя скрывать как косметику. Высокая similarity сама по себе не определяет статус. Не удалять глобально «Международные», «не» или слова, определяющие область аудита.
 
-For conflict detection, each function has `{process, role}`; `role` is `execute | control | approve | audit | support | other`. Within an AFTER unit and the same normalized `process`, an `execute` function combined with `control`, `approve` or `audit` deterministically produces a `CONFLICT` candidate. Cite both functions and explain the rule in its text. The LLM interprets process and role from evidence; code evaluates the combination. This is a potential conflict for human review, not a legal determination. Different processes or `execute + support` alone do not trigger it.
+Fuzzy и embeddings ранжируют кандидатов; фиксированные пороги, версии модели и стабильный порядок разрешают ничьи воспроизводимо. `ONLY_BEFORE` / `ONLY_AFTER` — результат исчерпания принятого поиска, не факт потери / появления функции. Для существенных и несопоставленных фрагментов LLM проверяет смысл и цитаты, сервер валидирует решение. Не отправлять `IDENTICAL` / `COSMETIC` на повторный LLM-анализ: сущности из стабильных пунктов извлекать правилами и переносить из проверенного cache; неизвестный смысл не объявлять косметикой ради экономии вызовов.
 
-Duplication compares functions between AFTER units, supported by evidence on both sides of the overlap. Do not infer duplication from identical generic wording alone. `LOSS` findings map to `POSSIBLE_LOSS` lineage, supported by the BEFORE clause and a recorded AFTER search. `REORGANIZATION` findings ground structural changes and conclusion text.
+Alignment — одна пара или один несопоставленный пункт на запись. Каждый содержательный `clause` / `item` представлен один раз; текст родителя не должен повторно включать тексты дочерних пунктов. `heading`, `toc`, `empty` сохраняются для контекста/диагностики, но не входят в счётчики alignment. Разделение одной обязанности на несколько пунктов требует поиска lineage: контракт alignment не изображает фиктивное точное соответствие многие-ко-многим. Такие ограничения выводить в warnings.
 
-Server assigns `reviewPriority` as review order, never legal severity. Initial policy: supported loss and conflict candidates HIGH, duplication MEDIUM, informational reorganization LOW; unverified candidates require source checking and are separated from validated findings. `confidence` is `high | medium | low`, based on evidence completeness and matching ambiguity, never a numeric probability. These policies are explicit and reproducible; the LLM does not own them.
+### Детерминированные бизнес-правила
 
-## Full shared contract
+`UnitChange`: `PRESERVED` и `RENAMED` — один к одному, `MERGED` — многие к одному, `SPLIT` — один ко многим, `CREATED` — ноль к одному, `REMOVED` — один к нулю. Изменение перечня должностей не доказывает изменение численности. `transformed` — только UI-группа `RENAMED`, `MERGED`, `SPLIT`. Одно имя не гарантирует одинаковых обязанностей. `parentUnitId` задаёт структурного родителя, но не всю матрицу функционального подчинения: дополнительные связи сохранять в исходных пунктах и evidence и показывать с их видом. Не терять второго руководителя, пытаясь записать его в одно поле.
 
-All names are camelCase. Backend implements these objects as Zod schemas and exports inferred TypeScript types. `?` means optional; arrays are present even when empty. IDs are stable strings within an analysis. Timestamps use ISO 8601 strings. `warnings[]` contains human-readable strings. References must resolve in the same result.
+`FunctionLineage`: `UNCHANGED` — эквивалентная функция у сопоставленного владельца; `TRANSFERRED` — ответственность переходит другому владельцу; `MODIFIED` — содержательное изменение у сохранённого владельца; `NEW` — нет поддержанного предшественника; `POSSIBLE_LOSS` — не найден эквивалент в загруженном ПОСЛЕ после поиска. Перенос с изменениями остаётся `TRANSFERRED`, а модификации поясняются в `rationale`. Допустимы подтверждённые связи многие-ко-многим. `NEW` не имеет BEFORE IDs, `POSSIBLE_LOSS` — AFTER IDs. Проверять частичное сохранение, общий блок БВА и нового владельца до объявления возможной потери.
 
-| Object | Fields |
-| --- | --- |
-| `Evidence` | `fragmentId: string`, `documentName: string`, `side: "before" | "after"`, `locator: { page?: number, section?: string, row?: number, label: string }`, `quote: string`, `fragmentText: string`, `verified: boolean` |
-| `DocumentInfo` | `id: string`, `name: string`, `side: "before" | "after"`, `docType: "structure" | "regulation" | "job_description" | "order" | "other"`, `fragmentCount: number`, `warnings: string[]` |
-| `Unit` | `id: string`, `side: "before" | "after"`, `name: string`, `normalizedName: string`, `parentName?: string`, `evidence: Evidence[]` |
-| `UnitChange` | `id: string`, `beforeUnitIds: string[]`, `afterUnitIds: string[]`, `status: "PRESERVED" | "RENAMED" | "MERGED" | "SPLIT" | "CREATED" | "REMOVED"`, `rationale: string`, `evidence: Evidence[]` |
-| `OrgFunction` | `id: string`, `unitId: string`, `side: "before" | "after"`, `text: string`, `action: string`, `object: string`, `process: string`, `role: "execute" | "control" | "approve" | "audit" | "support" | "other"`, `evidence: Evidence[]` |
-| `FunctionLineage` | `id: string`, `beforeFunctionIds: string[]`, `afterFunctionIds: string[]`, `status: "UNCHANGED" | "TRANSFERRED" | "MODIFIED" | "NEW" | "POSSIBLE_LOSS"`, `rationale: string`, `candidatesChecked: { functionId: string, reason: string }[]` |
-| `Finding` | `id: string`, `type: "LOSS" | "DUPLICATION" | "CONFLICT" | "REORGANIZATION"`, `reviewPriority: "HIGH" | "MEDIUM" | "LOW"`, `confidence: "high" | "medium" | "low"`, `title: string`, `explanation: string`, `unitIds: string[]`, `functionIds: string[]`, `evidence: Evidence[]`, `searchTrace?: { checkedCount: number, topCandidates: { functionId: string, reason: string }[] }`, `recommendation: string`, `verified: boolean`, `review: { status: "NOT_REVIEWED" | "CONFIRMED" | "REJECTED" | "NEEDS_CHECK", comment?: string, updatedAt?: string }` |
-| `Summary` | `unitsByStatus: { PRESERVED: number, RENAMED: number, MERGED: number, SPLIT: number, CREATED: number, REMOVED: number }`, `functionsByStatus: { UNCHANGED: number, TRANSFERRED: number, MODIFIED: number, NEW: number, POSSIBLE_LOSS: number }`, `findingsByType: { LOSS: number, DUPLICATION: number, CONFLICT: number, REORGANIZATION: number }` |
-| `Conclusion` | `sections: { key: string, title: string, text: string, findingIds: string[] }[]` |
-| `AnalysisResult` | `id: string`, `isMock: boolean`, `documents: DocumentInfo[]`, `summary: Summary`, `units: Unit[]`, `unitChanges: UnitChange[]`, `functions: OrgFunction[]`, `lineage: FunctionLineage[]`, `findings: Finding[]`, `conclusion: Conclusion`, `warnings: string[]` |
-| `AnalysisJob` | `id: string`, `status: "queued" | "running" | "done" | "failed"`, `stages: { key: "ingest" | "units" | "functions" | "lineage" | "findings" | "verify" | "conclusion", label: string, status: "pending" | "running" | "done" | "failed", detail?: string }[]`, `error?: string`, `result?: AnalysisResult` |
+`DUPLICATION` требует совпадения ответственности между владельцами ПОСЛЕ с доказательствами обеих функций. Общие обязанности БВА и их детализация у директора не доказывают дублирование. Для `CONFLICT`: в одном AFTER unit и одном нормализованном `process` сочетание `execute` с `control`, `approve` или `audit` даёт кандидата; разные процессы или `execute + support` — нет. Цитировать обе функции. Обязанность раскрывать конфликт в 4.4 сама не является конфликтом; функциональное и административное подчинение не смешивать.
 
-The prompt did not name the nested summary keys; the keys above are the initial explicit contract decision. Count one unique unit-change relationship per `unitsByStatus` bucket (a merge is one change, not two); one lineage record per `functionsByStatus` bucket; verified findings only per `findingsByType` bucket. Label UI totals as change/comparison records where cardinality could mislead. Distinct source unit/function totals are available from their arrays and must not be confused with these counts. Backend publishes these semantics with the schema; frontend does not reconstruct business aggregates. Each eligible unit/function participates in a consistent relationship, without double counting repeated source mentions.
+`checks` проверяет не только существование цели ссылки, но и смену её значения после перенумерации: 5.10.2 / 5.10.5 ссылаются на существующие 5.8.1 / 5.8.2, однако прежние права теперь в 5.7. Это кандидат `BROKEN_REFERENCE` с предложением проверить намерение автора. `UNDEFINED_ROLE` означает отсутствие подтверждённого определения/синонима титула в корпусе, а не доказательство отсутствия должности в компании. Двойное подчинение без данных о несовместимости — `AMBIGUITY` для проверки; не автоматический `CONFLICT`.
 
-Conclusion section keys, in order: `orgChanges`, `functionPreservation`, `possibleLosses`, `duplication`, `conflicts`, `needsHumanReview`. Titles and user-visible text are Russian. Each factual section refers only to verified finding IDs. Use evidence-backed reorganization findings to ground preservation summaries too; an empty section states the limits of available findings rather than inventing a conclusion. Excluded unverified candidates remain in diagnostics/warnings for source checking, never as asserted facts. Human review status is displayed separately from source verification and never changes `verified`.
+Все находки, зависящие от неоднозначного заголовка 5.3, изначально получают `review.status=NEEDS_CHECK` и `confidence` не выше `medium`. Это правило действует и при дословно подтверждённых цитатах. `COSMETIC` никогда не становится находкой; перенос из-за смены владельца обосновывается изменением контекста, не косметической строкой.
 
-`locator.page` and `locator.row` are one-based. Use `section` for original clause numbers such as `3.2.1` or `п. 5`; `label` includes sheet name and row for Excel. DOCX page numbers must not be fabricated. Keep multiple evidence entries for claims requiring multiple clauses. Store the original fragment registry internally; returned `fragmentText` must come from that registry, not from an LLM.
+`reviewPriority` — порядок проверки, не юридическая тяжесть. Базовая политика: `LOSS` функции и `CONFLICT` — `HIGH`; `LOSS` права, `DUPLICATION`, `SCOPE_CHANGE`, `BROKEN_REFERENCE`, `UNDEFINED_ROLE`, `AMBIGUITY` — `MEDIUM`; информационная `REORGANIZATION` — `LOW`. Потеря права имеет меньший приоритет, чем сопоставимая потеря функции. `confidence=high|medium|low` зависит от полноты доказательств и неоднозначности; это не вероятность. Неподтверждённые кандидаты показываются отдельно.
 
-## API and jobs
+## Целевой общий контракт
 
-| Endpoint | Request | Successful response |
+Backend публикует Zod-схемы и TypeScript-типы. Это полное целевое описание, а не содержимое текущего `src/shared/contract.ts`. `?` означает optional; массивы присутствуют, даже если пусты; ID разрешаются внутри анализа, timestamps — ISO 8601. Новые обязательные поля и enum требуют обновления схем, примеров, mock, потребителей и версии сохранённых jobs/cache в одной согласованной поставке. Старые сохранённые результаты мигрировать либо явно отклонять как несовместимые, не заполнять вымышленными пунктами.
+
+```ts
+type Side = "before" | "after";
+type AlignmentStatus = "IDENTICAL" | "COSMETIC" | "SUBSTANTIVE" | "ONLY_BEFORE" | "ONLY_AFTER";
+type UnitStatus = "PRESERVED" | "RENAMED" | "MERGED" | "SPLIT" | "CREATED" | "REMOVED";
+type LineageStatus = "UNCHANGED" | "TRANSFERRED" | "MODIFIED" | "NEW" | "POSSIBLE_LOSS";
+type FindingType = "LOSS" | "DUPLICATION" | "CONFLICT" | "REORGANIZATION" | "SCOPE_CHANGE" | "BROKEN_REFERENCE" | "UNDEFINED_ROLE" | "AMBIGUITY";
+type ReviewStatus = "NOT_REVIEWED" | "CONFIRMED" | "REJECTED" | "NEEDS_CHECK";
+type StageKey = "ingest" | "clauses" | "alignment" | "units" | "functions" | "lineage" | "checks" | "findings" | "verify" | "conclusion";
+
+interface Evidence {
+  fragmentId: string; documentName: string; side: Side;
+  locator: { page?: number; section?: string; row?: number; label: string };
+  quote: string; fragmentText: string; verified: boolean;
+}
+interface DocumentInfo {
+  id: string; name: string; side: Side;
+  docType: "structure" | "regulation" | "job_description" | "order" | "other";
+  fragmentCount: number; warnings: string[];
+}
+interface Clause {
+  id: string; side: Side; documentId: string; number: string;
+  letter?: string; parentNumber?: string; sectionNumber: string; sectionTitle: string;
+  text: string; kind: "heading" | "clause" | "item" | "toc" | "empty";
+}
+interface ClauseAlignment {
+  id: string; beforeClauseId?: string; afterClauseId?: string;
+  status: AlignmentStatus; similarity: number; method: "exact" | "fuzzy" | "embedding" | "llm";
+}
+interface Unit {
+  id: string; side: Side; name: string; normalizedName: string; parentName?: string;
+  kind: "block" | "department" | "position" | "center";
+  abbreviation?: string; parentUnitId?: string; evidence: Evidence[];
+}
+interface UnitChange {
+  id: string; beforeUnitIds: string[]; afterUnitIds: string[];
+  status: UnitStatus; rationale: string; evidence: Evidence[];
+}
+interface OrgFunction {
+  id: string; unitId: string; side: Side; text: string; action: string;
+  object: string; process: string; role: "execute" | "control" | "approve" | "audit" | "support" | "other";
+  category: "function" | "right"; clauseId: string; evidence: Evidence[];
+}
+interface FunctionLineage {
+  id: string; beforeFunctionIds: string[]; afterFunctionIds: string[];
+  status: LineageStatus; rationale: string;
+  beforeClauseNumber?: string; afterClauseNumber?: string;
+  candidatesChecked: { functionId: string; reason: string }[];
+}
+interface Finding {
+  id: string; type: FindingType; reviewPriority: "HIGH" | "MEDIUM" | "LOW";
+  confidence: "high" | "medium" | "low"; title: string; explanation: string;
+  unitIds: string[]; functionIds: string[]; evidence: Evidence[];
+  searchTrace?: { checkedCount: number; topCandidates: { functionId: string; reason: string }[] };
+  recommendation: string; verified: boolean;
+  review: { status: ReviewStatus; comment?: string; updatedAt?: string };
+}
+interface Summary {
+  unitsByStatus: Record<UnitStatus, number>;
+  functionsByStatus: Record<LineageStatus, number>;
+  findingsByType: Record<FindingType, number>;
+  alignmentsByStatus: Record<AlignmentStatus, number>;
+}
+interface Conclusion {
+  sections: { key: string; title: string; text: string; findingIds: string[] }[];
+}
+interface AnalysisResult {
+  id: string; isMock: boolean; documents: DocumentInfo[]; summary: Summary;
+  clauses: Clause[]; alignments: ClauseAlignment[];
+  units: Unit[]; unitChanges: UnitChange[]; functions: OrgFunction[];
+  lineage: FunctionLineage[]; findings: Finding[]; conclusion: Conclusion; warnings: string[];
+}
+interface AnalysisJob {
+  id: string; status: "queued" | "running" | "done" | "failed";
+  stages: { key: StageKey; label: string; status: "pending" | "running" | "done" | "failed"; detail?: string }[];
+  error?: string; result?: AnalysisResult;
+}
+```
+
+`similarity` — нормированная оценка 0–1, не confidence. У парных alignment оба ID, у `ONLY_BEFORE` только BEFORE, у `ONLY_AFTER` только AFTER; для несопоставленного пункта `similarity=0`, `method` обозначает последний использованный этап поиска. `exact` обычно даёт 1; `llm` не должен изобретать похожесть: сохраняется численная оценка кандидата. Исходные clauses остаются неизменными после LLM-проверки.
+
+`Evidence.locator.section` — исходный пункт, например `5.5.8` или `2.3.3 д`; `page` / `row` — с единицы. Для XLSX `label` содержит лист и строку. Страницы DOCX/TXT не выдумывать. Внутренний реестр связывает `clauseId` с исходными fragment IDs; `fragmentText` берётся из реестра, не из ответа модели. Повторяющиеся номера различаются `clauseId` и контекстом.
+
+`beforeClauseNumber` / `afterClauseNumber` — удобные подписи для простого соответствия. При нескольких пунктах не сворачивать доказательства в одну строку: UI получает все номера через связанные `OrgFunction.clauseId` и `Clause`. `parentUnitId` должен ссылаться на unit той же стороны, без циклов. Документные дефекты могут иметь пустые `functionIds` и `unitIds`, но обязаны иметь evidence.
+
+Счётчики вычисляет backend: `unitsByStatus` считает уникальные отношения изменения, не штатные единицы; `functionsByStatus` — записи lineage; `findingsByType` — только `verified=true`. `alignmentsByStatus` считает записи сравнения содержательных пунктов: пара ДО/ПОСЛЕ — одна запись, несопоставленный пункт — одна. `N` — сумма пяти alignment-счётчиков, не сумма всех пунктов двух документов. Пустые пункты, оглавление и заголовки в N не входят. Все ключи присутствуют, включая нулевые; повторные упоминания не удваивают сущности.
+
+Разделы `Conclusion` в порядке: `orgChanges`, `functionPreservation`, `possibleLosses`, `duplication`, `conflicts`, `needsHumanReview`. Заголовки и тексты русские. `SCOPE_CHANGE` относится к изменениям/сохранности функций; документные дефекты и неоднозначности — к `needsHumanReview`. Факты опираются только на verified finding IDs, включая доказательные `REORGANIZATION` для сохранности. При отсутствии достаточных находок описывать ограничение, не генерировать утверждение. Human review и проверка источника независимы: `CONFIRMED` не превращает плохую цитату в `verified=true`.
+
+## API и jobs
+
+Целевые форматы загрузки: `.txt`, `.docx`, `.pdf`, `.xlsx`, один или несколько файлов на каждой стороне. Форма допускает единственный регламент, содержащий и структуру, и функции. Формат файла не равен семантическому `docType`.
+
+| Endpoint | Запрос | Успешный ответ |
 | --- | --- | --- |
-| `POST /api/analyses` | Multipart fields `before[]`, `after[]`; at least one supported file per side | HTTP 202, `{ id: string }`; start a persisted job |
-| `GET /api/analyses/:id` | Analysis ID | HTTP 200, `AnalysisJob`; frontend polls until `done` or `failed` |
-| `PATCH /api/analyses/:id/findings/:findingId/review` | JSON `{ status: "NOT_REVIEWED" | "CONFIRMED" | "REJECTED" | "NEEDS_CHECK", comment?: string }` | HTTP 200, updated `Finding`; persist server timestamp |
+| `POST /api/analyses` | Multipart `before[]`, `after[]`; минимум один поддерживаемый файл с каждой стороны | 202 `{ id: string }`, запуск сохраняемого job |
+| `GET /api/analyses/:id` | ID анализа | 200 `AnalysisJob`, polling до `done` / `failed` |
+| `PATCH /api/analyses/:id/findings/:findingId/review` | JSON `{ status: ReviewStatus, comment?: string }` | 200 полный обновлённый `Finding`, серверное время |
 
-Status codes and PATCH response are initial implementation decisions completing the supplied API. Validate all bodies. Return a consistent sanitized `{ error: string }` for invalid requests (400), unknown IDs (404), oversized uploads (413), unsupported media (415), unfinished-job review (409) or unexpected server failures (500). Never echo keys, provider payloads or secrets.
+PATCH: отсутствующий `comment` сохраняет прежний, `""` очищает; лимит 4000 символов сохраняется. Валидировать запросы, возвращать безопасный `{ error: string }`: 400 неверный запрос, 404 неизвестный ID, 413 превышение размера, 415 формат, 409 review незавершённого анализа, 500 внутренняя ошибка. Не выводить provider payload и секреты. Подробности действующего API остаются в `docs/api/CONTRACT.md` до реализации миграции.
 
-Use Next.js Node runtime for parsing and disk access. The local long-running Next.js process is the hackathon execution target; do not assume durable serverless background jobs. Keep an in-memory job store backed by atomic JSON writes in `.data/`. Persist transitions and reviews. On restart, load completed results and mark interrupted queued/running jobs failed with an actionable message; no silent resume assumption. Concurrent review writes must not discard each other.
+Node runtime, локальный длительно работающий Next.js-процесс, атомарное сохранение JSON в `.data/`, in-memory store поверх диска. После перезапуска загружать завершённые результаты; прерванные jobs помечать failed с объяснением, не обещать durable serverless jobs. Конкурентные review-записи не теряются.
 
-Create all seven stages as `pending`. A queued job becomes running when processing starts. Completed work becomes `done`; failed work becomes `failed`, the job receives `error`, and remaining stages stay `pending`. A completed job has all stages `done` and a schema-valid `result`; incomplete stages cannot be called complete. Never generate fake percentages or timer-based stage completion. Stub stages may complete their actual no-op work but must say they are stubs; the result is explicitly mock and not an audit.
+Все десять этапов создаются `pending`; старт переводит job в `running`. Завершённая работа — `done`; ошибка — `failed` на этапе и job, оставшиеся этапы — `pending`. Успех требует всех `done` и валидного `result`. Нет таймерной имитации процентов. Заглушки явно обозначаются, всегда `isMock=true`; stub не считается выполненным аудитом.
 
-## Evidence, AI and caching
+## Доказательства, AI и cache
 
-Every LLM claim includes `fragmentId` and a verbatim source `quote`, including interpretations used for matching, rationale and role tagging. Where the public object has no evidence field, validate and retain source provenance internally and expose it through its referenced functions/units/findings. Resolve fragment identity server-side; never accept the LLM's invented `fragmentText`, source name, side or locator.
+Любая LLM-интерпретация сопровождается `fragmentId` и дословной `quote`. Для объектов без собственного evidence сохранять provenance внутри и раскрывать через связанные функции, units и findings. Проверять и наличие цитаты, и её смысловую поддержку. Для проверки допустима нормализация пробелов, регистра и кавычек, но не fuzzy approval или парафраз. Пустая цитата, неизвестный ID, неверная сторона и частичная поддержка составной находки не проходят. Неподтверждённое — отбросить либо явно пометить diagnostic.
 
-Normalize whitespace, case and typographic quote characters for matching; retain the original quote and source text for display. Empty quotes and unknown IDs fail. Normalized matching is not paraphrase matching: do not use fuzzy similarity to approve quotations. Check that the cited text actually supports the claim as well as being present. Failed claims are dropped or explicitly unverified; a finding requiring two claims is not verified if only one citation validates. Never create verified evidence for unsupported assertions.
+`POSSIBLE_LOSS` означает «эквивалент не найден в загруженном ПОСЛЕ», не исчезновение в реальности. Нужны BEFORE-цитата, фактический `searchTrace.checkedCount`, лучшие кандидаты и причины отклонения. Поиск включает все успешно разобранные AFTER-документы, общие блоки и возможных новых владельцев. Если часть корпуса не разобрана, явно ограничить или удержать вывод. Цитату об отсутствии не создавать.
 
-Possible loss means no equivalent function was found in the uploaded AFTER corpus. It is not proof of real-world disappearance. Cite the original BEFORE function and display `searchTrace` with actual checked count and top AFTER candidates plus rejection reasons. Store broader candidate checks internally if needed; disclose prefilter and parser coverage limitations. Do not invent an AFTER quotation for an absent function. If relevant files were unreadable, qualify or withhold loss findings and record the gap.
+Structured output + Zod, ограниченные retries, capped backoff при rate limits, ограничение concurrency. Cache chat/embeddings по hash операции, входа, источников, модели, версии prompt/schema и параметров; секрет не входит в ключ. Изменение parser/alignment версии тоже инвалидирует зависимые данные. Проверять cached output; ошибки не cache-ировать как успех. Cache с исходниками локальный и игнорируемый. Логи — безопасный тип ошибки, не ключи и не полные документы.
 
-Use structured LLM output and Zod validation. Deterministic code controls state, enums, counts and priority. Cache all chat and embedding calls using a stable hash of operation, exact input, source hashes, model, prompt/schema version and relevant parameters. No cache key includes the API secret. Keep source-containing cache local and ignored. Model/prompt/source changes invalidate the corresponding cache; don't cache failures as successful outputs. Validate cached outputs too. Retries are bounded inside try/catch; rate limits use capped backoff. Log sanitized error types rather than secrets or full source documents.
+## Матрица сбоев
 
-## Failure matrix
-
-| Failure | Planned behavior |
+| Ситуация | Поведение |
 | --- | --- |
-| Scanned PDF without text layer | Emit document warning, no invented text or automatic OCR claim; continue usable files. If a side has no usable text, fail with a request for a text-based replacement. Partial coverage is prominent and cannot substantiate loss. |
-| Unsupported or corrupted file | Reject unsupported formats in UI and server; warn and isolate a corrupted supported file. Continue only when both sides retain usable content and disclose omissions; otherwise fail. Never crash the process. |
-| Huge document | Set file-count, byte, page/row and fragment limits at T=0 from real data. Reject before expensive processing where possible; chunk accepted content. Never silently truncate and assert complete coverage. |
-| Unit name variants | Preserve originals, normalize candidates, use hierarchy and quoted context for matching; expose ambiguous relationships for review. |
-| Functions spread across documents | Group by supported unit identity per side, retain multiple citations, deduplicate repeated mentions without erasing provenance. Search all successfully parsed AFTER documents. |
-| Quote mismatch | Drop claim or mark evidence and dependent finding unverified; exclude it from validated counts and conclusion; show source-check warning. |
-| LLM timeout or invalid output | Bounded retry; validate schema and quotes on every attempt; after exhaustion fail the affected stage with a sanitized actionable error. Preserve job details; never replace real results with mock data silently. |
-| Rate limit | Bounded capped backoff, use cache, limit concurrency; after exhaustion mark stage/job failed and explain retry action. |
-| Empty upload | Disable submission when either side is empty and return server 400 if bypassed. Empty extracted content is an explicit error/warning, not a successful empty audit. |
+| Перенумерация 5.8 → 5.7 | Сопоставлять содержание и владельца, показывать оба номера; не создавать ложный `LOSS` |
+| Склеенные заголовки / несколько пунктов в строке | Разделять границы с проверкой контекста; не путать ссылку с новым пунктом; неоднозначный разбор — warning |
+| Потеря автоматической нумерации DOCX | Проверить исходную структуру Word; восстановить номера воспроизводимо либо сообщить ограничение; не выдумывать локаторы и не объявлять полный охват |
+| Неоднозначный групповой заголовок | `AMBIGUITY`, зависимые findings `NEEDS_CHECK`, confidence ≤ `medium`; без произвольного назначения владельца |
+| Пустой пункт / повторное оглавление | `empty` / `toc`, исключение из функций и alignment-счётчиков; предупреждение о пустом пункте |
+| PDF без текстового слоя | Warning, без заявления об OCR; продолжить пригодные файлы. Если сторона без текста — fail с просьбой о текстовом варианте; частичный охват не доказывает потерю |
+| Неподдерживаемый или повреждённый файл | Формат отвергать в UI и API; повреждённый изолировать с warning, продолжать только при пригодном содержимом обеих сторон |
+| Большой документ | Ограничения количества/размера/страниц/строк/фрагментов определить на данных; отклонять до дорогой обработки; не делать скрытое усечение |
+| Варианты имён / одноимённые должности | Сохранять оригиналы, учитывать родителя и quoted context; не объединять только по имени |
+| Функции в нескольких документах | Искать по всему корпусу, сохранять несколько источников, не удваивать повторные упоминания |
+| Цитата не подтверждается | Отбросить либо `verified=false`, исключить зависимый вывод из валидированных счётчиков |
+| Timeout / неверный AI output / rate limit | Ограниченные повторы и cache; затем failed с безопасным сообщением, без автоматической подмены mock |
+| Пустая загрузка / пустой текст | Не включать запуск без обеих сторон; API 400 для пустой формы, отсутствие пригодного текста — явная ошибка |
 
-## Case coverage and simple solution check
+## Контрольный набор и покрытие кейса
 
-| Official requirement | Pipeline coverage | UI coverage | QA acceptance |
+Основной контроль — `data/samples/before/` и `data/samples/after/`. [DATA_ANALYSIS.md](../research/DATA_ANALYSIS.md) задаёт источники, ожидаемые изменения и вопросы. Сначала проверить создание ДИТААД/ДОА, сохранение ДНМ/ДККМ, удалённую должность с переносом обязанностей, перенос 5.4.4 → 5.3.3, отсутствие ложных потерь при 5.8 → 5.7, изменения области/периодичности, дефекты ссылок и осторожную обработку 5.3. Это критерии будущих тестов, не уже полученные результаты.
+
+Синтетический набор вторичен: нужен для однозначной потерянной функции, дублирования, merge/split, отрицательных примеров конфликта и ошибок. Не подгонять реальные выводы под синтетические ожидания. На основной паре кандидаты потерь остаются гипотезами до предметной разметки; не заявлять обнаружение известного дублирования, которого исследование не установило.
+
+| Требование кейса | Pipeline / UI | Приёмка |
+| --- | --- | --- |
+| §7.1 Структура | `clauses`, `units`, `verify`; структура ДО/ПОСЛЕ с должностями и подчинением | R01–R03: новые/сохранённые/удалённые сущности основной пары; merge/split/rename дополнительно на синтетике |
+| §7.2 Функции и возможные потери | `alignment`, `functions`, `lineage`; таблица функций и LOSS Drawer | R04–R05: перенос не потеря, права отделены от функций, поиск по всему ПОСЛЕ |
+| §7.3 Дублирование и конфликты | `functions`, `checks`, `findings`; фильтры и парные источники | R06–R07: однозначные синтетические примеры; 4.4 и двойное подчинение не ложные подтверждённые конфликты |
+| §7.4 Источник каждой находки | Все границы AI + `verify`; Finding → Function → Source | R08–R09: документ, сторона, точная цитата, исходный номер |
+| §7.5 Заключение | `conclusion`; шесть разделов с finding links | R10: только доказательные выводы, оговорки и рекомендации |
+| §11 Простая проверка | Реорганизация + известная потеря + дублирование с корректными источниками | R11: основной набор плюс явно вторичные размеченные примеры для отсутствующих однозначных случаев |
+| Новые требования из данных | «Изменения документа», десять этапов, TXT, checks | QA назначает дополнительные ID: alignment counts, word diff, TOC/empty, renumbering, NEEDS_CHECK и дефекты ссылок |
+| §10 Передача результата | Интерфейс, репозиторий, README, запуск и архитектура | R12–R20 из QA-пакета; отдельный полный прогон после интеграции |
+
+R-номера — координация с QA, не отметки о прохождении. Измерять обнаружение и корректность источников отдельно, не публиковать вымышленную точность.
+
+## Критерии жюри и порядок поставки
+
+| Критерий | Баллы | Вклад команды |
+| --- | --- | --- |
+| Соответствие и функциональность | 25 | Все пять must have, реальная пара, полный пользовательский путь и контрольные случаи |
+| Техническая реализация | 25 | Контракт, воспроизводимый alignment, ограниченное AI, проверки цитат, устойчивые jobs, разделение UI и логики |
+| README и воспроизводимость | 25 | Команды запуска, модели без ключей, архитектура, пути источников, ограничения и фактические результаты проверок |
+| Ценность и применимость | 15 | Быстрая проверка сотрудником, объяснимые переносы и scoped loss, приоритет проверки |
+| Развитие и оригинальность | 10 | Clause alignment + Function Lineage, trace поиска и обоснованные дальнейшие шаги |
+| Итого | 100 | Совместная поставка с сохранёнными персональными вкладами |
+
+Сначала все must have и simple solution check. Базовые Drawer, источники, lineage, search trace и human review обязательны. После работающего пути улучшать: side-by-side evidence, Function Lineage, trace поиска, Human Review, Function Passport по имеющимся полям, сравнение с предоставленными нормативными документами. PDF-экспорт, расширенные рекомендации перераспределения и benchmarking — только после MVP и при наличии источников. Без login, профилей, тем, 3D-графов, AI-чата, декоративных диаграмм, множества страниц, мобильной вёрстки и сложных анимаций.
+
+## Расписание итерации
+
+| Минуты | Backend | Frontend | QA / общий рубеж |
 | --- | --- | --- | --- |
-| Must have 1: identify reorganized, retained and created units from annexes | `ingest`, `units`, `verify` | Dashboard; Structure Diff with original names and clauses | R01, R02, R03; merge, rename, preserved, created, removed and split examples |
-| Must have 2: compare transformed and existing units' functions, detect potential losses | `functions`, `lineage`, `findings`, `verify` | Function Diff; LOSS Evidence Drawer with BEFORE source and search trace | R04, R05; known missing function with qualified wording |
-| Must have 3: compare units for duplication and conflicts | `functions`, `findings`, `verify` | Dashboard filters; Function Diff; paired evidence in Drawer | R06, R07; duplicate clauses and same-process incompatible roles |
-| Must have 4: source document and relevant fragment/clause for every finding | `ingest`, extraction-time checks, `verify` | Finding → Function → Source → original fragment; verification badge | R08, R09; correct document, side, clause and actual quote |
-| Must have 5: clear final analytical conclusion | `conclusion` | Conclusion with finding links and advisory caption | R10; no unsupported claims or broken links |
-| Simple solution check: known unit reorganization | `units`, `findings`, `verify` | Structure Diff and Drawer | R11; expected merged units, resulting unit, correct BEFORE and AFTER sources |
-| Simple solution check: known lost function | `lineage`, `findings`, `verify` | LOSS Drawer and search trace | R11; detected yes/no and correct BEFORE citation, no fabricated absence citation |
-| Simple solution check: known duplicated functions | `findings`, `verify` | DUPLICATION Drawer showing both AFTER units | R11; detected yes/no and both exact source clauses |
+| 0–10 | Проверить текущий scaffold; согласовать миграцию контракта и TXT | Прочитать новый контракт/сценарий, согласовать mock | Подтвердить образцы и форматы жюри, проверить доступ chat/embeddings без вывода секретов |
+| 10–40 | Реальная пара → clauses → alignment; один документ → доказательные функции | Загрузка → этапы → dashboard → Drawer на согласованном mock | Эталон пунктов, ловушки разбора, первичные ожидания |
+| 40–45 | Общая синхронизация контрактов и интеграции | Устранить расхождения UI/API | Зафиксировать ошибки и владельцев |
+| 40–100 | Units, владельцы, jobs/API и alignment | Реальная загрузка, прогресс, dashboard, «Изменения документа» | TXT, номера, косметика, единицы структуры и API |
+| 100–160 | Lineage, потери, дублирование, checks и конфликтные правила | Drawer, структура и функции с категориями и номерами | Основная пара и вторичные известные случаи |
+| 160–210 | Заключение, persisted review, исправления | Заключение и весь сценарий проверки | Источники, ограничения, полная контрольная проверка |
+| 210–255 | Устойчивость и описание архитектуры | Исправления UX и навигации источников | README, воспроизводимость и регрессия |
+| 255–300 | Freeze: только исправления и финальные проверки | Freeze: только исправления и финальные проверки | Push, отправка на платформу и подтверждение получения |
 
-R numbers are reserved for the QA prompt's future `docs/qa/TEST_PLAN.md`; that file is not part of this documentation-only package. Also verify the required upload/result interface, source repository, README launch steps and architecture description (R12–R20 below in the QA task).
+Заглушки не выполняют рубеж T=40. Все участники доступны T=240–300, новые функции запрещены с T=255. Документационная задача сама не реализует это расписание и не означает готовность MVP.
 
-## Jury criteria and lane contributions
+## Ограничения и вопросы перед реализацией
 
-| Official criterion | Points | Backend / AI | Frontend / Product | QA / README / Evaluation |
-| --- | --- | --- | --- | --- |
-| Compliance with the task and functionality | 25 | All must-have pipeline outputs and real-file support | Complete upload-to-conclusion flow | Requirement mapping, control set, per-case detection and citation checks |
-| Technical implementation | 25 | Zod contract, deterministic decisions, AI interpretation, cache and robust jobs | Contract-only rendering, real progress and review persistence | Schema/API checks, failure reproduction, architecture consistency |
-| README and reproducibility | 25 | Working root commands and env placeholders | Document main UI scenario | README launch steps, architecture diagram, fixture generation and evaluation commands |
-| Value and applicability | 15 | Traceable loss, duplicate and potential-conflict evidence | Fast source inspection and responsible human review | Demonstrate time-saving verification and disclose limits |
-| Development potential and originality | 10 | Function lineage and extensible evidence model | Side-by-side evidence, search trace, optional function detail | Explain measured strengths, gaps and grounded next steps |
-| Total | 100 | Shared delivery | Shared delivery | Shared delivery |
-
-## Delivery order and WOW priorities
-
-Get all five must haves and the simple solution check working first. Core source access, lineage data and the advisory review flow cannot be postponed as optional merely because their presentation is impressive. Once that baseline works, prioritize polish in this order: (1) side-by-side Evidence Drawer, (2) Function Lineage view, (3) search trace for `POSSIBLE_LOSS`, (4) Human Review, (5) Function Passport using existing function data, (6) comparison with provided regulatory documents if time remains. The first frontend task includes a basic Drawer, trace display and review; the WOW list controls extra polish, not removal of those specified basics.
-
-Basic per-finding recommendations are part of the case output. Advanced redistribution advice, regulatory comparison and benchmarking other operators are optional. Never perform them without suitable source documents. PDF export is optional after the MVP, as are advanced Function Passport details. Do not build login, registration, profiles, theme settings, 3D/draggable org charts, AI chat, decorative charts, many pages, mobile layout or complex animation before the MVP works.
-
-## Timeline
-
-| Minutes | Backend | Frontend | QA / shared gate |
-| --- | --- | --- | --- |
-| 0–10 | Publish root shell, contract baseline and runnable scripts to `main`; verify API configuration | Pull baseline; inspect schema and start mock-driven flow | Inspect real formats; run one chat and one embeddings check; confirm stack |
-| 10–40 | Walking skeleton: real files → fragments; one document → verified functions | Mock upload → progress → dashboard → evidence end to end | Data notes and reproducible control-set preparation |
-| 40–45 | Five-minute sync and merge within the 40–100 window | Resolve interface mismatches with backend | Record integration failures and assign by lane |
-| 40–100 | Units and matching; real jobs/API | Upload, progress and dashboard on real API | Format, unit and API checks |
-| 100–160 | Lineage, loss, duplication and conflict rules | Drawer on real evidence; Structure and Function Diff in next task | Known-case detection and source accuracy |
-| 160–210 | Conclusion, persisted review, fix control-set failures | Conclusion and integrated review workflow | Control set passes with correct citations |
-| 210–255 | Reliability fixes and architecture details | UX fixes and source-navigation checks | README, architecture diagram, reproducibility and regression |
-| 255–300 | Feature freeze; fixes and final verification | Feature freeze; fixes and final verification | Push, submit on platform and confirm receipt; no new features |
-
-The skeleton prompts are first tasks, not permission to implement every future feature immediately. Backend skeleton stubs must be followed by the real function-extraction slice before the T=40 walking-skeleton gate. Do not claim that stub-only output satisfies that gate. Everyone stays in the zone from T=240 to T=300. Preserve all three personal contributions in the submitted repository.
-
-## Scope tensions and their handling
-
-- The case names Word, PDF and Excel generally; this prompt initially accepts only `.docx`, `.pdf`, `.xlsx`. Confirm whether organizer data contains `.doc`, `.xls`, scans or other variants at T=0. Report any gap; do not claim broad support or silently convert/alter originals.
-- The case requires traceability for every significant finding; the contract also allows unverified candidates. Treat those as diagnostic candidates, label them clearly and exclude them from validated counts and analytical assertions. Mock verified flags demonstrate UI behavior only, not real AI verification.
-- No source clause can prove a function is absent. Use a verified BEFORE clause plus a transparent, scoped AFTER search; phrase the result as possible loss and disclose incomplete parsing.
-- The case optionally allows external compliance and operator benchmarking. Defer both until must haves pass; the requested WOW order prioritizes regulatory comparison over any benchmarking. This is scope prioritization, not a case conflict.
-- The case specifies an AI agent but mandates no agent framework. The bounded AI-assisted pipeline satisfies that interpretation; demonstrate its actual AI calls and source validation.
-- Lane-only editing conflicts with the requested initial root scaffold and frontend handoff append. The two narrow exceptions above make ownership explicit. No blanket cross-lane permission is implied.
-- A valid stub API is not a functioning audit. Label stub/mock results and measure the real MVP against the case before claiming completion.
-
-## T=0 open questions from real data
-
-1. What exact file extensions, file counts, sizes, page counts and Excel layouts are present? Are all within `.pdf`, `.docx`, `.xlsx`?
-2. Which files belong to BEFORE and AFTER, and how are effective dates and document versions identified?
-3. Which annexes contain authoritative structures, functions, hierarchy and renamed/merged units? Are documents complementary or contradictory?
-4. Do PDFs have text layers; do DOCX tables and spreadsheets contain functions; what locators and clause numbering appear? Are scans or legacy Office formats blockers?
-5. What languages, abbreviations and unit-name variants need preservation and normalization?
-6. Is there enough AFTER coverage to assess possible loss, including removed units whose functions were partly transferred?
-7. What document limits, chunk sizes and candidate-search limits fit the actual corpus and five-hour budget? How will skipped content be disclosed?
-8. Are chat and embedding models available with the provided OpenAI account, and what rate/token limits apply? Record model IDs without keys.
-9. Are external regulations or operator datasets actually supplied, and which are authoritative? Keep them optional unless organizers change scope.
-10. Can the local demo environment persist `.data/` and run long jobs reliably? What are the submission steps and deadline on the platform?
-11. What minimal DOCX writer dependency can backend approve for QA's synthetic fixture generator?
+1. Кейс §5 называет Word/PDF/Excel; реальная контрольная пара — TXT. Добавить TXT, сохранить остальные целевые форматы; `.doc`, `.xls`, OCR не обещать. Проверить оригинальную авто-нумерацию Word и формат набора жюри.
+2. Одного `parentUnitId` недостаточно для всех видов подчинения: на MVP показывать дополнительные связи с исходными пунктами; отдельный тип reporting links согласовать до расширения контракта.
+3. Уточнить область 5.3, титул 9.37 и предполагаемую цель ссылок 5.10.2/5.10.5. До ответа зависимые находки остаются `NEEDS_CHECK`.
+4. Уточнить размеры/количество файлов, лимиты фрагментов, candidate search, доступные модели и бюджет вызовов. Подтвердить устойчивость локального процесса и хранения `.data/`.
+5. Получить предметную разметку ожидаемых потерь и дублирования, внешние источники — только если реально предоставлены. Не редактировать первоисточники для удобства теста.
+6. При реализации синхронно обновить `src/shared/contract.ts`, примеры, API-документацию, backend, mock/UI и QA. Исторические prompts с семью этапами/тремя форматами применять только с поправками этого плана; не заявлять совместимость новой схемы со старым runtime.
+7. Трассируемость §9 обязательна: unverified candidates допустимы только как диагностика; mock не является AI-аудитом. Bounded AI pipeline может выполнять кейс без agent framework, но реальные вызовы и верификация должны быть продемонстрированы.

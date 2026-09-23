@@ -1,67 +1,114 @@
-# OrgTrace AI — frontend product specification
+# OrgTrace AI — пользовательский сценарий
 
-## Outcome and scope
+## Результат и границы
 
-Build a Russian-language interface for an employee checking organizational changes. The shortest valuable path is Finding → Function → Source → original document fragment. Every conclusion is advisory; speed and clarity of human verification matter more than polished AI prose.
+Русскоязычный интерфейс для сотрудника, проверяющего организационные изменения. Основной путь проверки: Finding → Function → Source → исходный пункт. Для дефекта документа без функции — Finding → Source. Все выводы рекомендательные, окончательное решение принимает сотрудник.
 
-Documentation is English. Preserve Russian UI copy and exact English contract identifiers. Read `docs/case/case.txt`, `docs/plan/PLAN.md` and backend's `src/shared/contract.ts`. Backend owns matching, statuses, counts, priorities, confidence and all other business decisions.
+Прочитать `docs/case/case.txt`, `docs/research/DATA_ANALYSIS.md`, `docs/plan/PLAN.md` и действующий `src/shared/contract.ts`. Этот документ описывает **целевую следующую итерацию**, включая TXT, десять этапов, clause alignment и восемь типов находок. Текущий `v0.1.0` в `docs/api/CONTRACT.md` их ещё не поддерживает. Backend сначала публикует согласованную схему и пример, затем frontend обновляет adapter, mock и views; документационная задача не меняет runtime. Тексты документа и UI — русские, идентификаторы — английские.
 
-## User flow
+## Пользовательский путь
 
-«Создать анализ» → upload documents ДО → upload documents ПОСЛЕ → «Анализировать изменения» → real stage progress → dashboard → structure changes → function changes → risks → select a risk → inspect original document clauses → «Подтвердить» / «Отклонить» / «Требует проверки» → final conclusion.
+«Создать анализ» → файлы ДО → файлы ПОСЛЕ → «Анализировать изменения» → реальные этапы → сводка → «Изменения документа» / структура / функции / замечания → источник → «Подтвердить» / «Отклонить» / «Требует проверки» → заключение.
 
-Keep navigation compact: one analysis workspace with views and a shared Drawer is sufficient. Analysis IDs survive reload and polling stops at terminal job states. Preserve selected filters when opening and closing evidence.
+Достаточно одного рабочего пространства с вкладками и общим Drawer. Сохранять analysis ID при перезагрузке; polling прекращать в конечных состояниях. Открытие источника не сбрасывает фильтры. Основной контроль — `data/samples/before/` (редакция 8) и `data/samples/after/` (редакция 9); не требовать отдельного файла структуры или должностных инструкций: один регламент может содержать всё.
 
-## Screens in build order
+## Экраны в порядке реализации
 
-| Order / screen | Required behavior |
+| Порядок / экран | Поведение |
 | --- | --- |
-| 1. New Analysis | Two clearly separated drop zones ДО / ПОСЛЕ; drag-and-drop and file picker; multiple files; show name and format; allow removal. Accept only `.pdf`, `.docx`, `.xlsx`; reject other types with a clear Russian error. Distinguish file format from backend's semantic `docType`. Require a file on each side before enabling «Анализировать изменения». Show server upload errors without losing the selected list unnecessarily. |
-| 2. Progress | List `AnalysisJob.stages` in server order, using actual `pending`, `running`, `done`, `failed` states. Labels: «Загрузка и разбор», «Подразделения», «Функции», «Связи функций», «Замечания», «Проверка источников», «Заключение». Show `detail` and sanitized failures. No fake percentages or timer-driven success. |
-| 3. Dashboard | Document counts per side; cards for structure changes, possible losses, duplications, conflicts and transferred functions. Cards open the matching filtered view. Use server summary fields and documented count semantics; a merge is one relationship, not a headcount. Display warnings and an empty state. Show `DEMO / MOCK DATA` prominently whenever `isMock=true`. |
-| 4. Evidence Drawer | Highest interaction priority: open from every finding and allow inspection and human review using the specification below. |
-| 5. Structure Diff | Two-column BEFORE → AFTER table with unit names, status badges, rationale and evidence links. Support all six unit statuses and empty sides for created/removed units. No graph visualization. `transformed` groups `RENAMED`, `MERGED`, `SPLIT` only in the UI. |
-| 6. Function Diff / Function Lineage | Table with BEFORE function, AFTER function, lineage status and evidence link. Filters: All / Loss / Duplicates / Conflicts / Transferred / Modified / New, rendered with Russian labels. Duplicates and Conflicts select functions referenced by corresponding findings; they are not lineage statuses. Many-to-many relationships display all linked functions. |
-| 7. Conclusion | Six sections: organizational changes, function preservation, possible losses, duplication, conflicts, needs human review. Render server text and links to finding IDs; clicking a link opens its evidence. Persistent caption: «Выводы носят рекомендательный характер и требуют проверки ответственным сотрудником». PDF export only if time remains. |
+| 1. «Новый анализ» | Две зоны ДО / ПОСЛЕ, drag-and-drop и выбор файлов, один или несколько файлов на каждой стороне. Принимать `.txt`, `.docx`, `.pdf`, `.xlsx`; имя с `.docx.txt` распознавать как TXT. Показывать имя/формат, разрешать удаление. Запуск доступен при наличии файлов с обеих сторон. Неподдерживаемые форматы и ошибки сервера объяснять по-русски, сохранять выбранный список при исправимой ошибке. Формат не равен `docType`. |
+| 2. «Ход анализа» | Отображать `AnalysisJob.stages` в серверном порядке, реальные `pending`, `running`, `done`, `failed`, `detail` и безопасное сообщение ошибки. Десять этапов перечислены ниже. Без вымышленных процентов и успеха по таймеру. |
+| 3. «Сводка» | Количество документов по сторонам, серверные summary по структуре, функциям и находкам. Добавить «Из N пунктов: без изменений / косметические / существенные / только ДО / только ПОСЛЕ» с пятью счётчиками. Подпись поясняет, что N — записи сравнения: пара пунктов считается один раз; оглавление, заголовки и пустые пункты исключены. Карточка открывает соответствующий фильтр. Показывать warnings, пустое состояние и `DEMO / MOCK DATA` при `isMock=true`. |
+| 4. Drawer источников | Открывается из каждой находки; показывает доказательства, объяснение, trace поиска и human review по правилам ниже. Не требовать function ID для дефекта ссылки или заголовка. |
+| 5. «Изменения документа» | Две колонки исходных пунктов ДО / ПОСЛЕ из `clauses[]` по `alignments[]`: документ, номер и буква, заголовок раздела, неизменённый текст, статус. Косметические изменения скрыты по умолчанию, есть переключатель их показа. Фильтры по пяти статусам; для `SUBSTANTIVE` подсветка добавленных/удалённых слов. Для `ONLY_BEFORE` / `ONLY_AFTER` — явно пустая противоположная сторона, без заявления о потере функции. |
+| 6. «Структура» | Таблица ДО → ПОСЛЕ: департаменты, должности, блоки и центры, тип сущности, аббревиатура, родитель, подтверждённые связи подчинения и их источники. Все шесть unit statuses; пустая сторона для созданного/удалённого. Сохранённый ДККМ может иметь изменённый перечень должностей. Не изображать единственного начальника, если источник говорит о нескольких видах подчинения. |
+| 7. «Функции и полномочия» | BEFORE / AFTER, владелец, badge «Функция» (`function`) / «Полномочие» (`right`), lineage status, ссылки на источники и номера с обеих сторон: например `5.8.1 → 5.7.1`. Для связи многие-ко-многим показать все функции и номера через `clauseId`, не только optional подписи lineage. |
+| 8. «Заключение» | Шесть серверных разделов: изменения структуры, сохранность функций, возможные потери, дублирование, конфликты, вопросы для проверки человеком. Ссылки на находки открывают Drawer. Постоянная подпись: «Выводы носят рекомендательный характер и требуют проверки ответственным сотрудником». PDF-экспорт — после MVP. |
 
-Screens 1–4 are the first frontend task; screens 5–7 are the next task. In the first task, cards may filter a findings list or show a selected-filter placeholder for a later view; no dead clicks or invented results. Finish the full flow before the final MVP gate.
+Первый срез: экраны 1–4 с рабочими ссылками и базовым review. Следующий: 5–8. Этот порядок заменяет старую нумерацию экранов в исторических frontend prompts. Пока следующая вкладка не готова, карточка фильтрует существующий список находок или показывает честное состояние ожидания; не создавать мёртвые клики и придуманные результаты.
 
-## Evidence Drawer specification
+### Этапы и статусы сравнения
 
-Show finding type, title, `reviewPriority`, categorical `confidence`, current human review state, involved units, linked functions, explanation and recommendation. Present priority as order of review, not legal severity. A confidence label is never a percentage.
+| Stage key | Подпись |
+| --- | --- |
+| `ingest` | Загрузка и разбор |
+| `clauses` | Разбор пунктов |
+| `alignment` | Сопоставление пунктов |
+| `units` | Подразделения и должности |
+| `functions` | Функции и полномочия |
+| `lineage` | Связи функций |
+| `checks` | Проверки документа |
+| `findings` | Замечания |
+| `verify` | Проверка источников |
+| `conclusion` | Заключение |
 
-Use side-by-side BEFORE and AFTER source panels with clear headings. Each evidence item shows `documentName`, `locator.label`, available page/section/row, and the original `fragmentText`; highlight the supported `quote` inside that text. If one side has no evidence, state why rather than inventing content. For duplication or conflicts, show all relevant AFTER clauses, even when both belong in the same side panel. Users must be able to follow a function reference to its source fragment without searching the document manually.
+| Alignment status | Подпись |
+| --- | --- |
+| `IDENTICAL` | Без изменений |
+| `COSMETIC` | Косметические |
+| `SUBSTANTIVE` | Существенные |
+| `ONLY_BEFORE` | Только ДО |
+| `ONLY_AFTER` | Только ПОСЛЕ |
 
-Use the original fragment returned by the server; do not rewrite it. Match highlights robustly to whitespace/case/quote-character normalization while preserving displayed source text. If highlighting cannot be mapped reliably, show the quote separately and the full unchanged fragment. Highlighting must not create or override a verification decision.
+Серверный `summary.alignmentsByStatus` задаёт общие значения, даже если косметика скрыта фильтром. Не выдавать количество видимых строк за полный N. Перенумерация видна в колонках, даже если статус `IDENTICAL`. Косметика никогда не показана как находка. Word diff — только визуализация строк уже сопоставленных backend: frontend не меняет статус, similarity, владельца или бизнес-вывод. Текст отображается безопасно, не как HTML из документа. При ненадёжном сопоставлении подсветки показывать исходные тексты без неё.
 
-For a `LOSS` finding associated with `POSSIBLE_LOSS`, show the BEFORE clause, then «Эквивалентная функция не найдена» with a qualifier that this refers to the uploaded AFTER documents. Render `searchTrace.checkedCount` and `topCandidates`, with function labels and reasons. Show missing trace or incomplete parsing as a limitation, not as a fabricated zero-result search. Do not invent an AFTER quote proving absence.
+### Структура и функции
 
-Show server-provided verified status per evidence item and per finding: verified badge or «не подтверждено источником». Unverified candidates are visually distinct and not counted as validated findings. A human clicking confirm does not make an invalid quotation verified.
+Unit statuses: `PRESERVED` — «Сохранено», `RENAMED` — «Переименовано», `MERGED` — «Объединено», `SPLIT` — «Разделено», `CREATED` — «Создано», `REMOVED` — «Удалено». UI-группа `transformed` включает только `RENAMED`, `MERGED`, `SPLIT`, нового enum не добавляет. Счётчик отношений изменения не равен численности подразделений или сотрудников. Граф не требуется.
 
-Review buttons map to `CONFIRMED`, `REJECTED`, `NEEDS_CHECK`. Send optional comment and status through `reviewFinding`; disable duplicate submits while pending. Use the successful server response to update the Drawer and the related card. Show failures and preserve the previous persisted state. Display server `updatedAt` when available. Reload must restore the persisted review. The mock adapter may persist local demo review state, clearly separated from real analysis IDs.
+`parentUnitId` показывает структурного родителя. Дополнительное функциональное/административное подчинение отображать по возвращённым evidence и соответствующим пунктам. Если backend не передал достаточную связь, показывать ограничение, а не выводить её из названия должности в компоненте. Для 3.6 а / 3.8 в редакции 8 раскрыть оба источника; два руководителя не означают подтверждённый конфликт.
 
-## Data access and contract rules
+Lineage statuses: `UNCHANGED` — «Сохранена», `TRANSFERRED` — «Передана», `MODIFIED` — «Изменена», `NEW` — «Новая», `POSSIBLE_LOSS` — «Возможная потеря». Фильтры: «Все», «Возможные потери», «Дублирование», «Конфликты», «Переданные», «Изменённые», «Новые», плюс категория «Функция» / «Полномочие». Дублирование/конфликты выбирают функции, указанные в findings, и не являются lineage statuses. Перенос с изменениями остаётся «Передана», детали — в rationale. Утрата права — `LOSS` с меньшим серверным приоритетом, не отдельный тип.
 
-All data flows through `src/lib/api.ts`: `createAnalysis`, `getAnalysis` with polling, and `reviewFinding`. Use a `USE_MOCK` switch inside that layer. Components never import mock JSON directly and never call API endpoints directly. Mock and real branches obey the same shared contract. Do not silently fall back to mock when a real API fails.
+### Типы замечаний
 
-Real flow: multipart POST → ID → GET polling → `done` result or `failed` error → PATCH review. Stop polling on terminal states, unmount or analysis switch; prevent overlapping polls and stale responses. Transport polling belongs in the data access layer; components only request and render state.
+| Finding type | Русская подпись | Что раскрывать |
+| --- | --- | --- |
+| `LOSS` | Возможная потеря | Категория, BEFORE-источник, область поиска ПОСЛЕ, кандидаты и причины отклонения |
+| `DUPLICATION` | Дублирование | Обе функции ПОСЛЕ и их владельцы |
+| `CONFLICT` | Потенциальный конфликт | Процесс, роли и обе подтверждающие цитаты; не юридический вердикт |
+| `REORGANIZATION` | Реорганизация | Изменения сущностей/ответственности и источники обеих сторон |
+| `SCOPE_CHANGE` | Изменение области ответственности | Пункты ДО/ПОСЛЕ, изменение предмета, периодичности или условий |
+| `BROKEN_REFERENCE` | Некорректная ссылка | Пункт со ссылкой, прежняя/новая цель и объяснение; существующий номер тоже может вести к другому смыслу |
+| `UNDEFINED_ROLE` | Неопределённая роль | Упоминание титула, доступные определения/кандидат-синоним и ограничение корпуса |
+| `AMBIGUITY` | Неоднозначность | Заголовок или связь с несколькими прочтениями, варианты и вопрос сотруднику |
 
-Frontend renders backend results and applies view filters only. No similarity calculations, loss/duplication/conflict decisions, confidence assignment, role classification or business aggregates in components. Request contract additions from backend. Mock data has `isMock=true` and a persistent `DEMO / MOCK DATA` badge across dashboard, Drawer and any result views; synthetic evidence is not a real AI output.
+Для зависимых от 5.3 находок показывать исходное `NEEDS_CHECK` и confidence не выше `medium`. Не поднимать confidence из-за валидной цитаты и не заменять статус своим предположением. Сотрудник может явно изменить review; это не переписывает исходную модельную неопределённость.
 
-## Do not build before the MVP works
+## Drawer источников
 
-No login, registration, profiles, theme settings, 3D or draggable organizational charts, AI chat, decorative charts, many pages, mobile layout or complex animations. Function Passport may later expose existing function fields; it must not invent new claims. Optional external comparison needs actual supplied sources.
+Показывать тип, title, `reviewPriority`, категориальный `confidence`, review status, связанные units/functions, объяснение и рекомендацию. Приоритет означает очередь проверки, confidence не отображается в процентах.
 
-## QA handoff after every screen
+Две панели ДО / ПОСЛЕ. Каждый evidence показывает `documentName`, `locator.label`, известные page/section/row, полный оригинальный `fragmentText` и выделенную `quote`. `locator.section` содержит исходный пункт и букву, например `2.3.3 д`. Если на стороне нет evidence, пояснить причину. Для дублирования/конфликта обе цитаты могут находиться в панели ПОСЛЕ. Для ссылки показывать и содержащий её пункт, и доступные целевые пункты. Уточняющие выдержки не подменяют оригинал.
 
-Append an entry to `docs/qa/handoff.md` (the explicit append-only ownership exception). Use actual URLs and test IDs; never claim an unexecuted check passed.
+Подсветка может учитывать пробелы, регистр и типографские кавычки, но не изменяет исходный текст и verified status. Если отображение невозможно надёжно сопоставить, показать цитату отдельно рядом с полным фрагментом. Не выдумывать страницы TXT/DOCX и не использовать страницы оглавления как фактические координаты.
+
+Для `LOSS` / `POSSIBLE_LOSS`: BEFORE-пункт и «Эквивалентная функция не найдена в загруженных документах ПОСЛЕ» (для `right` — «Эквивалентное полномочие…»). Показать `searchTrace.checkedCount`, `topCandidates`, названия функций и причины отклонения. Отсутствующий trace или неполный разбор — явное ограничение, не «проверено 0, ничего нет». Не создавать AFTER-цитату об отсутствии. При неоднозначном владельце показать NEEDS_CHECK и альтернативное покрытие из общего блока.
+
+Проверка источника отображается отдельно для evidence и finding: verified либо «не подтверждено источником». Непроверенные кандидаты визуально отделены и не входят в валидированные счётчики/фактические выводы. Нажатие «Подтвердить» не валидирует неверную цитату.
+
+Review: кнопки `CONFIRMED`, `REJECTED`, `NEEDS_CHECK`, optional comment. Отправлять через `reviewFinding`, блокировать повторную отправку до ответа. Успешный полный `Finding` обновляет Drawer и связанные карточки; при ошибке сохранять предыдущее состояние. Показывать `updatedAt`; reload восстанавливает persisted review. Пропущенный comment сохраняет старый, пустая строка очищает, лимит — 4000. Mock может хранить demo review локально, отдельно от реальных ID.
+
+## Доступ к данным и интеграция
+
+Все вызовы идут через `src/lib/api.ts`: `createAnalysis`, `getAnalysis`, `reviewFinding`. `USE_MOCK` находится в этом слое; компоненты не импортируют mock JSON и не вызывают endpoints напрямую. Mock и real соответствуют одной опубликованной схеме. Нет автоматического fallback на mock при реальной ошибке. При `isMock=true` постоянная маркировка `DEMO / MOCK DATA` на сводке, Drawer, сравнении и заключении; это не AI-результат.
+
+Реальный поток: multipart POST → ID → GET polling → `done` result / `failed` error → PATCH review. Polling прекращается при terminal state, unmount и смене анализа; исключить перекрывающиеся запросы и устаревшие ответы. Backend владеет сопоставлением, статусами, приоритетами, confidence, поиском потерь и summary. Frontend выполняет только представление, фильтры и действия пользователя; word highlight не является смысловым анализом.
+
+До публикации целевой схемы нельзя считать текущие ответы совместимыми с новыми обязательными полями. Согласовать миграцию сохранённых jobs и mock; не подставлять пустые clauses/нулевые counts так, будто анализ выполнен. При недоступной версии показывать понятную ошибку совместимости.
+
+## Проверка и передача QA
+
+После каждого экрана добавить запись в `docs/qa/handoff.md` (только append, остальной файл принадлежит QA). Указывать реальные URL, режим и выполненные проверки; не объявлять непроведённую проверку успешной.
 
 ```text
 READY FOR TEST
-Feature: <screen or behavior>
-URL: <actual local URL and analysis ID if needed>
-Expected: <visible outcome, including mock/real mode>
-Test cases: <R numbers from docs/qa/TEST_PLAN.md>
+Feature: <экран или поведение>
+URL: <фактический URL, при необходимости ID анализа>
+Expected: <ожидаемый результат, mock/real>
+Test cases: <согласованные R-номера и дополнительные проверки>
 ```
 
-If the test plan does not exist yet, use the reserved R numbers from the QA prompt and state that the full plan is pending. Suggested mapping: New Analysis R12/R13; Progress R14; Dashboard R01/R15; Drawer R05–R09/R16/R17; Structure Diff R01–R03; Function Diff R04–R07; Conclusion R10.
+Основная пара обязательна: TXT по одному файлу на сторону; десять реальных этапов; alignment без TOC/empty; перенумерация `5.8.1 → 5.7.1`; ДИТААД/ДОА созданы; перенос не объявлен потерей; права видны отдельно; 5.3 вызывает NEEDS_CHECK; дефекты 5.10.2/5.10.5 и титул 9.37 объясняются с источниками. Проверить скрытие косметики без искажения общей сводки и все восемь типов через согласованные mock/контрольные результаты. Однозначное дублирование проверять на вторичном синтетическом наборе.
+
+Ориентиры QA: загрузка R12/R13; прогресс R14; сводка R01/R15; Drawer R05–R09/R16/R17; структура R01–R03; функции R04–R07; заключение R10. Для alignment, новых дефектов и расширенного контракта QA назначает дополнительные ID. Если полного тест-плана ещё нет, так и указать. До MVP не добавлять login, профили, темы, 3D-схемы, AI-чат, декоративные графики, мобильную вёрстку и сложные анимации.
