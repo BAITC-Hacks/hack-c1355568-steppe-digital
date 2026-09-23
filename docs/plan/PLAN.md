@@ -16,8 +16,8 @@ Confirm the stack at T=0 after inspecting actual file formats and checking chat 
 
 | Path | Purpose / owner |
 | --- | --- |
-| `src/app/api/**` | Upload, polling and review routes / backend |
-| `src/server/**` | Parsers, LLM client, cache, jobs, pipeline, colocated tests / backend |
+| `src/app/api/**` | Thin Next.js route exports to `backend/handlers.ts` / backend |
+| `backend/**` | Parsers, LLM client, cache, jobs, pipeline, colocated tests / backend |
 | `src/shared/contract.ts` | Zod schemas and inferred types / backend |
 | `src/shared/analysis-result.example.json` | Schema-valid example with `isMock=true` / backend |
 | `src/app/**` except API, `src/components/**` | Application shell, screens and evidence UI / frontend |
@@ -30,6 +30,8 @@ Confirm the stack at T=0 after inspecting actual file formats and checking chat 
 | `data/` | Organizer input; inspect read-only and do not assume its presence or contents |
 | `.data/`, `.cache/` | Ignored runtime storage and cache |
 | `package.json`, root configuration, dependency lockfile | Stack, scripts, dependencies and tooling / backend |
+
+Server code is grouped in `backend/`; browser-safe schemas remain in `src/shared/`. The folder separation does not change API URLs or introduce a second process.
 
 Branches: `lane/backend`, `lane/frontend`, `lane/qa`. Each participant commits personally. Pull `main` before every task; do not overwrite uncommitted work. Contract changes always go through backend. Two narrow exceptions resolve the supplied workflow: backend creates the initial minimal Next.js shell and publishes the first baseline to `main` before frontend begins; frontend may append handoff entries to QA's log. Thereafter normal ownership applies. Backend tests belong beside backend/shared code, avoiding QA-owned fixtures.
 

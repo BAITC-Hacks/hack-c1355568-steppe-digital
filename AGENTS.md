@@ -7,7 +7,7 @@ Documentation and task reports are in English. Product UI and synthetic control 
 
 | Lane / branch | Owned paths |
 | --- | --- |
-| Backend / AI — `lane/backend` | `src/app/api/**`, `src/server/**`, `src/shared/**`, `package.json`, root configuration files and dependency lockfile |
+| Backend / AI — `lane/backend` | `src/app/api/**`, `backend/**`, `src/shared/**`, `package.json`, root configuration files and dependency lockfile |
 | Frontend / Product — `lane/frontend` | `src/app/**` except `src/app/api/**`, `src/components/**`, `src/lib/api.ts`, `src/mocks/**`, `docs/product/**` |
 | QA / README / Evaluation — `lane/qa` | `tests/fixtures/**`, `eval/**`, `scripts/**`, `docs/qa/**`, `DATA_NOTES.md`, `README.md` |
 

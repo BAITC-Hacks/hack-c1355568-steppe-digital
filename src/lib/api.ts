@@ -87,7 +87,7 @@ export async function reviewFinding(id: string, findingId: string, review: Pick<
     const job = demoJob(id);
     const finding = job.result?.findings.find(item => item.id === findingId);
     if (!finding) throw new Error("Замечание не найдено.");
-    const updated = FindingSchema.parse({ ...finding, review: { ...review, updatedAt: new Date().toISOString() } });
+    const updated = FindingSchema.parse({ ...finding, review: { ...finding.review, ...review, updatedAt: new Date().toISOString() } });
     job.result!.findings = job.result!.findings.map(item => item.id === findingId ? updated : item);
     saveDemo(job);
     return updated;

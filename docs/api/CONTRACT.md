@@ -177,21 +177,23 @@ Backend checks: `npm test`, `npm run typecheck`, `npm run lint`, `npm run build`
 
 Frontend can start against the shared example now, use the seeded job for real GET/PATCH, and use real uploads for POST/polling/error integration. No change to `src/lib/api.ts` is made by backend. QA can generate DOCX with the installed `docx` dev dependency and XLSX with `xlsx`; `pdf-lib` is available for parser test fixtures. Future QA scripts remain QA-owned.
 
-QA evaluation interface: `runAnalysis({ id, files, onStage? })` from `src/server/pipeline.ts`; `files` contains `{ name, side, bytes: Uint8Array }`. `id` must be nonempty ASCII letters/digits/hyphens; prefer a UUID. `onStage` is an optional async callback receiving `Stage`. The function persists fragments, returns a validated `AnalysisResult`, and throws sanitized errors; it does not create a job itself. `executeAnalysis` supplies job lifecycle handling. Set `ORGTRACE_DATA_DIR` to an isolated temporary directory for tests. Evaluation must refuse to count current `isMock=true` results as real detection.
+QA evaluation interface: `runAnalysis({ id, files, onStage? })` from `backend/pipeline.ts`; `files` contains `{ name, side, bytes: Uint8Array }`. `id` must be nonempty ASCII letters/digits/hyphens; prefer a UUID. `onStage` is an optional async callback receiving `Stage`. The function persists fragments, returns a validated `AnalysisResult`, and throws sanitized errors; it does not create a job itself. `executeAnalysis` supplies job lifecycle handling. Set `ORGTRACE_DATA_DIR` to an isolated temporary directory for tests. Evaluation must refuse to count current `isMock=true` results as real detection.
 
 Next backend task: real evidence-backed unit/function extraction, then matching/lineage/findings/conclusion according to PLAN. Keep the existing contract stable or document a coordinated version change here and in the shared schemas. This scaffold does not yet satisfy the case's full audit demonstration.
 
 Implementation references: [Next.js after](https://nextjs.org/docs/app/api-reference/functions/after), [OpenAI structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs), [OpenAI embeddings](https://developers.openai.com/api/docs/guides/embeddings).
 
-## Frontend integration check — 2026-09-23
+## Frontend/backend compatibility — 2026-09-23
 
-The frontend contribution from commit `6c6eeda` was merged while preserving its layout, page, components and adapter. Its existing mock passes `AnalysisResultSchema`; the requested runtime/type exports and JSON import support are available. The public mock-mode flag is now in `.env.example`.
+Server implementation and tests now live in `backend/`; see [backend/README.md](../../backend/README.md). Next.js route files are thin re-exports from `@backend/handlers`. Shared types stay in `src/shared/contract.ts`, so frontend imports, multipart fields, API URLs and response shapes are unchanged. `runAnalysis` now imports from `backend/pipeline.ts`. There is still one root package, one Next.js process and no CORS or second-service setup.
 
-Backend tests, backend-scoped lint, merged-app typecheck and production build pass. HTTP checks exercised all three routes with synthetic DOCX/PDF/XLSX uploads and confirmed review persistence across a real production-server restart. No live OpenAI requests or organizer-data evaluation were run.
+The frontend mock validates against the shared schema. Integration tests now drive frontend's actual `src/lib/api.ts` through all three actual route exports, including upload/polling, full Finding responses and comment persistence. Both browser-demo and server-backed review preserve an omitted comment; an empty string clears it.
 
-Full-repository `npm run lint` exits 1 for two issues in frontend-owned `src/components/analysis-workspace.tsx`, preserved from the incoming contribution:
+Compatibility corrections:
 
-- Line 21: `react-hooks/set-state-in-effect` for synchronous URL-to-state initialization in the mount effect. Frontend should choose a URL state integration compatible with its navigation and server-rendering behavior.
-- Line 42: `@next/next/no-html-link-for-pages` for the brand anchor to `/`. Frontend should use Next.js navigation while preserving its intended reset behavior.
+- URL state uses Next.js `useSearchParams`/`useRouter` with Suspense, and the brand uses `Link`; both former frontend lint failures are resolved.
+- Results are displayed only when the returned job ID matches the current URL, preventing stale results/badges during navigation.
+- Mock-data labels remain driven by `isMock`; storage wording is driven by transport mode. API results save reviews on the server, even when the result is mock. `USE_MOCK=true` saves its separate synthetic demo in the browser.
+- The comment textarea uses the server's 4,000-character limit.
 
-These are requests for the frontend lane, not disabled checks or a claim of passing repository-wide lint. Browser interaction acceptance and the four screen handoffs remain frontend/QA work. The backend API scaffold is ready for integration; full audit functionality still requires the semantic stages described above.
+Validation: 27 tests pass; repository-wide lint, typecheck and production build pass. Browser checks on a production server verified a URL-loaded result, source Drawer, actual PATCH review with a comment, restored status/comment after reload, and navigation back to the upload screen. These checks used synthetic data in a separate temporary store. No live OpenAI calls or organizer-data analysis were performed. Semantic stages remain explicitly labeled stubs.
