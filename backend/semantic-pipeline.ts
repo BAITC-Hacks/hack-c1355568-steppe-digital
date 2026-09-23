@@ -35,43 +35,99 @@ function role(text: string): OrgFunction["role"] {
 function actionText(text: string): boolean {
   return /^(?:осуществля|провод|вед[её]т|контрол|монитор|выявля|оценива|организ|обеспеч|разрабат|формир|подгот|готов|соглас|утвержд|провер|исполн|выполн|представ|анализ|участву|рассматр|направля|информир|консульт|координир)/iu.test(text);
 }
-type Assignment = { fragment: Fragment; unit: Unit; text: string };
+type Assignment = { fragment: Fragment; unit: Unit; text: string; context?: Fragment };
 export function extract(result: AnalysisResult, fragments: Fragment[]): Assignment[] {
   const assignments: Assignment[] = [];
+  // Extraction-only list normalization: do not change matching/tokenization rules.
+  const listedBody = (line: string) => body(line).replace(/^[а-я][.)]\s+/iu, "");
+  const nameWithoutAlias = (text: string) => text.replace(/\s*\((?:далее\s+[^()]+|[А-ЯЁA-Z][А-ЯЁA-Z\d-]+)\)$/u, "").trim();
+  const departmentName = (text: string) => {
+    const name = nameWithoutAlias(text);
+    return /^(?:Департамент|Управление|Отдел|Служба|Центр|Блок)\s+[^:;.!?]+$/iu.test(name)
+      && !/(?:^|\s)(?:осуществляет|обеспечивает|подчиняется|является|включает|состоит)(?:\s|$)/iu.test(name) ? name : undefined;
+  };
+  const entries = fragments.flatMap(fragment => fragment.text.split(/\n/u).filter(line => line.trim()).map(line => ({
+    fragment, line, text: listedBody(line), number: line.match(/^\s*(\d+(?:\.\d+)*)(?:[.)]|\s|$)/u)?.[1],
+  })));
+  const register = (name: string, fragment: Fragment, line: string, parentName?: string) => {
+    let unit = result.units.find(u => u.side === fragment.side && u.normalizedName === normalized(name));
+    if (!unit) {
+      unit = { id: `unit-${id(fragment.side, name)}`, side: fragment.side, name, normalizedName: normalized(name),
+        ...(parentName ? { parentName } : {}), evidence: [] };
+      result.units.push(unit);
+    }
+    if (!unit.evidence.some(e => e.fragmentId === fragment.id && e.quote === line)) unit.evidence.push(evidence(fragment, line));
+    return unit;
+  };
+  // Discover structural lists first, even when the responsibilities appear earlier in the document.
+  for (const { fragment, line, text } of entries) {
+    const name = departmentName(text);
+    if (name) register(name, fragment, line);
+  }
   for (const document of result.documents) {
     let owner: Unit | undefined;
     let section: string | undefined;
-    for (const fragment of fragments.filter(f => f.documentId === document.id)) {
-      for (const line of fragment.text.split(/\n/u).filter(x => x.trim())) {
-        const text = body(line);
-        const number = line.match(/^\s*(\d+(?:\.\d+)*)[.\s]/u)?.[1];
-        const heading = text.match(/^((?:Департамент|Управление|Отдел|Служба|Центр|Блок)\s+[^:;.!?]+?)(?:\s*:\s*)?$/u);
-        if (heading && !/\b(?:осуществляет|обеспечивает|подчиняется|является)\b/iu.test(text)) {
-          const name = heading[1].trim();
-          owner = result.units.find(u => u.side === fragment.side && u.normalizedName === normalized(name));
-          if (!owner) {
-            owner = { id: `unit-${id(fragment.side, name)}`, side: fragment.side, name, normalizedName: normalized(name), evidence: [evidence(fragment, line)] };
-            result.units.push(owner);
-          } else owner.evidence.push(evidence(fragment, line));
+    let previousNumber: string | undefined;
+    let context: Fragment | undefined;
+    let groupWarning = false;
+    for (const { fragment, line, text, number } of entries.filter(e => e.fragment.documentId === document.id)) {
+        // Rights/prohibitions are not positive functions of the preceding owner.
+        if (/:\s*$/u.test(line) && /(?:име[ею]т прав[оа]|запрещается|запрещено)/iu.test(text)) {
+          owner = undefined; section = undefined; context = undefined;
+          if (number) previousNumber = number;
+          continue;
+        }
+        const department = departmentName(text);
+        const title = nameWithoutAlias(text);
+        const position = /:\s*$/u.test(line)
+          && /^(?:Директор(?:ы)?|Начальник(?:и)?|Руководител[ьи]|Главный аудитор)(?:\s+[^:;.!?]+)?$/iu.test(title)
+          && !/(?:^|\s)(?:обязан[аы]?|име[ею]т|долж[её]н|должны|не)(?:\s|$)/iu.test(title);
+        if (department || position) {
+          let parent: Unit | undefined;
+          if (position) {
+            const tail = title.replace(/^(?:Директор|Начальник|Руководитель)\s+/iu, "")
+              .replace(/^департамента\s/iu, "Департамент ").replace(/^управления\s/iu, "Управление ")
+              .replace(/^отдела\s/iu, "Отдел ").replace(/^службы\s/iu, "Служба ")
+              .replace(/^центра\s/iu, "Центр ").replace(/^блока\s/iu, "Блок ");
+            const parents = result.units.filter(u => u.side === fragment.side && departmentName(u.name)
+              && (u.normalizedName === normalized(tail) || u.evidence.some(e => e.quote.includes(`(${tail})`))));
+            if (parents.length === 1) parent = parents[0];
+            if (/^(?:Директоры|Начальники|Руководители)\s/iu.test(title) && !groupWarning) {
+              const warning = "не удалось однозначно распределить обязанности группового должностного заголовка; сохранён общий владелец без приписывания функций отдельным подразделениям.";
+              document.warnings.push(warning); result.warnings.push(`${document.name}: ${warning}`); groupWarning = true;
+            }
+          }
+          // Positions retain their literal titles; they are not renamed into departments.
+          owner = register(department ?? title, fragment, line, parent?.name);
+          context = undefined;
           section = number;
+          if (!number && position) section = previousNumber;
+          if (number) previousNumber = number;
+          // A list of departments declares structure, not ownership of the next paragraph.
+          if (department && /^\s*[а-я][.)]\s/iu.test(line) && !/:\s*$/u.test(line)) owner = undefined;
           continue;
         }
         // A new sibling/ancestor heading ends ownership; it must not leak to unrelated sections.
         if (number && section && !number.startsWith(`${section}.`) && number !== section) { owner = undefined; section = undefined; }
-        if (owner && actionText(text) && !/^(?:не |имеет право|имеют право)/iu.test(text)) assignments.push({ fragment, unit: owner, text });
-      }
+        if (number) { previousNumber = number; context = undefined; }
+        const action = actionText(text) || /^(?:запрашива|вынос|взаимодейств|консолидир|актуализир|довод|определя|назнача|принима)/iu.test(text);
+        const listItem = /^\s*(?:\d+(?:\.\d+)*[.)]?\s*)?[а-я][.)]\s/iu.test(line);
+        if (owner && !/^(?:не\s|имеет право|имеют право)/iu.test(text) && (action || (listItem && context))) {
+          assignments.push({ fragment, unit: owner, text, ...(listItem && context ? { context } : {}) });
+          if (action && /:\s*$/u.test(line)) context = fragment;
+        } else if (!listItem) context = undefined;
     }
   }
   if (!result.units.length) result.warnings.push("Не распознаны явные заголовки подразделений. Текущий извлекатель поддерживает разделы с названием подразделения и следующими за ним функциями; полнота анализа не подтверждена.");
   return assignments;
 }
 export function extractFunctions(result: AnalysisResult, assignments: Assignment[]) {
-  for (const { fragment, unit, text } of assignments) {
+  for (const { fragment, unit, text, context } of assignments) {
     const existing = result.functions.find(f => f.unitId === unit.id && normalized(f.text) === normalized(text));
-    if (existing) { existing.evidence.push(evidence(fragment)); continue; }
+    if (existing) { existing.evidence.push(evidence(fragment), ...(context ? [evidence(context)] : [])); continue; }
     const words = text.split(/\s/u);
     result.functions.push({ id: `function-${id(unit.id, text)}`, unitId: unit.id, side: fragment.side, text,
-      action: words[0], object: words.slice(1).join(" ") || text, process: key(words.slice(1).join(" ")) || key(text), role: role(text), evidence: [evidence(fragment), ...unit.evidence] });
+      action: words[0], object: words.slice(1).join(" ") || text, process: key(words.slice(1).join(" ")) || key(text), role: role(text), evidence: [evidence(fragment), ...(context ? [evidence(context)] : []), ...unit.evidence] });
   }
 }
 export function match(result: AnalysisResult) {

@@ -55,4 +55,48 @@ describe("source-backed runtime pipeline", () => {
     const r = await analyze(["1. Отдел альфа", "1.1. Формирует отчёт.", "2. Общие положения", "2.1. Утверждает бюджет."], ["1. Отдел альфа", "1.1. Формирует отчёт."]);
     expect(r.functions.filter(f => f.side === "before")).toHaveLength(1);
   });
+  it("recognizes lettered structural lists and keeps director ownership separate", async () => {
+    const source = ["1. Состав", "а. Департамент сопровождения (ДС).", "б) Отдел расчётов.",
+      "2. Директор департамента сопровождения (далее Директор ДС):", "2.1. Формирует отчёт.",
+      "3. Начальник отдела расчётов:", "3.1. Контролирует обработку счетов.",
+      "4. Общие положения", "4.1. Утверждает бюджет."];
+    const r = await analyze(source, source);
+    const units = r.units.filter(u => u.side === "after");
+    expect(units.map(u => u.name)).toEqual(expect.arrayContaining(["Департамент сопровождения", "Отдел расчётов"]));
+    const director = units.find(u => u.name === "Директор департамента сопровождения")!;
+    expect(director.parentName).toBe("Департамент сопровождения");
+    const f = r.functions.find(f => f.side === "after" && f.text === "Формирует отчёт")!;
+    expect(f.unitId).toBe(director.id);
+    expect(f.evidence.map(e => e.locator.section)).toContain("2.1");
+    expect(f.evidence.map(e => e.locator.section)).toContain("2");
+    expect(r.functions.some(f => f.text.includes("бюджет"))).toBe(false);
+    expect(r.summary.findingsByType.LOSS).toBe(0);
+  });
+  it("retains nominal subclauses and their context across a changed collective owner", async () => {
+    const r = await analyze([
+      "1. Служба аналитики", "2. Руководитель службы аналитики:",
+      "2.1. Взаимодействует с руководителями в части:", "а. выявления рисков с недостаточным покрытием;",
+    ], [
+      "1. Отдел контроля", "2. Директоры отделов контроля и сопровождения:",
+      "2.1. Готовят отчёт, взаимодействуют с руководителями в части:", "а) выявления рисков с недостаточным покрытием;",
+    ]);
+    const before = r.functions.find(f => f.side === "before" && f.text.startsWith("выявления"))!;
+    const after = r.functions.find(f => f.side === "after" && f.text.startsWith("выявления"))!;
+    expect(before).toBeDefined(); expect(after).toBeDefined();
+    expect(after.evidence.some(e => e.locator.section === "2.1")).toBe(true);
+    expect(after.evidence.some(e => e.quote.startsWith("а)"))).toBe(true);
+    expect(r.lineage.find(l => l.beforeFunctionIds.includes(before.id))).toMatchObject({ status: "TRANSFERRED", afterFunctionIds: [after.id] });
+    expect(r.findings.filter(f => f.type === "LOSS").some(f => f.functionIds.includes(before.id))).toBe(false);
+    expect(r.warnings.some(w => w.includes("группового"))).toBe(true);
+    expect(r.units.find(u => u.id === after.unitId)?.name).toBe("Директоры отделов контроля и сопровождения");
+  });
+  it("does not turn inherited rights/prohibitions or structural list neighbours into functions", async () => {
+    const source = ["1. Структура", "а. Отдел расчётов.", "Формирует чужой отчёт.",
+      "2. Полномочия", "Главный аудитор:", "2.1. Организует проверку.",
+      "2.2. Главный аудитор имеет право:", "2.2.1. Проводить совещания.",
+      "3. Отдел контроля", "3.1. Контролирует качество продукции.",
+      "3.2. Работники не имеют права:", "3.2.1. Выполнять обработку счетов."];
+    const r = await analyze(source, source);
+    expect(r.functions.filter(f => f.side === "after").map(f => f.text)).toEqual(["Организует проверку", "Контролирует качество продукции"]);
+  });
 });
