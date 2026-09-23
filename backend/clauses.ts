@@ -15,6 +15,22 @@ function dice(x: Set<string>, y: Set<string>): number {
   return 2 * [...x].filter(t => y.has(t)).length / (x.size + y.size);
 }
 export function similarity(a: string, b: string): number { return dice(tokens(a), tokens(b)); }
+/** Share of the shorter wording contained in the longer one: a narrowed or widened duty, not a different one. */
+export function coverage(a: string, b: string): number {
+  const x = tokens(a), y = tokens(b);
+  const [small, large] = x.size <= y.size ? [x, y] : [y, x];
+  if (!small.size) return 0;
+  return [...small].filter(t => large.has(t)).length / small.size;
+}
+export const contentTokens = (value: string) => tokens(value).size;
+/** Scope markers of this domain (БВА, ДНМ, СВК, ДЗО…). Replacing one changes who or what a duty covers. */
+export const acronyms = (text: string) => new Set(text.match(/(?<![\p{Ll}])[\p{Lu}]{2,8}(?![\p{Ll}])/gu) ?? []);
+export function acronymShare(source: string, candidate: string): number {
+  const wanted = acronyms(source);
+  if (!wanted.size) return 1;
+  const present = acronyms(candidate);
+  return [...wanted].filter(a => present.has(a)).length / wanted.size;
+}
 
 /** Keep original text spans: a clause is never reconstructed from a model response. */
 export function parseClauses(fragments: Fragment[]): ParsedClauses {

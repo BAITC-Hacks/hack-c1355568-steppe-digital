@@ -40,7 +40,8 @@ describe("regulation samples: real documents, no model/network dependency", () =
     expect(result.lineage.some(l => l.beforeClauseNumber === "5.4.2" && l.afterClauseNumber === "5.4.2" && l.status === "UNCHANGED")).toBe(true);
     expect(result.lineage.some(l => l.beforeClauseNumber === "5.3.2" && l.afterClauseNumber === "5.4.2")).toBe(false);
     expect(result.lineage.some(l => l.beforeClauseNumber === "9.37" && l.afterClauseNumber === "9.37" && l.status === "TRANSFERRED")).toBe(true);
-    expect(result.findings.filter(f => f.type === "LOSS").every(f => !f.verified && f.searchTrace)).toBe(true);
+    // A loss reports a verified quotation and an exhausted search; the interpretation still needs review.
+    expect(result.findings.filter(f => f.type === "LOSS").every(f => f.verified && f.searchTrace && f.evidence.some(e => e.side === "before") && f.review.status === "NEEDS_CHECK")).toBe(true);
     console.info(JSON.stringify({ clauses: result.clauses.length, units: result.units.length, functions: result.functions.length, summary: result.summary }));
   }, 30_000);
   it("separates glued clauses, keeps non-reset letters and rejects a forged clause reference", async () => {

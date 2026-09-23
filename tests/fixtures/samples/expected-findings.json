@@ -1,0 +1,57 @@
+{
+  "about": "Согласованные ожидания анализа контрольной пары ред. 8 → ред. 9 (data/samples). Источник ожиданий — docs/research/DATA_ANALYSIS.md и разбор пунктов 3.x, 5.3, 5.6, 5.7 обеих редакций. Проверяется детерминированный режим (ORGTRACE_AI=false).",
+  "source": {
+    "before": "data/samples/before/Положение_о_внутреннем_аудите_редакция_8_обезличено.docx.txt",
+    "after": "data/samples/after/Положение_о_внутреннем_аудите_редакция_9_обезличено.docx.txt"
+  },
+  "unitsByStatus": { "PRESERVED": 6, "RENAMED": 3, "MERGED": 0, "SPLIT": 0, "CREATED": 15, "REMOVED": 5 },
+  "functionsByStatus": { "UNCHANGED": 88, "TRANSFERRED": 23, "MODIFIED": 9, "NEW": 7, "POSSIBLE_LOSS": 3 },
+  "units": [
+    { "name": "Департамент ИТ-аудита и анализа данных", "side": "after", "status": "CREATED", "why": "ДИТААД появился в 3.4 а" },
+    { "name": "Департамент операционного аудита", "side": "after", "status": "CREATED", "why": "ДОА появился в 3.4 б" },
+    { "name": "Центр анализа данных", "side": "after", "status": "CREATED", "why": "выявляется по должностям ДИТААД в 3.6 г–е" },
+    { "name": "Аудитор Центра анализа данных", "side": "after", "status": "CREATED", "why": "должность ЦАД в 3.6 е" },
+    { "name": "Департамент непрерывного мониторинга системы внутреннего контроля", "side": "after", "status": "PRESERVED", "why": "ДНМ сохранён при изменившемся перечне должностей" },
+    { "name": "Департамент контроля качества аудита и методологии", "side": "after", "status": "PRESERVED", "why": "ДККМ сохранён при перечне должностей 4 → 2" },
+    { "name": "Главный аудитор", "side": "after", "status": "PRESERVED", "why": "должность сохранена" },
+    { "name": "Директор направления внутреннего аудита", "side": "before", "status": "REMOVED", "why": "титул исчез в ред. 9" },
+    { "name": "Директор проектов ДНМ", "side": "before", "status": "RENAMED", "renamedTo": "Директор проектов", "parent": "Департамент непрерывного мониторинга системы внутреннего контроля", "why": "название сокращено внутри того же департамента" },
+    { "name": "Директор проектов ДККМ", "side": "before", "status": "RENAMED", "renamedTo": "Директор проектов", "parent": "Департамент контроля качества аудита и методологии", "why": "название сокращено внутри того же департамента" },
+    { "name": "Руководитель направления непрерывного мониторинга СВК", "side": "before", "status": "RENAMED", "renamedTo": "Руководитель направления", "parent": "Департамент непрерывного мониторинга системы внутреннего контроля", "why": "название сокращено внутри того же департамента" }
+  ],
+  "lineage": [
+    { "before": "5.4.2", "after": "5.4.2", "status": "UNCHANGED", "why": "дословная пара ДНМ не должна вытесняться однотекстовым пунктом другого владельца" },
+    { "before": "5.5.8", "after": "5.3.9", "status": "TRANSFERRED", "ambiguousGroup": true, "why": "обязанность ДККМ сведена в групповой блок 5.3" },
+    { "before": "5.5.10", "after": "5.3.3", "status": "TRANSFERRED", "ambiguousGroup": true, "why": "обязанность ДККМ сведена в групповой блок 5.3" },
+    { "before": "5.4.4 а", "after": "5.3.3 а", "status": "TRANSFERRED", "why": "подпункт ДНМ сведён в групповой блок 5.3" },
+    { "before": "5.7.1", "after": "5.6.1", "status": "MODIFIED", "why": "право ДНМ сужено до внесения изменений в утверждённые программы (общий 5.6)" },
+    { "before": "4.4", "after": "4.4", "status": "MODIFIED", "why": "текст ред. 8 сохранён дословно, в ред. 9 добавлен блок о конфликте интересов" },
+    { "before": "9.37", "after": "9.37", "status": "TRANSFERRED", "why": "получатель делегирования сменился" },
+    { "before": "5.6.2", "after": null, "status": "POSSIBLE_LOSS", "category": "right", "why": "формирование групп контроля качества не имеет аналога в общем 5.6" },
+    { "before": "5.6.3", "after": null, "status": "POSSIBLE_LOSS", "category": "right", "why": "предложения по внешней оценке БВА не имеют аналога в общем 5.6" },
+    { "before": "5.7.2", "after": null, "status": "POSSIBLE_LOSS", "category": "right", "why": "доведение результатов консультаций не имеет аналога в общем 5.6" }
+  ],
+  "findings": {
+    "byType": { "LOSS": 3, "DUPLICATION": 10, "CONFLICT": 1, "REORGANIZATION": 26, "SCOPE_CHANGE": 9, "BROKEN_REFERENCE": 4, "UNDEFINED_ROLE": 1, "AMBIGUITY": 2 },
+    "rules": [
+      { "rule": "loss-verified", "why": "каждая LOSS публикует проверенную цитату ДО и историю поиска; интерпретация остаётся на проверке" },
+      { "rule": "loss-only-rights", "why": "на этой паре подтверждённые потери — только полномочия, поэтому reviewPriority=MEDIUM" },
+      { "rule": "reorganization-one-per-unit", "why": "список читается как «какие подразделения реорганизованы»: заголовки не повторяются" },
+      { "rule": "group-ambiguity-aggregated", "why": "одна находка AMBIGUITY на групповой заголовок 5.3, а не на каждый перенесённый пункт" },
+      { "rule": "all-needs-check", "why": "выводы рекомендательные: решение принимает сотрудник" }
+    ],
+    "expected": [
+      { "type": "LOSS", "beforeClause": "5.6.2", "verified": true, "searchTrace": true, "reviewPriority": "MEDIUM" },
+      { "type": "LOSS", "beforeClause": "5.6.3", "verified": true, "searchTrace": true, "reviewPriority": "MEDIUM" },
+      { "type": "LOSS", "beforeClause": "5.7.2", "verified": true, "searchTrace": true, "reviewPriority": "MEDIUM" },
+      { "type": "SCOPE_CHANGE", "beforeClause": "5.7.1", "afterClause": "5.6.1" },
+      { "type": "AMBIGUITY", "afterClause": "5.3", "confidenceAtMost": "medium" },
+      { "type": "DUPLICATION", "afterClauses": ["5.3.8", "5.4.5"], "confidenceAtMost": "medium", "review": "NEEDS_CHECK" },
+      { "type": "DUPLICATION", "afterClauses": ["5.3.9", "5.4.6"], "confidenceAtMost": "medium", "review": "NEEDS_CHECK" },
+      { "type": "DUPLICATION", "afterClauses": ["5.3.10", "5.4.7"], "confidenceAtMost": "medium", "review": "NEEDS_CHECK" },
+      { "type": "CONFLICT", "unit": "Директор проектов ДККМ", "side": "before", "confidenceAtMost": "low", "beforeClauses": ["3.6", "3.8"] },
+      { "type": "BROKEN_REFERENCE", "afterClause": "5.10.2" },
+      { "type": "UNDEFINED_ROLE", "afterClause": "9.37" }
+    ]
+  }
+}

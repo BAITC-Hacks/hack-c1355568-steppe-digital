@@ -13,7 +13,8 @@
     "lint": "eslint . --max-warnings=0",
     "test": "vitest run",
     "test:watch": "vitest",
-    "demo:seed": "node --import tsx backend/seed-demo.ts"
+    "demo:seed": "node --import tsx backend/seed-demo.ts",
+    "eval": "node --import tsx eval/evaluate.ts"
   },
   "dependencies": {
     "mammoth": "^1.11.0",

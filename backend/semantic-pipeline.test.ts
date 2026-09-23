@@ -96,7 +96,9 @@ describe("source-backed runtime pipeline", () => {
       expect(r.units.some(u => u.id === f.unitId && u.side === f.side)).toBe(true);
       expect(r.clauses.some(c => c.id === f.clauseId && c.side === f.side)).toBe(true);
     }
-    expect(r.summary.findingsByType.LOSS).toBe(0);
+    // Only rights with no equivalent anywhere in the AFTER edition survive as losses.
+    expect(r.summary.findingsByType.LOSS).toBe(3);
+    expect(r.findings.filter(f => f.type === "LOSS").every(f => f.searchTrace!.checkedCount > 0)).toBe(true);
     expect(r.lineage.some(l => l.status === "TRANSFERRED")).toBe(true);
   });
 
