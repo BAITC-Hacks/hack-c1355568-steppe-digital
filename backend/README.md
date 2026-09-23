@@ -1,23 +1,45 @@
 # OrgTrace AI backend
 
-Server implementation lives in this directory. The frontend remains under `src/`, with shared browser-safe Zod schemas in `src/shared/contract.ts`. This is still one Next.js application, one root package and one origin; the directory move does not introduce a second service or change API URLs.
+Реальный минимальный pipeline в одном Next.js-приложении. Контракт `v0.1.0` и маршруты не изменены. Загрузка через UI при `NEXT_PUBLIC_USE_MOCK=false` (или без этой переменной) вызывает POST → выполнение → GET с `isMock=false`. Предзаписанный demo остаётся отдельно и всегда имеет `isMock=true`.
 
-| File | Responsibility |
-| --- | --- |
-| `handlers.ts` | POST analysis, GET job, PATCH review handlers |
-| `http.ts` | Bounded request parsing and sanitized responses |
-| `ingest.ts` | DOCX/PDF/XLSX parsers, fragments and locators |
-| `pipeline.ts` | Real ingestion and explicitly labeled semantic stubs |
-| `store.ts` | Serialized in-memory job store backed by atomic JSON writes |
-| `llm.ts` | Cached structured chat/embeddings and bounded retries |
-| `files.ts`, `errors.ts`, `stages.ts` | Storage, safe errors and stage metadata |
-| `seed-demo.ts` | Explicit synthetic result for GET/PATCH integration |
-| `*.test.ts` | Parser, API, persistence and cache tests |
+## Обработка
 
-`src/app/api/**/route.ts` contains only Next.js route exports and runtime configuration. These thin adapters import `@backend/handlers`. Server internals use `@backend/*` or relative imports; frontend components must never import them. Shared types remain at `@/shared/contract` to preserve existing frontend imports.
+`ingest` разбирает DOCX/PDF/XLSX, сохраняет исходные фрагменты. `units` распознаёт явные заголовки подразделений; `functions` извлекает действия под заголовком и сохраняет доказательства функции и владельца. `lineage` сопоставляет точные названия, затем возможное переименование по имени и сохранённым функциям. Функции группируются по нормализованному действию, объекту и ограничениям во всём корпусе обеих сторон, независимо от владельца. Перенос не становится потерей; несколько предшественников могут сохраняться у одного получателя.
 
-From the repository root: `npm ci`, optionally `npm run demo:seed` before starting the server, then `npm run dev`. Validation: `npm test`, `npm run typecheck`, `npm run lint`, `npm run build`. Do not run a separate install or server from this directory.
+`findings` формирует рекомендательные `LOSS`, `DUPLICATION`, `CONFLICT`, `REORGANIZATION`. В текущем контракте возможная потеря — `LOSS` + lineage `POSSIBLE_LOSS`, возможное дублирование — `DUPLICATION`. При потере проверяются все AFTER-функции и исходные AFTER-фрагменты; частичное покрытие или неполный разбор оставляет только диагностического кандидата `verified=false`. Дублирование требует эквивалентного полного набора токенов ответственности у двух разных AFTER-владельцев. Общие слова сами по себе не достаточны. Конфликт — сочетание исполнения и контроля/утверждения/аудита одного объекта у одного владельца.
 
-The API specification and current functionality/limitations are maintained in [docs/api/CONTRACT.md](../docs/api/CONTRACT.md). QA imports `runAnalysis` from `backend/pipeline.ts`; its signature and all HTTP contracts are unchanged. No old `src/server` compatibility shim is required by the currently tracked frontend or QA code.
+`verify` сверяет ID, сторону, документ, locator, цитату и полный исходный текст с реестром ingest; проверяет контракт и пересчитывает счётчики. `conclusion` формирует шесть разделов из результатов. `verified=true` подтверждает источник рекомендательного кандидата, а не исчезновение обязанности в организации; все находки исходно `NEEDS_CHECK`. Непроверенные кандидаты исключены из finding-счётчиков и ссылок заключения.
 
-Storage stays at root `.data/` and `.cache/`, or the server-only directory overrides. Secrets stay in root `.env.local`, never in browser code or this directory. The semantic analysis stages remain stubs; a successful parse is not an AI audit.
+## Воспроизведение
+
+Из корня репозитория:
+
+```sh
+npm ci
+node --import tsx backend/run-synthetic.ts
+npm test
+npm run typecheck
+npm run lint
+npm run build
+npm run start
+```
+
+Результат прямого запуска: `.data/synthetic-real-output.json`. Скрипт читает только `eval/synthetic/inputs/before.docx` и `after.docx`, не читает expected-results. Полный ответ production HTTP API сохранён в [runtime/synthetic-api-output.json](runtime/synthetic-api-output.json). Это вычисленный результат синтетических документов, не mock.
+
+Проверка HTTP после запуска:
+
+```sh
+curl -F 'before[]=@eval/synthetic/inputs/before.docx' -F 'after[]=@eval/synthetic/inputs/after.docx' http://localhost:3000/api/analyses
+# Подставить полученный id:
+curl http://localhost:3000/api/analyses/ID
+```
+
+Фактический synthetic результат: 5 подразделений (2 ДО, 3 ПОСЛЕ), 10 функций (5 + 5), 1 переименование, 1 сохранённое и 1 новое подразделение; 4 сохранённые связи функций и 1 возможная потеря; 1 LOSS, 1 DUPLICATION, 0 CONFLICT, 2 REORGANIZATION. S01: RENAMED; S02/S04/S05: UNCHANGED; S03: LOSS по before §2.2; S06: DUPLICATION по after §3.2 и §4.1.
+
+## Ограничения P0
+
+Это детерминированный анализ реальных входных документов без обращения к LLM/embeddings. Языковые правила ограничены: произвольные синонимы, сложные перефразировки и косвенное покрытие могут остаться кандидатами. Полнота извлечения произвольного регламента не гарантируется. Поддерживается шаблон «явный заголовок подразделения → действия в пунктах». Позиции, общие групповые владельцы, права, вложенная структура, merge/split и номинальные формулировки функций не покрыты. Табличные документы парсятся, но их произвольная схема назначения владельцев не интерпретируется. Для нераспознанной структуры возвращается предупреждение.
+
+TXT основной пары редакций 8/9 не поддерживается существующим API этой ветки; основной корпус в этом P0 не аттестован. OCR и восстановление автоматической нумерации Word не реализованы; вместо вымышленных номеров сохраняются абзац/страница/строка. Пустые или частично непрочитанные AFTER-документы удерживают LOSS от подтверждённых счётчиков. Отсутствие найденных конфликтов не означает отсутствия конфликта. Полный семантический аудит основного корпуса требует отдельной интеграции.
+
+Хранилища `.data/` и `.cache/` локальные. Секреты и `.env.local` не читаются проверочными скриптами и не выводятся. `llm.ts` остаётся доступным вспомогательным модулем, но этот pipeline его не вызывает.

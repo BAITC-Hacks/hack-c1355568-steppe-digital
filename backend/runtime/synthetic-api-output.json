@@ -1,0 +1,1239 @@
+{
+  "id": "e3ec8ac7-f2bd-4c7a-92b2-ae5deb8f4c0e",
+  "status": "done",
+  "stages": [
+    {
+      "key": "ingest",
+      "label": "Загрузка и разбор",
+      "status": "done",
+      "detail": "Документов: 2; подразделений: 0; функций: 0; находок: 0."
+    },
+    {
+      "key": "units",
+      "label": "Подразделения",
+      "status": "done",
+      "detail": "Документов: 2; подразделений: 5; функций: 0; находок: 0."
+    },
+    {
+      "key": "functions",
+      "label": "Функции",
+      "status": "done",
+      "detail": "Документов: 2; подразделений: 5; функций: 10; находок: 0."
+    },
+    {
+      "key": "lineage",
+      "label": "Связи функций",
+      "status": "done",
+      "detail": "Документов: 2; подразделений: 5; функций: 10; находок: 0."
+    },
+    {
+      "key": "findings",
+      "label": "Замечания",
+      "status": "done",
+      "detail": "Документов: 2; подразделений: 5; функций: 10; находок: 4."
+    },
+    {
+      "key": "verify",
+      "label": "Проверка источников",
+      "status": "done",
+      "detail": "Документов: 2; подразделений: 5; функций: 10; находок: 4."
+    },
+    {
+      "key": "conclusion",
+      "label": "Заключение",
+      "status": "done",
+      "detail": "Документов: 2; подразделений: 5; функций: 10; находок: 4."
+    }
+  ],
+  "result": {
+    "id": "e3ec8ac7-f2bd-4c7a-92b2-ae5deb8f4c0e",
+    "isMock": false,
+    "documents": [
+      {
+        "id": "doc-2894f94e53ea4baab9d86060",
+        "name": "before.docx",
+        "side": "before",
+        "docType": "other",
+        "fragmentCount": 11,
+        "warnings": []
+      },
+      {
+        "id": "doc-df8613a326e52255ef4dd52d",
+        "name": "after.docx",
+        "side": "after",
+        "docType": "other",
+        "fragmentCount": 12,
+        "warnings": []
+      }
+    ],
+    "summary": {
+      "unitsByStatus": {
+        "PRESERVED": 1,
+        "RENAMED": 1,
+        "MERGED": 0,
+        "SPLIT": 0,
+        "CREATED": 1,
+        "REMOVED": 0
+      },
+      "functionsByStatus": {
+        "UNCHANGED": 4,
+        "TRANSFERRED": 0,
+        "MODIFIED": 0,
+        "NEW": 0,
+        "POSSIBLE_LOSS": 1
+      },
+      "findingsByType": {
+        "LOSS": 1,
+        "DUPLICATION": 1,
+        "CONFLICT": 0,
+        "REORGANIZATION": 2
+      }
+    },
+    "units": [
+      {
+        "id": "unit-f225cbdc978d0c33c7ca6c14",
+        "side": "before",
+        "name": "Департамент внутреннего контроля",
+        "normalizedName": "департамент внутреннего контроля",
+        "evidence": [
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f5",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент внутреннего контроля",
+            "fragmentText": "2. Департамент внутреннего контроля",
+            "verified": true
+          }
+        ]
+      },
+      {
+        "id": "unit-c5a48306cb06c9704bcfe549",
+        "side": "before",
+        "name": "Департамент риск-менеджмента",
+        "normalizedName": "департамент риск менеджмента",
+        "evidence": [
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f9",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "3",
+              "label": "Пункт 3"
+            },
+            "quote": "3. Департамент риск-менеджмента",
+            "fragmentText": "3. Департамент риск-менеджмента",
+            "verified": true
+          }
+        ]
+      },
+      {
+        "id": "unit-5a60eff4f6e2c6c4c1dd3194",
+        "side": "after",
+        "name": "Департамент комплаенс и внутреннего контроля",
+        "normalizedName": "департамент комплаенс и внутреннего контроля",
+        "evidence": [
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f5",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент комплаенс и внутреннего контроля",
+            "fragmentText": "2. Департамент комплаенс и внутреннего контроля",
+            "verified": true
+          }
+        ]
+      },
+      {
+        "id": "unit-e0abe26dd9681033a159081b",
+        "side": "after",
+        "name": "Департамент риск-менеджмента",
+        "normalizedName": "департамент риск менеджмента",
+        "evidence": [
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f8",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "3",
+              "label": "Пункт 3"
+            },
+            "quote": "3. Департамент риск-менеджмента",
+            "fragmentText": "3. Департамент риск-менеджмента",
+            "verified": true
+          }
+        ]
+      },
+      {
+        "id": "unit-bbe03701e22f1bdf5819df7f",
+        "side": "after",
+        "name": "Департамент корпоративного управления",
+        "normalizedName": "департамент корпоративного управления",
+        "evidence": [
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f11",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "4",
+              "label": "Пункт 4"
+            },
+            "quote": "4. Департамент корпоративного управления",
+            "fragmentText": "4. Департамент корпоративного управления",
+            "verified": true
+          }
+        ]
+      }
+    ],
+    "unitChanges": [
+      {
+        "id": "change-unit-f225cbdc978d0c33c7ca6c14",
+        "beforeUnitIds": [
+          "unit-f225cbdc978d0c33c7ca6c14"
+        ],
+        "afterUnitIds": [
+          "unit-5a60eff4f6e2c6c4c1dd3194"
+        ],
+        "status": "RENAMED",
+        "rationale": "Возможное преобразование: похожесть названий 0.75 и сохранённые функции. Требуется проверка человеком.",
+        "evidence": [
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f5",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент внутреннего контроля",
+            "fragmentText": "2. Департамент внутреннего контроля",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f5",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент комплаенс и внутреннего контроля",
+            "fragmentText": "2. Департамент комплаенс и внутреннего контроля",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f6",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2.1",
+              "label": "Пункт 2.1"
+            },
+            "quote": "2.1. Осуществляет мониторинг исполнения договорных обязательств.",
+            "fragmentText": "2.1. Осуществляет мониторинг исполнения договорных обязательств.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f5",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент внутреннего контроля",
+            "fragmentText": "2. Департамент внутреннего контроля",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f8",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2.3",
+              "label": "Пункт 2.3"
+            },
+            "quote": "2.3. Ведёт мониторинг выполнения корректирующих мероприятий.",
+            "fragmentText": "2.3. Ведёт мониторинг выполнения корректирующих мероприятий.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f5",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент внутреннего контроля",
+            "fragmentText": "2. Департамент внутреннего контроля",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f6",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "2.1",
+              "label": "Пункт 2.1"
+            },
+            "quote": "2.1. Проводит мониторинг выполнения обязательств по договорам.",
+            "fragmentText": "2.1. Проводит мониторинг выполнения обязательств по договорам.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f5",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент комплаенс и внутреннего контроля",
+            "fragmentText": "2. Департамент комплаенс и внутреннего контроля",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f7",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "2.2",
+              "label": "Пункт 2.2"
+            },
+            "quote": "2.2. Ведёт мониторинг выполнения корректирующих мероприятий.",
+            "fragmentText": "2.2. Ведёт мониторинг выполнения корректирующих мероприятий.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f5",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент комплаенс и внутреннего контроля",
+            "fragmentText": "2. Департамент комплаенс и внутреннего контроля",
+            "verified": true
+          }
+        ]
+      },
+      {
+        "id": "change-unit-c5a48306cb06c9704bcfe549",
+        "beforeUnitIds": [
+          "unit-c5a48306cb06c9704bcfe549"
+        ],
+        "afterUnitIds": [
+          "unit-e0abe26dd9681033a159081b"
+        ],
+        "status": "PRESERVED",
+        "rationale": "Название подразделения сохранено.",
+        "evidence": [
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f9",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "3",
+              "label": "Пункт 3"
+            },
+            "quote": "3. Департамент риск-менеджмента",
+            "fragmentText": "3. Департамент риск-менеджмента",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f8",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "3",
+              "label": "Пункт 3"
+            },
+            "quote": "3. Департамент риск-менеджмента",
+            "fragmentText": "3. Департамент риск-менеджмента",
+            "verified": true
+          }
+        ]
+      },
+      {
+        "id": "change-unit-bbe03701e22f1bdf5819df7f",
+        "beforeUnitIds": [],
+        "afterUnitIds": [
+          "unit-bbe03701e22f1bdf5819df7f"
+        ],
+        "status": "CREATED",
+        "rationale": "В распознанной структуре ДО соответствие не найдено.",
+        "evidence": [
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f11",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "4",
+              "label": "Пункт 4"
+            },
+            "quote": "4. Департамент корпоративного управления",
+            "fragmentText": "4. Департамент корпоративного управления",
+            "verified": true
+          }
+        ]
+      }
+    ],
+    "functions": [
+      {
+        "id": "function-d5c402898be9e50a34ccf60b",
+        "unitId": "unit-f225cbdc978d0c33c7ca6c14",
+        "side": "before",
+        "text": "Осуществляет мониторинг исполнения договорных обязательств",
+        "action": "Осуществляет",
+        "object": "мониторинг исполнения договорных обязательств",
+        "process": "выполн договор мониторинг обязательств",
+        "role": "control",
+        "evidence": [
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f6",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2.1",
+              "label": "Пункт 2.1"
+            },
+            "quote": "2.1. Осуществляет мониторинг исполнения договорных обязательств.",
+            "fragmentText": "2.1. Осуществляет мониторинг исполнения договорных обязательств.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f5",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент внутреннего контроля",
+            "fragmentText": "2. Департамент внутреннего контроля",
+            "verified": true
+          }
+        ]
+      },
+      {
+        "id": "function-760d219988cc804c8a36c9b4",
+        "unitId": "unit-f225cbdc978d0c33c7ca6c14",
+        "side": "before",
+        "text": "Контролирует соблюдение процедур закупок",
+        "action": "Контролирует",
+        "object": "соблюдение процедур закупок",
+        "process": "закупок процедур соблюд",
+        "role": "control",
+        "evidence": [
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f7",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2.2",
+              "label": "Пункт 2.2"
+            },
+            "quote": "2.2. Контролирует соблюдение процедур закупок.",
+            "fragmentText": "2.2. Контролирует соблюдение процедур закупок.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f5",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент внутреннего контроля",
+            "fragmentText": "2. Департамент внутреннего контроля",
+            "verified": true
+          }
+        ]
+      },
+      {
+        "id": "function-15a2bb1b88bcfcfab5ef7bb5",
+        "unitId": "unit-f225cbdc978d0c33c7ca6c14",
+        "side": "before",
+        "text": "Ведёт мониторинг выполнения корректирующих мероприятий",
+        "action": "Ведёт",
+        "object": "мониторинг выполнения корректирующих мероприятий",
+        "process": "выполн корректирующих мероприят мониторинг",
+        "role": "control",
+        "evidence": [
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f8",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2.3",
+              "label": "Пункт 2.3"
+            },
+            "quote": "2.3. Ведёт мониторинг выполнения корректирующих мероприятий.",
+            "fragmentText": "2.3. Ведёт мониторинг выполнения корректирующих мероприятий.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f5",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент внутреннего контроля",
+            "fragmentText": "2. Департамент внутреннего контроля",
+            "verified": true
+          }
+        ]
+      },
+      {
+        "id": "function-dc583b478aec4db2ec95027d",
+        "unitId": "unit-c5a48306cb06c9704bcfe549",
+        "side": "before",
+        "text": "Выявляет и оценивает корпоративные риски",
+        "action": "Выявляет",
+        "object": "и оценивает корпоративные риски",
+        "process": "корпоративн оценив риски",
+        "role": "other",
+        "evidence": [
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f10",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "3.1",
+              "label": "Пункт 3.1"
+            },
+            "quote": "3.1. Выявляет и оценивает корпоративные риски.",
+            "fragmentText": "3.1. Выявляет и оценивает корпоративные риски.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f9",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "3",
+              "label": "Пункт 3"
+            },
+            "quote": "3. Департамент риск-менеджмента",
+            "fragmentText": "3. Департамент риск-менеджмента",
+            "verified": true
+          }
+        ]
+      },
+      {
+        "id": "function-510545314528c97ebe647999",
+        "unitId": "unit-c5a48306cb06c9704bcfe549",
+        "side": "before",
+        "text": "Контролирует выполнение мероприятий по управлению рисками",
+        "action": "Контролирует",
+        "object": "выполнение мероприятий по управлению рисками",
+        "process": "выполн мероприят риск управлени",
+        "role": "control",
+        "evidence": [
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f11",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "3.2",
+              "label": "Пункт 3.2"
+            },
+            "quote": "3.2. Контролирует выполнение мероприятий по управлению рисками.",
+            "fragmentText": "3.2. Контролирует выполнение мероприятий по управлению рисками.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f9",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "3",
+              "label": "Пункт 3"
+            },
+            "quote": "3. Департамент риск-менеджмента",
+            "fragmentText": "3. Департамент риск-менеджмента",
+            "verified": true
+          }
+        ]
+      },
+      {
+        "id": "function-a9ea30d762b98ffe2e71f639",
+        "unitId": "unit-5a60eff4f6e2c6c4c1dd3194",
+        "side": "after",
+        "text": "Проводит мониторинг выполнения обязательств по договорам",
+        "action": "Проводит",
+        "object": "мониторинг выполнения обязательств по договорам",
+        "process": "выполн договор мониторинг обязательств",
+        "role": "control",
+        "evidence": [
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f6",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "2.1",
+              "label": "Пункт 2.1"
+            },
+            "quote": "2.1. Проводит мониторинг выполнения обязательств по договорам.",
+            "fragmentText": "2.1. Проводит мониторинг выполнения обязательств по договорам.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f5",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент комплаенс и внутреннего контроля",
+            "fragmentText": "2. Департамент комплаенс и внутреннего контроля",
+            "verified": true
+          }
+        ]
+      },
+      {
+        "id": "function-2b0ddbc9553e7f2ebe7aa033",
+        "unitId": "unit-5a60eff4f6e2c6c4c1dd3194",
+        "side": "after",
+        "text": "Ведёт мониторинг выполнения корректирующих мероприятий",
+        "action": "Ведёт",
+        "object": "мониторинг выполнения корректирующих мероприятий",
+        "process": "выполн корректирующих мероприят мониторинг",
+        "role": "control",
+        "evidence": [
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f7",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "2.2",
+              "label": "Пункт 2.2"
+            },
+            "quote": "2.2. Ведёт мониторинг выполнения корректирующих мероприятий.",
+            "fragmentText": "2.2. Ведёт мониторинг выполнения корректирующих мероприятий.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f5",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент комплаенс и внутреннего контроля",
+            "fragmentText": "2. Департамент комплаенс и внутреннего контроля",
+            "verified": true
+          }
+        ]
+      },
+      {
+        "id": "function-8d636ab48f0d47c195cc054d",
+        "unitId": "unit-e0abe26dd9681033a159081b",
+        "side": "after",
+        "text": "Выявляет и оценивает корпоративные риски",
+        "action": "Выявляет",
+        "object": "и оценивает корпоративные риски",
+        "process": "корпоративн оценив риски",
+        "role": "other",
+        "evidence": [
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f9",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "3.1",
+              "label": "Пункт 3.1"
+            },
+            "quote": "3.1. Выявляет и оценивает корпоративные риски.",
+            "fragmentText": "3.1. Выявляет и оценивает корпоративные риски.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f8",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "3",
+              "label": "Пункт 3"
+            },
+            "quote": "3. Департамент риск-менеджмента",
+            "fragmentText": "3. Департамент риск-менеджмента",
+            "verified": true
+          }
+        ]
+      },
+      {
+        "id": "function-6fae53f20b7868e95a5a1ee8",
+        "unitId": "unit-e0abe26dd9681033a159081b",
+        "side": "after",
+        "text": "Контролирует выполнение мероприятий по управлению рисками",
+        "action": "Контролирует",
+        "object": "выполнение мероприятий по управлению рисками",
+        "process": "выполн мероприят риск управлени",
+        "role": "control",
+        "evidence": [
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f10",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "3.2",
+              "label": "Пункт 3.2"
+            },
+            "quote": "3.2. Контролирует выполнение мероприятий по управлению рисками.",
+            "fragmentText": "3.2. Контролирует выполнение мероприятий по управлению рисками.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f8",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "3",
+              "label": "Пункт 3"
+            },
+            "quote": "3. Департамент риск-менеджмента",
+            "fragmentText": "3. Департамент риск-менеджмента",
+            "verified": true
+          }
+        ]
+      },
+      {
+        "id": "function-e8080b3e81a7fc47cda5cbfb",
+        "unitId": "unit-bbe03701e22f1bdf5819df7f",
+        "side": "after",
+        "text": "Контролирует выполнение мероприятий по управлению рисками",
+        "action": "Контролирует",
+        "object": "выполнение мероприятий по управлению рисками",
+        "process": "выполн мероприят риск управлени",
+        "role": "control",
+        "evidence": [
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f12",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "4.1",
+              "label": "Пункт 4.1"
+            },
+            "quote": "4.1. Контролирует выполнение мероприятий по управлению рисками.",
+            "fragmentText": "4.1. Контролирует выполнение мероприятий по управлению рисками.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f11",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "4",
+              "label": "Пункт 4"
+            },
+            "quote": "4. Департамент корпоративного управления",
+            "fragmentText": "4. Департамент корпоративного управления",
+            "verified": true
+          }
+        ]
+      }
+    ],
+    "lineage": [
+      {
+        "id": "lineage-97117d1ac02c114591b288a2",
+        "beforeFunctionIds": [
+          "function-d5c402898be9e50a34ccf60b"
+        ],
+        "afterFunctionIds": [
+          "function-a9ea30d762b98ffe2e71f639"
+        ],
+        "status": "UNCHANGED",
+        "rationale": "Сохранены действие и объект функции у сопоставленного владельца.",
+        "candidatesChecked": [
+          {
+            "functionId": "function-a9ea30d762b98ffe2e71f639",
+            "reason": "similarity=1.000. Совпадают нормализованные действие, объект и ограничения."
+          },
+          {
+            "functionId": "function-2b0ddbc9553e7f2ebe7aa033",
+            "reason": "similarity=0.333. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          },
+          {
+            "functionId": "function-6fae53f20b7868e95a5a1ee8",
+            "reason": "similarity=0.125. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          },
+          {
+            "functionId": "function-e8080b3e81a7fc47cda5cbfb",
+            "reason": "similarity=0.125. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          },
+          {
+            "functionId": "function-8d636ab48f0d47c195cc054d",
+            "reason": "similarity=0.000. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          }
+        ]
+      },
+      {
+        "id": "lineage-545322c798ff21d900abb8a5",
+        "beforeFunctionIds": [
+          "function-760d219988cc804c8a36c9b4"
+        ],
+        "afterFunctionIds": [],
+        "status": "POSSIBLE_LOSS",
+        "rationale": "Эквивалент по языковым правилам не найден среди ВСЕХ извлечённых функций ПОСЛЕ. Это возможная потеря в пределах корпуса, не доказательство исчезновения обязанности.",
+        "candidatesChecked": [
+          {
+            "functionId": "function-6fae53f20b7868e95a5a1ee8",
+            "reason": "similarity=0.125. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          },
+          {
+            "functionId": "function-e8080b3e81a7fc47cda5cbfb",
+            "reason": "similarity=0.125. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          },
+          {
+            "functionId": "function-a9ea30d762b98ffe2e71f639",
+            "reason": "similarity=0.000. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          },
+          {
+            "functionId": "function-2b0ddbc9553e7f2ebe7aa033",
+            "reason": "similarity=0.000. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          },
+          {
+            "functionId": "function-8d636ab48f0d47c195cc054d",
+            "reason": "similarity=0.000. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          }
+        ]
+      },
+      {
+        "id": "lineage-4d69b80b88a41af6cc6bb06c",
+        "beforeFunctionIds": [
+          "function-15a2bb1b88bcfcfab5ef7bb5"
+        ],
+        "afterFunctionIds": [
+          "function-2b0ddbc9553e7f2ebe7aa033"
+        ],
+        "status": "UNCHANGED",
+        "rationale": "Сохранены действие и объект функции у сопоставленного владельца.",
+        "candidatesChecked": [
+          {
+            "functionId": "function-2b0ddbc9553e7f2ebe7aa033",
+            "reason": "similarity=1.000. Совпадают нормализованные действие, объект и ограничения."
+          },
+          {
+            "functionId": "function-a9ea30d762b98ffe2e71f639",
+            "reason": "similarity=0.333. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          },
+          {
+            "functionId": "function-6fae53f20b7868e95a5a1ee8",
+            "reason": "similarity=0.286. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          },
+          {
+            "functionId": "function-e8080b3e81a7fc47cda5cbfb",
+            "reason": "similarity=0.286. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          },
+          {
+            "functionId": "function-8d636ab48f0d47c195cc054d",
+            "reason": "similarity=0.000. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          }
+        ]
+      },
+      {
+        "id": "lineage-28a0c7010eb7381b4c2bff32",
+        "beforeFunctionIds": [
+          "function-dc583b478aec4db2ec95027d"
+        ],
+        "afterFunctionIds": [
+          "function-8d636ab48f0d47c195cc054d"
+        ],
+        "status": "UNCHANGED",
+        "rationale": "Сохранены действие и объект функции у сопоставленного владельца.",
+        "candidatesChecked": [
+          {
+            "functionId": "function-8d636ab48f0d47c195cc054d",
+            "reason": "similarity=1.000. Совпадают нормализованные действие, объект и ограничения."
+          },
+          {
+            "functionId": "function-a9ea30d762b98ffe2e71f639",
+            "reason": "similarity=0.000. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          },
+          {
+            "functionId": "function-2b0ddbc9553e7f2ebe7aa033",
+            "reason": "similarity=0.000. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          },
+          {
+            "functionId": "function-6fae53f20b7868e95a5a1ee8",
+            "reason": "similarity=0.000. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          },
+          {
+            "functionId": "function-e8080b3e81a7fc47cda5cbfb",
+            "reason": "similarity=0.000. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          }
+        ]
+      },
+      {
+        "id": "lineage-63570be31f5c30dd59834ce5",
+        "beforeFunctionIds": [
+          "function-510545314528c97ebe647999"
+        ],
+        "afterFunctionIds": [
+          "function-6fae53f20b7868e95a5a1ee8",
+          "function-e8080b3e81a7fc47cda5cbfb"
+        ],
+        "status": "UNCHANGED",
+        "rationale": "Сохранены действие и объект функции у сопоставленного владельца.",
+        "candidatesChecked": [
+          {
+            "functionId": "function-6fae53f20b7868e95a5a1ee8",
+            "reason": "similarity=1.000. Совпадают нормализованные действие, объект и ограничения."
+          },
+          {
+            "functionId": "function-e8080b3e81a7fc47cda5cbfb",
+            "reason": "similarity=1.000. Совпадают нормализованные действие, объект и ограничения."
+          },
+          {
+            "functionId": "function-2b0ddbc9553e7f2ebe7aa033",
+            "reason": "similarity=0.286. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          },
+          {
+            "functionId": "function-a9ea30d762b98ffe2e71f639",
+            "reason": "similarity=0.125. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          },
+          {
+            "functionId": "function-8d636ab48f0d47c195cc054d",
+            "reason": "similarity=0.000. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+          }
+        ]
+      }
+    ],
+    "findings": [
+      {
+        "id": "finding-3e958216f26957e9732776ad",
+        "type": "REORGANIZATION",
+        "reviewPriority": "LOW",
+        "confidence": "medium",
+        "title": "Изменение структуры",
+        "explanation": "Возможное преобразование: похожесть названий 0.75 и сохранённые функции. Требуется проверка человеком.",
+        "unitIds": [
+          "unit-f225cbdc978d0c33c7ca6c14",
+          "unit-5a60eff4f6e2c6c4c1dd3194"
+        ],
+        "functionIds": [],
+        "evidence": [
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f5",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент внутреннего контроля",
+            "fragmentText": "2. Департамент внутреннего контроля",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f5",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент комплаенс и внутреннего контроля",
+            "fragmentText": "2. Департамент комплаенс и внутреннего контроля",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f6",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2.1",
+              "label": "Пункт 2.1"
+            },
+            "quote": "2.1. Осуществляет мониторинг исполнения договорных обязательств.",
+            "fragmentText": "2.1. Осуществляет мониторинг исполнения договорных обязательств.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f8",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2.3",
+              "label": "Пункт 2.3"
+            },
+            "quote": "2.3. Ведёт мониторинг выполнения корректирующих мероприятий.",
+            "fragmentText": "2.3. Ведёт мониторинг выполнения корректирующих мероприятий.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f6",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "2.1",
+              "label": "Пункт 2.1"
+            },
+            "quote": "2.1. Проводит мониторинг выполнения обязательств по договорам.",
+            "fragmentText": "2.1. Проводит мониторинг выполнения обязательств по договорам.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f7",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "2.2",
+              "label": "Пункт 2.2"
+            },
+            "quote": "2.2. Ведёт мониторинг выполнения корректирующих мероприятий.",
+            "fragmentText": "2.2. Ведёт мониторинг выполнения корректирующих мероприятий.",
+            "verified": true
+          }
+        ],
+        "recommendation": "Проверьте указанные пункты и полноту закрепления ответственности с владельцами подразделений.",
+        "verified": true,
+        "review": {
+          "status": "NEEDS_CHECK"
+        }
+      },
+      {
+        "id": "finding-4c2c152ae130f5f77a9f70cd",
+        "type": "REORGANIZATION",
+        "reviewPriority": "LOW",
+        "confidence": "medium",
+        "title": "Изменение структуры",
+        "explanation": "В распознанной структуре ДО соответствие не найдено.",
+        "unitIds": [
+          "unit-bbe03701e22f1bdf5819df7f"
+        ],
+        "functionIds": [],
+        "evidence": [
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f11",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "4",
+              "label": "Пункт 4"
+            },
+            "quote": "4. Департамент корпоративного управления",
+            "fragmentText": "4. Департамент корпоративного управления",
+            "verified": true
+          }
+        ],
+        "recommendation": "Проверьте указанные пункты и полноту закрепления ответственности с владельцами подразделений.",
+        "verified": true,
+        "review": {
+          "status": "NEEDS_CHECK"
+        }
+      },
+      {
+        "id": "finding-a5cbbdc71d13d499d1783458",
+        "type": "LOSS",
+        "reviewPriority": "HIGH",
+        "confidence": "medium",
+        "title": "Возможная потеря: Контролирует соблюдение процедур закупок",
+        "explanation": "Эквивалент по языковым правилам не найден среди ВСЕХ извлечённых функций ПОСЛЕ. Это возможная потеря в пределах корпуса, не доказательство исчезновения обязанности. Проверено функций ПОСЛЕ: 5; дополнительно просмотрены все исходные фрагменты ПОСЛЕ.",
+        "unitIds": [
+          "unit-f225cbdc978d0c33c7ca6c14"
+        ],
+        "functionIds": [
+          "function-760d219988cc804c8a36c9b4"
+        ],
+        "evidence": [
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f7",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2.2",
+              "label": "Пункт 2.2"
+            },
+            "quote": "2.2. Контролирует соблюдение процедур закупок.",
+            "fragmentText": "2.2. Контролирует соблюдение процедур закупок.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-2894f94e53ea4baab9d86060-f5",
+            "documentName": "before.docx",
+            "side": "before",
+            "locator": {
+              "section": "2",
+              "label": "Пункт 2"
+            },
+            "quote": "2. Департамент внутреннего контроля",
+            "fragmentText": "2. Департамент внутреннего контроля",
+            "verified": true
+          }
+        ],
+        "searchTrace": {
+          "checkedCount": 5,
+          "topCandidates": [
+            {
+              "functionId": "function-6fae53f20b7868e95a5a1ee8",
+              "reason": "similarity=0.125. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+            },
+            {
+              "functionId": "function-e8080b3e81a7fc47cda5cbfb",
+              "reason": "similarity=0.125. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+            },
+            {
+              "functionId": "function-a9ea30d762b98ffe2e71f639",
+              "reason": "similarity=0.000. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+            },
+            {
+              "functionId": "function-2b0ddbc9553e7f2ebe7aa033",
+              "reason": "similarity=0.000. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+            },
+            {
+              "functionId": "function-8d636ab48f0d47c195cc054d",
+              "reason": "similarity=0.000. Эквивалентность не установлена; проверьте смысл и частичное покрытие."
+            }
+          ]
+        },
+        "recommendation": "Проверьте указанные пункты и полноту закрепления ответственности с владельцами подразделений.",
+        "verified": true,
+        "review": {
+          "status": "NEEDS_CHECK"
+        }
+      },
+      {
+        "id": "finding-30590dbb9c3d1264071dd411",
+        "type": "DUPLICATION",
+        "reviewPriority": "MEDIUM",
+        "confidence": "medium",
+        "title": "Возможное дублирование: Контролирует выполнение мероприятий по управлению рисками",
+        "explanation": "Одинаковые действие, объект и ограничения закреплены за несколькими подразделениями ПОСЛЕ. similarity=1 по нормализованным токенам. Разделение областей ответственности требует проверки.",
+        "unitIds": [
+          "unit-e0abe26dd9681033a159081b",
+          "unit-bbe03701e22f1bdf5819df7f"
+        ],
+        "functionIds": [
+          "function-6fae53f20b7868e95a5a1ee8",
+          "function-e8080b3e81a7fc47cda5cbfb"
+        ],
+        "evidence": [
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f10",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "3.2",
+              "label": "Пункт 3.2"
+            },
+            "quote": "3.2. Контролирует выполнение мероприятий по управлению рисками.",
+            "fragmentText": "3.2. Контролирует выполнение мероприятий по управлению рисками.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f8",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "3",
+              "label": "Пункт 3"
+            },
+            "quote": "3. Департамент риск-менеджмента",
+            "fragmentText": "3. Департамент риск-менеджмента",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f12",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "4.1",
+              "label": "Пункт 4.1"
+            },
+            "quote": "4.1. Контролирует выполнение мероприятий по управлению рисками.",
+            "fragmentText": "4.1. Контролирует выполнение мероприятий по управлению рисками.",
+            "verified": true
+          },
+          {
+            "fragmentId": "doc-df8613a326e52255ef4dd52d-f11",
+            "documentName": "after.docx",
+            "side": "after",
+            "locator": {
+              "section": "4",
+              "label": "Пункт 4"
+            },
+            "quote": "4. Департамент корпоративного управления",
+            "fragmentText": "4. Департамент корпоративного управления",
+            "verified": true
+          }
+        ],
+        "recommendation": "Проверьте указанные пункты и полноту закрепления ответственности с владельцами подразделений.",
+        "verified": true,
+        "review": {
+          "status": "NEEDS_CHECK"
+        }
+      }
+    ],
+    "conclusion": {
+      "sections": [
+        {
+          "key": "orgChanges",
+          "title": "Изменения структуры",
+          "text": "Изменение структуры. Возможное преобразование: похожесть названий 0.75 и сохранённые функции. Требуется проверка человеком.\nИзменение структуры. В распознанной структуре ДО соответствие не найдено.",
+          "findingIds": [
+            "finding-3e958216f26957e9732776ad",
+            "finding-4c2c152ae130f5f77a9f70cd"
+          ]
+        },
+        {
+          "key": "functionPreservation",
+          "title": "Сохранение функций",
+          "text": "Извлечено функций: 10. Сохранённых связей: 4; переносов между владельцами: 0.",
+          "findingIds": []
+        },
+        {
+          "key": "possibleLosses",
+          "title": "Возможные потери",
+          "text": "Возможная потеря: Контролирует соблюдение процедур закупок. Эквивалент по языковым правилам не найден среди ВСЕХ извлечённых функций ПОСЛЕ. Это возможная потеря в пределах корпуса, не доказательство исчезновения обязанности. Проверено функций ПОСЛЕ: 5; дополнительно просмотрены все исходные фрагменты ПОСЛЕ.",
+          "findingIds": [
+            "finding-a5cbbdc71d13d499d1783458"
+          ]
+        },
+        {
+          "key": "duplication",
+          "title": "Дублирование",
+          "text": "Возможное дублирование: Контролирует выполнение мероприятий по управлению рисками. Одинаковые действие, объект и ограничения закреплены за несколькими подразделениями ПОСЛЕ. similarity=1 по нормализованным токенам. Разделение областей ответственности требует проверки.",
+          "findingIds": [
+            "finding-30590dbb9c3d1264071dd411"
+          ]
+        },
+        {
+          "key": "conflicts",
+          "title": "Конфликты",
+          "text": "В пределах применённых правил подтверждённых источниками кандидатов не обнаружено. Это не подтверждает отсутствие риска.",
+          "findingIds": []
+        },
+        {
+          "key": "needsHumanReview",
+          "title": "Требуется проверка человеком",
+          "text": "Все выводы рекомендательные. Проверка источника подтверждает цитату, а не окончательное решение о потере, дублировании или конфликте. Неподтверждённые кандидаты исключены из счётчиков. Проверьте полноту извлечения и документы вне загруженного корпуса.",
+          "findingIds": [
+            "finding-3e958216f26957e9732776ad",
+            "finding-4c2c152ae130f5f77a9f70cd",
+            "finding-a5cbbdc71d13d499d1783458",
+            "finding-30590dbb9c3d1264071dd411"
+          ]
+        }
+      ]
+    },
+    "warnings": [
+      "Реальный анализ документов детерминированными языковыми правилами, без LLM. Извлечение поддерживает явные заголовки подразделений и следующие за ними функции. Произвольные перефразировки, групповые владельцы, иерархии и косвенное покрытие требуют проверки человеком."
+    ]
+  }
+}
