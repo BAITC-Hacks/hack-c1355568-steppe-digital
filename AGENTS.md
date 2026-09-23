@@ -1,28 +1,31 @@
-# OrgTrace AI — team rules
+# OrgTrace AI — правила команды
 
-OrgTrace AI is an advisory AI reorganization auditor: compare BEFORE/AFTER documents, trace unit and function changes, flag possible losses, duplication and conflicts, and support findings with source clauses for human review.
+OrgTrace AI — рекомендательный AI-аудитор реорганизации: сравнивает ДО/ПОСЛЕ, прослеживает подразделения, должности и функции, выявляет возможные потери, дублирование, конфликты и дефекты документов с источниками для проверки человеком.
 
-Read the complete official scope in `docs/case/case.txt` and the execution plan in `docs/plan/PLAN.md`. The case is the source of truth; never edit, translate or rewrite it. Report conflicts instead of silently changing scope.
-Documentation and task reports are in English. Product UI and synthetic control documents use the specified Russian text. Identifiers, field names, paths and enum values stay in English.
+Обязательно полностью читать `docs/case/case.txt`, `docs/plan/PLAN.md` и `docs/research/DATA_ANALYSIS.md`. Кейс — источник истины: не редактировать, не переводить и не переписывать; противоречия сообщать.
+Обновляемая документация и отчёты — на русском; identifiers, fields, paths и enum — на английском. Это правило заменяет прежнее требование English в исторических prompts для новых задач по текущему плану.
+Основной контроль — `data/samples/before/` (редакция 8) и `data/samples/after/` (редакция 9). Содержимое и имена исходников сохранять; синтетический набор вторичен. Новые этапы/поля в плане — целевая спецификация, не утверждение о поддержке в текущем API.
 
-| Lane / branch | Owned paths |
+| Направление / ветка | Пути ответственности |
 | --- | --- |
-| Backend / AI — `lane/backend` | `src/app/api/**`, `backend/**`, `src/shared/**`, `package.json`, root configuration files and dependency lockfile |
-| Frontend / Product — `lane/frontend` | `src/app/**` except `src/app/api/**`, `src/components/**`, `src/lib/api.ts`, `src/mocks/**`, `docs/product/**` |
+| Backend / AI — `lane/backend` | `src/app/api/**`, `backend/**`, `src/shared/**`, `package.json`, корневая конфигурация и lockfile |
+| Frontend / Product — `lane/frontend` | `src/app/**`, кроме `src/app/api/**`; `src/components/**`, `src/lib/api.ts`, `src/mocks/**`, `docs/product/**` |
 | QA / README / Evaluation — `lane/qa` | `tests/fixtures/**`, `eval/**`, `scripts/**`, `docs/qa/**`, `DATA_NOTES.md`, `README.md` |
 
-- Edit only your lane's paths on your lane branch. Request shared contract changes from backend.
-- Pull the latest `main` before each task and incorporate it into your lane; preserve others' uncommitted work and never force-push shared history.
-- Narrow bootstrap exception: backend may create only the minimal root Next.js shell in frontend paths before frontend starts; publish that first baseline to `main`, then resume `lane/backend`.
-- Narrow handoff exception: frontend may append READY FOR TEST entries to `docs/qa/handoff.md`; QA owns the rest of that file. Coordinate appends at merge.
-- Backend-owned Vitest tests stay beside backend/shared source; QA owns fixtures and evaluation. QA requests dependency/configuration changes from backend.
-- Every member commits their own work under their own identity; preserve personal contributions when merging.
-- Never read, print, log or commit `.env.local`, keys or secret values. Runtime clients may consume environment variables without exposing them. `.env.example` contains placeholders only.
-- Never invent units, functions, clauses or facts for real analyses. Synthetic fixtures and mocks must be explicitly labeled.
-- Every publishable finding needs verified evidence. Unverified diagnostic candidates are visibly unconfirmed and excluded from validated counts and conclusions.
-- Every LLM interpretation needs `fragmentId` and a verbatim quote validated by the server. Missing AFTER evidence does not prove a loss.
-- Deterministic server code owns statuses, counts, priorities and state. Frontend never decides business logic.
-- Mock results always set `isMock=true` and show `DEMO / MOCK DATA`; never present them as AI output.
-- Run relevant tests, typecheck and lint before claiming completion; frontend also runs build. “Not run” is not “passed.”
-- No new features in the last 45 minutes; fixes, verification, push and submission only. Everyone stays in the zone for the last hour.
-- End every task with: changed files; commands with exit codes (or `NOT RUN` and reason); blockers; requests for other lanes.
+- Работать в своей ветке и своих путях; изменения общего контракта запрашивать у backend. Прямое поручение пользователя имеет приоритет в явно заданном объёме.
+- Перед задачей получить актуальный `main` и включить его в свою ветку; сохранять чужие незакоммиченные изменения, не делать force-push общей истории.
+- Узкое bootstrap-исключение: backend создаёт минимальную корневую Next.js-оболочку до старта frontend, публикует baseline в `main`, затем возвращается в `lane/backend`.
+- Узкое handoff-исключение: frontend может только добавлять `READY FOR TEST` в `docs/qa/handoff.md`; остальное принадлежит QA, добавления согласовать при merge.
+- Vitest-тесты backend хранить рядом с backend/shared; fixtures и evaluation принадлежат QA, зависимости и конфигурацию меняет backend.
+- Каждый участник коммитит от своего имени; сохранять персональные вклады при merge.
+- Никогда не читать, не выводить, не логировать и не коммитить `.env.local`, ключи и секреты. Runtime может потреблять env без раскрытия; `.env.example` — только placeholders.
+- Не выдумывать реальные units, функции, пункты и факты. Синтетические данные и mock явно маркировать.
+- Публикуемая находка требует проверенных источников. Неподтверждённые diagnostic-кандидаты отделять и исключать из валидированных счётчиков и фактических выводов.
+- Каждая LLM-интерпретация требует `fragmentId` и дословной цитаты, проверенной сервером. Отсутствие AFTER-цитаты не доказывает потерю.
+- Сопоставлять пункты по содержанию и контексту, не только по номеру. `COSMETIC` не создаёт findings; права отличать от функций.
+- Зависимые от неоднозначного группового заголовка findings изначально получают `NEEDS_CHECK` и confidence не выше `medium`.
+- Детерминированный серверный код владеет статусами, счётчиками, приоритетами и состоянием; frontend не решает бизнес-логику.
+- Mock всегда `isMock=true` с видимой маркировкой `DEMO / MOCK DATA`; не представлять его как AI-результат.
+- Выполнять релевантные тесты, typecheck и lint, frontend также build. Для задачи только с документацией проверить diff, ссылки и источники; проверки кода обозначить `NOT RUN`, а не «пройдены».
+- Последние 45 минут — только исправления, проверки, push и отправка; последний час вся команда остаётся в зоне.
+- Завершать задачу отчётом: изменённые файлы; команды с exit codes или `NOT RUN` и причиной; блокеры; запросы другим направлениям.
