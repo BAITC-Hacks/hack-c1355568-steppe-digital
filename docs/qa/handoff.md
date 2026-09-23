@@ -49,3 +49,11 @@ Test cases: R12–R15, пустые Structure/Function/Conclusion. Полный 
 Включены изменения команды до `cadc5fc`; исторические записи P0 выше относятся к контракту 0.1.0. Текущий контракт — 0.2.0. Сохранены поиск, фильтры структуры, кандидаты сопоставления, все извлечённые функции, статусы review в заключении и предупреждение о пустом аналитическом результате.
 
 После разрешения конфликтов: `npm test` (36 тестов), `npm run typecheck`, `npm run lint`, `npm run build` — exit 0. В браузере на production-сборке проверены поиск ДИТААД со статусом CREATED, фильтр полномочий и его сохранение при смене типа замечаний, просмотр кандидатов, список 300 функций и заключение со статусами review. Browser errors: 0. Реальные вызовы OpenAI по-прежнему NOT RUN.
+
+READY FOR TEST
+Feature: Адаптация дизайна shadcn-admin; обзор/таблица замечаний, фильтры, drawer, загрузка и самостоятельные разделы
+URL: http://127.0.0.1:3219/?analysis=b64bbc59-7fa0-4d7b-9be4-ab66b4a7a621
+Expected: Настоящий локальный API, ORGTRACE_AI=false, NEXT_PUBLIC_USE_MOCK=false. 87 findings: 70 verified + 17 diagnostic; по умолчанию 108 изменённых записей сравнения, все 488 доступны переключателями. Review сохраняется; черновик переживает закрытие до reload; закрытие pending блокируется.
+Test cases: R12/R13 upload, R14 реальные server stages, R15 сводка, R16/R17 источники/review; дополнительно поиск/фильтры/пагинация, NEEDS_CHECK не считается завершённым решением, native URL view navigation, пустой поиск, 19 TRANSFERRED. Основная TXT-пара повторно загружена через UI, browser smoke пройден. Просмотр всех промежуточных stages и live AI — NOT RUN.
+Checks: npm test exit 0 (36/36), npm run typecheck exit 0, npm run lint exit 0, npm run build exit 0, git diff --check exit 0. Production next start запущен на 3219. 1280×720 и 1024×768 проверены; full mobile/a11y NOT RUN. Console errors не наблюдались; при разработке были штатные Fast Refresh full reload warnings.
+Changed: src/app/globals.css, src/components/analysis-workspace.tsx, evidence-drawer.tsx, result-views.tsx, upload-form.tsx, ui-icons.tsx; docs/product/SHADCN_REDESIGN.md. Backend/API/shared/dependencies не изменены.
