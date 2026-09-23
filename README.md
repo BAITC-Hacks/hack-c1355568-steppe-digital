@@ -1,193 +1,161 @@
 # OrgTrace AI
 
-**ИИ-система для анализа организационной структуры и функционала до и после реорганизации**
+### Explainable organizational intelligence for restructuring analysis
 
-# OrgTrace AI
+**OrgTrace AI** анализирует организационные документы **ДО и ПОСЛЕ реорганизации**, отслеживает судьбу подразделений, функций, полномочий и зон ответственности и показывает, **какими исходными положениями документов подтверждается каждый существенный вывод**.
 
-**ИИ-система для анализа организационной структуры и функционала до и после реорганизации**
+> **Не просто сравнение двух файлов.
+> OrgTrace AI показывает, что произошло с каждой функцией организации.**
 
-OrgTrace AI анализирует организационные документы **ДО и ПОСЛЕ реорганизации** и показывает, что произошло с подразделениями, функциями, полномочиями и зонами ответственности.
-
-Главная идея проекта — не просто сравнить два документа, а показать **«судьбу функции»**:
-
-> **Где функция находилась ДО → что произошло с ней ПОСЛЕ → кто стал её владельцем → есть ли риск потери, дублирования или конфликта → какими положениями документов подтверждается вывод.**
-
-Каждый существенный вывод системы прослеживается до исходного документа.
+**Upload → Analyze → Structure Diff → Function Lineage → Finding → Evidence → Conclusion → Human Review**
 
 ---
 
-## Проблема
+## Verified Hackathon Prototype
 
-При реорганизации организации меняются не только названия подразделений.
+| Проверка                  |          Результат |
+| ------------------------- | -----------------: |
+| Automated tests           |   **46 / 46 PASS** |
+| TypeScript typecheck      |           **PASS** |
+| Lint                      |           **PASS** |
+| Production build          |           **PASS** |
+| Synthetic scenarios       |   **S01–S06 PASS** |
+| Original DOCX smoke       |           **PASS** |
+| Backend                   |   **Real backend** |
+| Mock mode                 | **`isMock=false`** |
+| BEFORE fragments          |            **491** |
+| AFTER fragments           |            **490** |
+| Functions / rights BEFORE |            **133** |
+| Functions / rights AFTER  |            **167** |
+| Function lineage records  |            **143** |
+| Browser E2E flow          |           **PASS** |
 
-Функция может:
-
-* сохраниться;
-* перейти другому подразделению;
-* измениться;
-* исчезнуть;
-* оказаться одновременно у нескольких владельцев;
-* создать потенциальный конфликт функций или ролей.
-
-При ручном сравнении двух больших редакций положений легко пропустить такие изменения.
-
-OrgTrace AI помогает ответить на главный вопрос:
-
-> **Что произошло с каждой функцией после реорганизации и на основании каких положений документов сделан этот вывод?**
-
----
-
-# Основные возможности
-
-## 1. Загрузка документов ДО и ПОСЛЕ
-
-Пользователь загружает документы, описывающие два состояния организации:
-
-* **BEFORE / ДО** — структура и функции до реорганизации;
-* **AFTER / ПОСЛЕ** — структура и функции после реорганизации.
-
-Система разбирает документы на исходные фрагменты и сохраняет связь каждого элемента анализа с его источником.
-
-В рамках прототипа предусмотрена работа с:
-
-* DOCX;
-* PDF;
-* XLSX.
-
----
-
-## 2. Сравнение организационной структуры
-
-OrgTrace AI извлекает подразделения и сравнивает структуру ДО и ПОСЛЕ.
-
-Система показывает:
-
-* сохранённые подразделения;
-* преобразованные / переименованные подразделения;
-* созданные подразделения;
-* удалённые подразделения;
-* связанные структурные изменения.
-
-Для этого в интерфейсе предусмотрен отдельный раздел **«Сравнение структуры»**.
-
----
-
-## 3. Трассировка функций — Function Lineage
-
-Система извлекает функции и полномочия вместе с их владельцами и определяет судьбу каждой функции между двумя редакциями документов.
-
-Поддерживаются, в частности, состояния:
-
-* `UNCHANGED` — функция сохранена;
-* `MODIFIED` — функция изменена;
-* `TRANSFERRED` — функция передана другому владельцу;
-* `POSSIBLE_LOSS` — возможная потеря функции.
-
-Это позволяет анализировать не только изменения названий подразделений, но и **изменения самого функционала**.
-
----
-
-## 4. Возможная потеря функции
-
-Если функция присутствует ДО реорганизации, система ищет её эквивалент **во всём документе ПОСЛЕ**, а не только в подразделении с похожим названием.
-
-Поэтому смена владельца функции сама по себе не считается её потерей.
-
-Пример:
+Проверенный application SHA:
 
 ```text
-ДО:
-Департамент A
-→ функция X
-
-ПОСЛЕ:
-Департамент B
-→ функция X
+c11483263674cdc93f95b702f11eec210bfae6ed
 ```
 
-В таком случае функция может быть классифицирована как **переданная**, а не потерянная.
-
-`POSSIBLE_LOSS` формируется только тогда, когда достаточное продолжение функции в состоянии AFTER не найдено.
+Финальные изменения документации не изменяют проверенный application code.
 
 ---
 
-## 5. Возможное дублирование функций
+<!--
+Добавьте сюда hero screenshot после создания:
 
-OrgTrace AI выявляет ситуации, когда схожие функции или полномочия закреплены одновременно за несколькими владельцами.
+![OrgTrace AI](docs/assets/hero.png)
 
-Система не утверждает автоматически, что найдено реальное организационное нарушение.
+Рекомендуемый размер: 1600×900 или 1440×900.
+-->
 
-Такой результат обозначается как **потенциальное дублирование** и должен быть проверен экспертом.
+## Что решает OrgTrace AI
 
----
+При реорганизации недостаточно сравнить названия подразделений или найти изменившиеся строки.
 
-## 6. Потенциальный конфликт функций или ролей
+Одна и та же функция может:
 
-Система может выявлять положения документов, которые потенциально указывают на конфликт функций, полномочий или зон ответственности.
+* сохраниться без изменений;
+* изменить формулировку;
+* перейти другому подразделению;
+* разделиться между несколькими владельцами;
+* оказаться продублированной;
+* потенциально исчезнуть;
+* создать пересечение полномочий или зон ответственности.
 
-Такой вывод также носит рекомендательный характер и требует экспертной оценки.
+При ручном сравнении больших редакций организационных положений такие изменения легко пропустить.
 
----
+OrgTrace AI отвечает на более важный вопрос:
 
-# Доказательная база — Evidence
-
-Ключевой принцип OrgTrace AI — **прослеживаемость до исходного документа**.
-
-Для существенных выводов система сохраняет:
-
-* исходный документ;
-* сторону анализа — ДО / ПОСЛЕ;
-* владельца функции;
-* пункт или locator;
-* исходный фрагмент документа;
-* связь finding → evidence.
-
-Пользователь может открыть аналитический вывод и перейти к соответствующему фрагменту документа через панель **Evidence**.
-
-> **Система должна не только сообщить, что обнаружила проблему, но и показать, почему она так считает.**
+> **Что произошло с каждой функцией между состоянием ДО и состоянием ПОСЛЕ — и какими фрагментами документов это подтверждается?**
 
 ---
 
-# Экспертная проверка — Human Review
+# Главная идея — Function Lineage
 
-OrgTrace AI является системой поддержки принятия решений, а не системой автоматического принятия юридических или управленческих решений.
+Главный объект анализа OrgTrace AI — не документ и не отдельная строка.
 
-Эксперт может присвоить найденному результату статус:
+Главный объект анализа — **функция организации**.
 
-* **Confirm / Подтвердить**;
-* **Reject / Отклонить**;
-* **Needs Review / Требует дополнительной проверки**.
+```text
+BEFORE
 
-Решение и комментарий сохраняются через API системы.
+Department A
+└── Function X
+        │
+        │  OrgTrace AI
+        ▼
+AFTER
 
-Human Review особенно важен для:
+Department B
+└── Function X
 
-* возможного дублирования;
-* изменённых функций;
-* сложных переносов ответственности;
-* функций с неоднозначно выраженным владельцем;
-* диагностических кандидатов, требующих дополнительной проверки.
+Result:
+TRANSFERRED
+
+Evidence:
+BEFORE → source clause
+AFTER  → source clause
+```
+
+Система строит **Function Lineage** — трассировку функции между двумя состояниями организации.
+
+Поддерживаемые состояния включают:
+
+* `UNCHANGED` — функция сохранена;
+* `MODIFIED` — функция изменилась;
+* `TRANSFERRED` — функция перешла другому владельцу;
+* `POSSIBLE_LOSS` — возможно, функция потеряна.
+
+Это позволяет анализировать **семантическое изменение функционала**, а не только текстовые различия документов.
 
 ---
 
-# Аналитическое заключение
+# Чем OrgTrace AI отличается от обычного document diff
 
-По результатам анализа система формирует итоговое аналитическое заключение.
+Обычный diff отвечает:
 
-Оно включает:
+> «Какие строки изменились?»
 
-* основные изменения структуры;
-* изменения функционала;
-* потенциальные потери функций;
-* потенциальные дублирования;
-* потенциальные конфликты;
-* вопросы, требующие экспертного рассмотрения.
+OrgTrace AI отвечает:
 
-Неподтверждённый диагностический сигнал не должен автоматически интерпретироваться как доказанный факт.
+> **«Что произошло с функцией?»**
+
+Например:
+
+```text
+ДО
+
+Департамент A
+→ Контроль финансовых рисков
+
+
+ПОСЛЕ
+
+Департамент B
+→ Контроль финансовых рисков
+```
+
+Текстовое сравнение может показать изменения в документах.
+
+OrgTrace AI определяет, что функция не исчезла, а **перешла другому владельцу**.
+
+```text
+Function:
+Контроль финансовых рисков
+
+BEFORE owner:
+Department A
+
+AFTER owner:
+Department B
+
+Status:
+TRANSFERRED
+```
 
 ---
 
-# Как работает OrgTrace AI
+# Основной workflow
 
 ```text
 Документы ДО
@@ -195,287 +163,672 @@ Human Review особенно важен для:
 Документы ПОСЛЕ
       │
       ▼
-Парсинг документов
+Parsing
       │
       ▼
-Исходные фрагменты + locators
+Source Fragments + Locators
       │
       ▼
-Извлечение подразделений
+Structure Extraction
       │
       ▼
-Извлечение функций и полномочий
+Functions / Rights Extraction
       │
       ▼
-Определение владельцев
+Owner Identification
       │
       ▼
-Сопоставление структуры
+Structure Matching
       │
       ▼
-Сопоставление функций
-      │
-      ├── сохранена
-      ├── изменена
-      ├── передана
-      └── возможная потеря
+Function Matching
       │
       ▼
-Поиск потенциальных рисков
+Function Lineage
       │
-      ├── потеря функции
-      ├── дублирование
-      └── конфликт
-      │
-      ▼
-Привязка к источникам
+      ├── UNCHANGED
+      ├── MODIFIED
+      ├── TRANSFERRED
+      └── POSSIBLE_LOSS
       │
       ▼
-Экспертная проверка
+Risk Detection
+      │
+      ├── Possible Loss
+      ├── Duplication
+      └── Conflict Signal
       │
       ▼
-Аналитическое заключение
+Evidence
+      │
+      ▼
+Conclusion
+      │
+      ▼
+Human Review
 ```
 
 ---
 
-# Архитектура
+# Core Capabilities
 
-Текущая версия создана как рабочий хакатонный прототип с акцентом на:
+## 1. BEFORE / AFTER Document Analysis
 
-* воспроизводимость;
-* доказуемость выводов;
-* traceability;
-* работающий end-to-end сценарий;
-* Human Review.
+Пользователь загружает два состояния организации:
+
+### BEFORE / ДО
+
+Документы до реорганизации.
+
+### AFTER / ПОСЛЕ
+
+Документы после реорганизации.
+
+Проверенный прототип принимает:
+
+* DOCX;
+* PDF;
+* XLSX.
+
+Степень проверки форматов различается и подробно описана ниже в разделе **Format Validation**.
+
+---
+
+## 2. Structure Diff
+
+OrgTrace AI извлекает организационные сущности и сравнивает структуру ДО и ПОСЛЕ.
+
+Система может показывать:
+
+* сохранённые подразделения;
+* преобразованные подразделения;
+* новые подразделения;
+* удалённые подразделения;
+* связанные структурные изменения.
+
+---
+
+## 3. Function Lineage
+
+Система извлекает функции и полномочия вместе с владельцами и пытается определить их судьбу между редакциями документов.
+
+Пример:
 
 ```text
-Frontend
-   │
-   ▼
-Analysis API
-   │
-   ▼
-Парсеры документов
-   │
-   ▼
-Реестр исходных фрагментов
-   │
-   ▼
-Semantic Extraction
-   │
-   ├── подразделения
-   ├── функции / полномочия
-   └── владельцы
-   │
-   ▼
-Matching / Function Lineage
-   │
-   ▼
-Findings Engine
-   │
-   ├── Possible Loss
-   ├── Duplication
-   └── Conflict
-   │
-   ▼
+BEFORE
+Department A
+└── Function X
+
+              ↓
+
+AFTER
+Department B
+└── Function X
+
+Status: TRANSFERRED
+```
+
+Смена владельца не интерпретируется автоматически как потеря функции.
+
+---
+
+## 4. Possible Function Loss
+
+Если функция присутствует в BEFORE, система ищет её продолжение в AFTER.
+
+Поиск не ограничивается подразделением с похожим названием.
+
+```text
+BEFORE
+
+Department A
+→ Function X
+
+
+AFTER
+
+Department B
+→ Function X
+```
+
+В таком сценарии функция может быть классифицирована как:
+
+```text
+TRANSFERRED
+```
+
+а не:
+
+```text
+POSSIBLE_LOSS
+```
+
+`POSSIBLE_LOSS` является диагностическим сигналом и требует проверки человеком.
+
+---
+
+## 5. Possible Duplication
+
+OrgTrace AI выявляет случаи, когда похожий функционал закреплён одновременно за несколькими владельцами.
+
+Система не утверждает автоматически, что это доказанное организационное нарушение.
+
+Результат интерпретируется как:
+
+> **Potential duplication candidate**
+
+и передаётся на Human Review.
+
+---
+
+## 6. Conflict Signals
+
+Система может выявлять потенциальные пересечения функций, ролей, полномочий или зон ответственности.
+
+Такие сигналы являются рекомендательными и требуют экспертной проверки.
+
+---
+
+# Evidence — ключевой слой системы
+
+Главный принцип OrgTrace AI:
+
+> **Ни один существенный вывод не должен существовать отдельно от источника.**
+
+Для finding система сохраняет связь с evidence:
+
+```text
+Finding
+│
+├── Risk type
+│
+├── Function
+│
+├── BEFORE owner
+│
+├── AFTER owner
+│
+├── BEFORE document
+│
+├── AFTER document
+│
+├── Locator / clause
+│
+├── Source fragment
+│
+└── Review status
+```
+
+Evidence может включать:
+
+* исходный документ;
+* BEFORE / AFTER state;
+* владельца функции;
+* locator;
+* пункт документа;
+* исходный текстовый фрагмент;
+* связь `finding → evidence`.
+
+Пользователь может открыть finding и проверить, на каких положениях документа основан вывод.
+
+---
+
+# Не просто вывод — прослеживаемая цепочка
+
+OrgTrace AI строится вокруг цепочки:
+
+```text
+Requirement
+    ↓
+Document
+    ↓
+Fragment
+    ↓
+Function
+    ↓
+Matching
+    ↓
+Finding
+    ↓
 Evidence
-   │
-   ▼
+    ↓
 Conclusion
-   │
-   ▼
+    ↓
 Human Review
 ```
 
-В рамках хакатона мы сознательно не усложняли архитектуру компонентами, которые не требовались для рабочего прототипа:
+Для QA используется аналогичный принцип:
 
-* отдельной vector DB;
-* graph DB;
-* микросервисами;
-* очередями;
+```text
+Requirement
+    ↓
+Implementation
+    ↓
+Test
+    ↓
+Result
+    ↓
+Evidence
+```
+
+---
+
+# Human Review
+
+OrgTrace AI — система поддержки принятия решений.
+
+Она не должна автоматически заменять юридическую, организационную или управленческую экспертизу.
+
+Для findings предусмотрены статусы:
+
+* **Confirm**
+* **Reject**
+* **Needs Review**
+
+Эксперт также может сохранить комментарий.
+
+Human Review особенно важен для:
+
+* потенциальной потери функции;
+* возможного дублирования;
+* неоднозначного владельца;
+* сложного переноса полномочий;
+* потенциального конфликта;
+* диагностических findings.
+
+---
+
+# Analytical Conclusion
+
+После анализа система формирует итоговое заключение.
+
+Оно может содержать:
+
+* изменения структуры;
+* изменения функционала;
+* переданные функции;
+* изменённые функции;
+* возможные потери;
+* возможные дублирования;
+* потенциальные конфликтные сигналы;
+* вопросы, требующие Human Review.
+
+Критический принцип:
+
+> **Диагностический сигнал не должен автоматически превращаться в доказанный организационный факт.**
+
+---
+
+# Example Finding
+
+Пример логики finding:
+
+```text
+Function:
+Контроль функции X
+
+BEFORE:
+Department A
+Clause 5.4.4(b)
+
+AFTER:
+Department B
+Clause 5.3.3(b)
+
+Relation:
+TRANSFERRED
+
+Evidence:
+✓ BEFORE source found
+✓ AFTER source found
+
+Review:
+Needs Review
+```
+
+Таким образом, пользователь видит не только classification, но и путь:
+
+```text
+Finding
+→ Function
+→ BEFORE owner
+→ AFTER owner
+→ Original clauses
+→ Human decision
+```
+
+---
+
+# Architecture
+
+```mermaid
+flowchart TD
+
+    A[BEFORE Documents] --> C[Document Ingestion]
+    B[AFTER Documents] --> C
+
+    C --> D[Document Parsers]
+
+    D --> E[Source Fragment Registry]
+
+    E --> F[Structure Extraction]
+    E --> G[Functions & Rights Extraction]
+
+    F --> H[Structure Matching]
+    G --> I[Owner Identification]
+
+    I --> J[Function Matching]
+    H --> J
+
+    J --> K[Function Lineage]
+
+    K --> L[Findings Engine]
+
+    L --> M[Possible Loss]
+    L --> N[Duplication]
+    L --> O[Conflict Signals]
+
+    M --> P[Evidence Layer]
+    N --> P
+    O --> P
+
+    P --> Q[Analytical Conclusion]
+
+    Q --> R[Human Review]
+
+    P --> S[Frontend]
+    R --> S
+```
+
+---
+
+# Architecture Principles
+
+Хакатонный прототип сознательно построен как компактная система.
+
+Приоритеты:
+
+* reproducibility;
+* traceability;
+* explainability;
+* end-to-end reliability;
+* быстрый локальный запуск;
+* Human Review.
+
+Для рабочего прототипа не добавлялись инфраструктурные компоненты, которые не были необходимы для демонстрационного сценария.
+
+Это позволяет запустить проверенный режим без:
+
+* отдельной vector database;
+* graph database;
+* message queue;
 * Kubernetes;
-* сложной production-инфраструктурой.
+* отдельной production database.
 
-Приоритетом был **работающий и воспроизводимый demo-flow**.
+Jobs сохраняются локально в:
+
+```text
+.data/
+```
 
 ---
 
 # Semantic Engine
 
-Проверенная версия проекта использует преимущественно **детерминированный / rule-based механизм извлечения и сопоставления**.
+Проверенный режим текущей версии преимущественно использует:
 
-Мы не заявляем, что проверенные выводы текущей версии автоматически формируются LLM.
+> **deterministic / rule-based extraction and matching**
 
-Такой подход позволил сделать анализ:
+Мы сознательно не заявляем, что все проверенные результаты текущей версии были получены live LLM.
 
-* воспроизводимым;
-* проверяемым;
-* связанным с конкретными фрагментами документов;
-* менее подверженным неподтверждённым генеративным утверждениям.
+Это позволяет сохранить:
 
-В дальнейшем архитектура может быть расширена:
+* воспроизводимость;
+* контролируемость;
+* связь с конкретными источниками;
+* предсказуемое поведение demo-flow.
 
-* embeddings;
-* LLM-based semantic matching;
-* более глубокой классификацией функций;
-* контекстным анализом сложных формулировок.
+При этом архитектура проекта предусматривает развитие semantic layer.
 
-При этом слой **Evidence + Human Review** должен сохраняться.
+Будущее направление:
+
+```text
+Deterministic Extraction
+        ↓
+Candidate Matching
+        ↓
+LLM Semantic Verification
+        ↓
+Structured Finding
+        ↓
+Evidence Validation
+        ↓
+Human Review
+```
+
+Принцип развития:
+
+> **Deterministic where reproducibility matters.
+> AI where semantic reasoning adds value.
+> Human review where judgment matters.**
 
 ---
 
 # Evaluation
 
-Для проекта используется два типа проверки.
+Проект проверяется на двух типах данных.
 
-## Synthetic evaluation
+## 1. Synthetic Evaluation
 
-Создан отдельный синтетический набор документов с заранее размеченными обязательными сценариями.
+Создан отдельный искусственный контрольный набор документов с заранее определёнными сценариями.
 
-| Case | Проверяемый сценарий         | Результат |
-| ---- | ---------------------------- | --------- |
-| S01  | Преобразование подразделения | PASS      |
-| S02  | Функция сохранена            | PASS      |
-| S03  | Возможная потеря функции     | PASS      |
-| S04  | Функция сохранена            | PASS      |
-| S05  | Функция сохранена            | PASS      |
-| S06  | Возможное дублирование       | PASS      |
+Expected-results хранятся отдельно и не передаются pipeline до получения фактического результата.
 
-Expected-results не передаются pipeline до получения ACTUAL результата.
+| Case | Проверяемый сценарий         |   Result |
+| ---- | ---------------------------- | -------: |
+| S01  | Преобразование подразделения | **PASS** |
+| S02  | Функция сохранена            | **PASS** |
+| S03  | Possible function loss       | **PASS** |
+| S04  | Функция сохранена            | **PASS** |
+| S05  | Функция сохранена            | **PASS** |
+| S06  | Possible duplication         | **PASS** |
 
----
-
-# Проверка на реальных документах
-
-Система протестирована на оригинальных обезличенных редакциях организационного положения:
-
-* редакция №8 — BEFORE;
-* редакция №9 — AFTER.
-
-Для проверенного v0.2 application candidate получен следующий smoke-result:
-
-| Метрика                   | Результат |
-| ------------------------- | --------: |
-| Фрагменты BEFORE          |       491 |
-| Фрагменты AFTER           |       490 |
-| Units / owners BEFORE     |        14 |
-| Units / owners AFTER      |        24 |
-| Functions / rights BEFORE |       133 |
-| Functions / rights AFTER  |       167 |
-| Lineage records           |       143 |
-| MODIFIED cases            |         7 |
-| `isMock`                  |   `false` |
-
-Эти показатели подтверждают, что pipeline действительно выполняет semantic extraction на реальных документах.
-
-Они **не означают**, что каждый автоматически извлечённый элемент является безусловно корректным. Сложные и неоднозначные случаи требуют Human Review.
-
----
-
-# QA и техническая проверка
-
-Проверенный main application `c11483263674cdc93f95b702f11eec210bfae6ed` прошёл:
-
-* **46 / 46 automated tests — PASS**
-* TypeScript typecheck — PASS
-* lint — PASS
-* production build — PASS
-* synthetic S01–S06 — PASS
-* original DOCX 8/9 smoke — PASS
-* browser flow Structure → Function Lineage → Finding → Evidence → Conclusion → Human Review — PASS
-* `isMock=false`
-
-Также отдельно проверялись:
-
-* Structure Diff;
-* Function Lineage;
-* Evidence;
-* Conclusion;
-* Human Review;
-* сохранение решения через API.
-
-QA-документация:
+Принцип:
 
 ```text
-docs/requirements-matrix.md
-docs/qa/release-final-summary.md
-docs/submission/demo-checklist.md
-docs/submission/fallback-demo.md
+EXPECTED ≠ APPLICATION INPUT
 ```
+
+Gold / expected данные не используются как вход analysis pipeline.
 
 ---
 
-# Запуск проекта
+# Real Document Validation
 
-## Требования
+Система также тестировалась на оригинальных обезличенных редакциях организационного положения.
 
-* Node.js >=22.12 (проверено на 24.19.0);
-* npm.
-
-## Установка зависимостей
-
-```bash
-npm ci
+```text
+Revision №8 → BEFORE
+Revision №9 → AFTER
 ```
 
-## Запуск
+Результаты проверенного smoke:
 
-```bash
-npm run dev
-```
+| Metric                    |    Result |
+| ------------------------- | --------: |
+| BEFORE fragments          |   **491** |
+| AFTER fragments           |   **490** |
+| Units / owners BEFORE     |    **14** |
+| Units / owners AFTER      |    **24** |
+| Functions / rights BEFORE |   **133** |
+| Functions / rights AFTER  |   **167** |
+| Lineage records           |   **143** |
+| MODIFIED cases            |     **7** |
+| Mock mode                 | **false** |
 
-## Проверка качества
+Эти значения подтверждают работу pipeline на реальных документах.
 
-```bash
-npm test
-npm run typecheck
-npm run lint
-npm run build
-```
+Они не означают, что каждый автоматически извлечённый элемент является безусловно корректным.
+
+Неоднозначные случаи должны проходить Human Review.
 
 ---
 
-## Воспроизведение проверенного режима
+# QA Results
 
-```sh
-git clone --branch main https://github.com/BAITC-Hacks/hack-c1355568-steppe-digital.git
-cd hack-c1355568-steppe-digital
-npm ci
+Проверенный application:
+
+```text
+c11483263674cdc93f95b702f11eec210bfae6ed
 ```
 
-PowerShell:
+успешно прошёл:
 
-```powershell
-$env:NEXT_PUBLIC_USE_MOCK = "false"
-$env:ORGTRACE_AI = "false"
-npm run build
-npm run start -- --hostname 127.0.0.1 --port 3000
+```text
+46 / 46 automated tests        PASS
+TypeScript typecheck           PASS
+Lint                           PASS
+Production build               PASS
+Synthetic S01–S06              PASS
+Original DOCX 8/9 smoke        PASS
+Browser E2E flow               PASS
+isMock                         false
 ```
 
-Bash: `export NEXT_PUBLIC_USE_MOCK=false ORGTRACE_AI=false`, затем `npm run build` и `npm run start -- --hostname 127.0.0.1 --port 3000`.
+Проверенный browser flow:
 
-Откройте `http://127.0.0.1:3000`. Нужен один длительно работающий Next.js-процесс, отдельная БД и API key для проверенного режима не нужны. Jobs сохраняются локально в `.data/`.
+```text
+Structure
+    ↓
+Function Lineage
+    ↓
+Finding
+    ↓
+Evidence
+    ↓
+Conclusion
+    ↓
+Human Review
+```
 
-Загрузите оригинальную редакцию №8 в ДО, №9 в ПОСЛЕ; private DOCX предоставляет организатор. Альтернатива: `eval/synthetic/inputs/before.docx` и `after.docx` — явно синтетический набор, обработанный реальным backend. Не загружайте expected/baseline как вход. TXT exports не подменяют проверку оригинальных DOCX.
+Human Review также проверялся с сохранением решения через API.
 
-## Подтверждённые форматы
+---
 
-| Формат | Результат | Evidence и границы |
-| --- | --- | --- |
-| DOCX | PASS | ORIGINAL 8/9: 491/490 fragments, document/source и locators; analysis и browser results smoke PASS |
-| PDF | PASS | Реальный parse fixture из backend/ingest.test.ts: 1 непустой fragment, documentId/documentName, страница 1, пункт 3.1; пустая страница 2 даёт предупреждение |
-| XLSX | PASS | Реальный parse fixture: 2 непустых fragments, documentId/documentName, лист «Структура», строки 1/2 |
+# Hackathon Criteria → Evidence
 
-PDF/XLSX прошли acceptance validator и parser без падения. Это parser PASS, не полный semantic E2E этих форматов. OCR не заявлен. DOCX 8/9 и synthetic загрузки последнего smoke выполнены multipart API; browser проверял результаты и сохранение Human Review. File chooser отдельно не перепроверялся.
+Официальные веса критериев задания:
 
-[Final QA summary](docs/qa/release-final-summary.md) · [Requirements matrix](docs/requirements-matrix.md) · [Demo checklist](docs/submission/demo-checklist.md) · [Fallback](docs/submission/fallback-demo.md).
+| Criterion                               | Weight | Что демонстрирует OrgTrace AI                                                        |
+| --------------------------------------- | -----: | ------------------------------------------------------------------------------------ |
+| Соответствие задаче и работоспособность | **25** | Рабочий BEFORE → AFTER end-to-end flow, Structure Diff, Function Lineage, Conclusion |
+| Техническая реализация                  | **25** | Parsing, extraction, matching, findings, evidence, local persistence, Human Review   |
+| README и воспроизводимость              | **25** | Exact tested SHA, `npm ci`, synthetic dataset, QA matrix, reproducible local mode    |
+| Ценность и применимость                 | **15** | Анализ судьбы функций и организационных рисков с evidence                            |
+| Потенциал развития и оригинальность     | **10** | Function Lineage, explainability, Human Review, расширяемый semantic layer           |
+
+Общий принцип submission:
+
+> **Не просто показать feature — показать evidence того, что feature работает.**
+
+---
+
+# Requirements Coverage
+
+Подробная матрица соответствия официальным требованиям находится здесь:
+
+[Requirements Matrix](docs/requirements-matrix.md)
+
+Она связывает:
+
+```text
+Requirement
+→ Implementation
+→ Test
+→ Status
+→ Evidence
+```
+
+Для каждого requirement используется один из статусов:
+
+```text
+PASS
+PARTIAL
+NOT RUN
+```
+
+Мы не присваиваем `PASS`, если требование не подтверждено воспроизводимой проверкой.
+
+---
+
+# Format Validation
+
+## DOCX
+
+Статус:
+
+**Full tested E2E path**
+
+Проверено на оригинальных обезличенных редакциях №8 и №9.
+
+Результаты:
+
+```text
+BEFORE fragments: 491
+AFTER fragments:  490
+
+Functions / rights BEFORE: 133
+Functions / rights AFTER:  167
+```
+
+Evidence включает source document и locators.
+
+---
+
+## PDF
+
+Статус:
+
+**Parser validated**
+
+Проверен реальный parser fixture:
+
+* непустой fragment;
+* `documentId`;
+* `documentName`;
+* page locator;
+* section locator;
+* warning для пустой страницы.
+
+Полный semantic PDF E2E отдельно не аттестован.
+
+OCR не заявлен.
+
+---
+
+## XLSX
+
+Статус:
+
+**Parser validated**
+
+Проверен реальный XLSX fixture:
+
+* fragments;
+* `documentId`;
+* `documentName`;
+* sheet;
+* row locators.
+
+Полный semantic XLSX E2E отдельно не аттестован.
+
+---
 
 # Demo Flow
 
-Рекомендуемый сценарий демонстрации:
+Рекомендуемый demo-flow рассчитан примерно на **3–5 минут**.
 
-### 1. Upload
+## 1. Upload
 
 Загрузить:
 
@@ -485,144 +838,455 @@ BEFORE
 AFTER
 ```
 
-### 2. Analyze
+---
 
-Запустить анализ документов.
+## 2. Analyze
 
-### 3. Сравнение структуры
+Запустить реальный analysis pipeline.
 
 Показать:
 
-* сохранённые подразделения;
-* преобразованные;
-* созданные;
-* удалённые.
+```text
+isMock=false
+```
 
-### 4. Function Lineage
+---
 
-Показать судьбу конкретной функции:
+## 3. Structure Diff
+
+Показать:
+
+* сохранённые сущности;
+* изменения структуры;
+* новые сущности.
+
+---
+
+## 4. Function Lineage
+
+Выбрать конкретную функцию.
+
+Показать:
 
 ```text
 BEFORE
-→ Function
-→ AFTER
+   ↓
+FUNCTION
+   ↓
+AFTER
 ```
 
-### 5. Finding
-
-Открыть один из потенциальных рисков:
-
-* Possible Loss;
-* Duplication;
-* Conflict.
-
-### 6. Evidence
-
-Показать:
-
-* исходный документ;
-* владельца;
-* пункт;
-* оригинальный фрагмент.
-
-### 7. Conclusion
-
-Показать итоговое аналитическое заключение.
-
-### 8. Human Review
-
-Показать:
-
-* Confirm;
-* Reject;
-* Needs Review.
-
-Ключевой принцип демонстрации:
-
-> **Мы показываем не только вывод, но и путь от вывода до исходного положения документа.**
-
----
-
-# Структура материалов проекта
+И её status:
 
 ```text
-docs/
-├── requirements-matrix.md
-├── qa/
-│   └── release-final-summary.md
-└── submission/
-    ├── demo-checklist.md
-    └── fallback-demo.md
-
-eval/
-├── gold/
-│   └── manual-baseline.md
-└── synthetic/
-    ├── inputs/
-    ├── expected/
-    └── README.md
+UNCHANGED
+MODIFIED
+TRANSFERRED
+POSSIBLE_LOSS
 ```
-
-Оригинальные приватные документы, использованные для evaluation, не публикуются в Git.
 
 ---
 
-# Известные ограничения
+## 5. Finding
 
-OrgTrace AI — это **рабочий хакатонный прототип**, а не промышленная система автоматического аудита.
+Открыть finding.
+
+Например:
+
+```text
+Possible Loss
+Duplication
+Transfer
+Modified Function
+```
+
+---
+
+## 6. Evidence
+
+Показать:
+
+```text
+Document
+Owner
+Clause
+Locator
+Original fragment
+```
+
+Ключевой момент demo:
+
+> **Мы показываем не только вывод системы, но и путь от вывода к исходному положению документа.**
+
+---
+
+## 7. Conclusion
+
+Открыть итоговое аналитическое заключение.
+
+Показать:
+
+* основные изменения;
+* risks;
+* evidence;
+* ограничения интерпретации.
+
+---
+
+## 8. Human Review
+
+Вернуться к finding.
+
+Показать:
+
+```text
+Confirm
+Reject
+Needs Review
+```
+
+Сохранить reviewer comment.
+
+---
+
+# Quick Start
+
+## Requirements
+
+```text
+Node.js >= 22.12
+npm
+```
+
+Проверено также на:
+
+```text
+Node.js 24.19.0
+```
+
+---
+
+## Clone
+
+```bash
+git clone --branch main https://github.com/BAITC-Hacks/hack-c1355568-steppe-digital.git
+
+cd hack-c1355568-steppe-digital
+```
+
+---
+
+## Install
+
+```bash
+npm ci
+```
+
+---
+
+## Development Mode
+
+```bash
+npm run dev
+```
+
+После запуска открыть:
+
+```text
+http://localhost:3000
+```
+
+---
+
+# Reproduce Verified Mode
+
+Проверенный hackathon режим запускается без внешней production database и без обязательного API key.
+
+## macOS / Linux
+
+```bash
+export NEXT_PUBLIC_USE_MOCK=false
+export ORGTRACE_AI=false
+
+npm run build
+
+npm run start -- --hostname 127.0.0.1 --port 3000
+```
+
+Открыть:
+
+```text
+http://127.0.0.1:3000
+```
+
+---
+
+## PowerShell
+
+```powershell
+$env:NEXT_PUBLIC_USE_MOCK = "false"
+$env:ORGTRACE_AI = "false"
+
+npm run build
+
+npm run start -- --hostname 127.0.0.1 --port 3000
+```
+
+Открыть:
+
+```text
+http://127.0.0.1:3000
+```
+
+---
+
+# Demo Data
+
+Если оригинальные приватные документы организатора доступны:
+
+```text
+Revision №8 → BEFORE
+Revision №9 → AFTER
+```
+
+Если они недоступны, можно использовать синтетический контрольный набор:
+
+```text
+eval/synthetic/inputs/before.docx
+eval/synthetic/inputs/after.docx
+```
+
+Важно:
+
+```text
+eval/synthetic/expected/
+```
+
+не должен использоваться как вход analysis pipeline.
+
+Expected results существуют только для независимой проверки результата.
+
+---
+
+# Quality Checks
+
+Запуск automated tests:
+
+```bash
+npm test
+```
+
+Typecheck:
+
+```bash
+npm run typecheck
+```
+
+Lint:
+
+```bash
+npm run lint
+```
+
+Production build:
+
+```bash
+npm run build
+```
+
+---
+
+# Tech Stack
+
+| Layer                | Technology     |
+| -------------------- | -------------- |
+| Frontend             | Next.js 16     |
+| UI                   | React 19       |
+| Language             | TypeScript     |
+| Validation           | Zod            |
+| Testing              | Vitest         |
+| DOCX parsing         | Mammoth        |
+| PDF parsing          | pdfjs-dist     |
+| XLSX parsing         | SheetJS        |
+| AI integration layer | OpenAI SDK     |
+| Storage              | Local `.data/` |
+| Runtime              | Node.js        |
+
+---
+
+# Repository Structure
+
+```text
+.
+├── backend/
+│
+├── data/
+│
+├── eval/
+│   ├── gold/
+│   │   └── manual-baseline.md
+│   │
+│   └── synthetic/
+│       ├── inputs/
+│       ├── expected/
+│       └── README.md
+│
+├── docs/
+│   ├── api/
+│   ├── case/
+│   ├── plan/
+│   ├── product/
+│   ├── prompts/
+│   ├── qa/
+│   │   └── release-final-summary.md
+│   │
+│   ├── research/
+│   │
+│   ├── submission/
+│   │   ├── demo-checklist.md
+│   │   └── fallback-demo.md
+│   │
+│   └── requirements-matrix.md
+│
+├── src/
+│   ├── app/
+│   ├── components/
+│   ├── lib/
+│   ├── mocks/
+│   └── shared/
+│
+├── AGENTS.md
+├── DATA_NOTES.md
+├── package.json
+└── README.md
+```
+
+---
+
+# Detailed Documentation
+
+### Requirements
+
+[docs/requirements-matrix.md](docs/requirements-matrix.md)
+
+### Final QA
+
+[docs/qa/release-final-summary.md](docs/qa/release-final-summary.md)
+
+### Demo Checklist
+
+[docs/submission/demo-checklist.md](docs/submission/demo-checklist.md)
+
+### Fallback Demo
+
+[docs/submission/fallback-demo.md](docs/submission/fallback-demo.md)
+
+---
+
+# Known Limitations
+
+OrgTrace AI — рабочий хакатонный прототип, а не промышленная система автоматического организационного аудита.
 
 Текущие ограничения:
 
-1. Semantic engine преимущественно deterministic / rule-based.
-2. Проверенный режим deterministic/rule-based; live LLM/embeddings не проверялся.
-3. Качество extraction зависит от структуры и формулировок документов.
-4. Сложные формулировки владельцев функций могут быть неоднозначными.
-5. Часть diagnostic findings требует Human Review.
-6. Полное качество всех автоматически найденных semantic findings не аттестовано.
-7. Одинаковые или похожие формулировки сами по себе не доказывают дублирование.
-8. Отсутствие найденного semantic match само по себе не является юридическим доказательством потери функции.
-9. Выводы системы носят рекомендательный характер.
+1. Проверенный semantic engine преимущественно deterministic / rule-based.
+2. Live LLM semantic mode не входит в подтверждённый final QA scope.
+3. Качество extraction зависит от структуры документов.
+4. Неоднозначные владельцы требуют Human Review.
+5. Возможная потеря функции не является автоматически доказанной потерей.
+6. Похожая формулировка у двух владельцев не является автоматически доказанным дублированием.
+7. Conflict signals требуют предметной экспертной оценки.
+8. DOCX имеет наиболее полный проверенный E2E scope.
+9. PDF и XLSX прошли parser validation, но не полный semantic E2E.
+10. OCR для scanned PDF не заявлен.
+11. Полная semantic accuracy всех автоматически найденных findings не аттестована.
+12. Выводы системы имеют рекомендательный характер.
 
 Наш принцип:
 
-> **Лучше показать потенциальный риск и доказательства для проверки человеком, чем автоматически выдать неподтверждённый вывод как факт.**
+> **Лучше показать потенциальный риск и документальные основания для проверки человеком, чем автоматически выдать неподтверждённое утверждение как факт.**
 
 ---
 
-# Release
+# Roadmap
 
-Основная сдаваемая ветка: **`main`**.
+## Current Prototype
 
-Tested main application SHA: **`c11483263674cdc93f95b702f11eec210bfae6ed`**.
+```text
+✓ BEFORE / AFTER upload
+✓ DOCX pipeline
+✓ Structure Diff
+✓ Function extraction
+✓ Function Lineage
+✓ Possible Loss signal
+✓ Duplication signal
+✓ Evidence
+✓ Conclusion
+✓ Human Review
+✓ Synthetic evaluation
+✓ Real-document smoke
+```
 
-Финальный docs-only commit не меняет application code. Exact packaging SHA установленной версии: `git rev-parse HEAD`. Новые тесты при финализации документации не запускались; результаты относятся к указанному проверенному application SHA.
+## Next
 
-Проверенный fallback: `release/hackathon-final` → `c823ccf7770e992a2817a9756f7d527be4ec9052`. Более ранний fallback: `release/hackathon-demo` → `29c34a406706c03f3904d989760b31c7175bf439`. Они сохранены отдельно и не являются основной сдаваемой веткой.
-
-**MAIN READY TO SUBMIT**
+```text
+→ LLM semantic verification
+→ Embedding-based candidate retrieval
+→ Advanced merge / split detection
+→ Stronger conflict-of-interest models
+→ External regulatory validation
+→ Standards compliance analysis
+→ Cross-operator benchmarking
+→ Recommendation engine
+→ Historical organization graph
+→ Enterprise integrations
+```
 
 ---
 
-# Главное отличие OrgTrace AI
+# Product Vision
 
-OrgTrace AI — это не просто:
+Сегодня организационные изменения часто анализируются как документы.
 
-> «чат с документами».
+Мы считаем, что их нужно анализировать как **изменения ответственности**.
 
-И не просто:
+```text
+DOCUMENTS
+    ↓
+STRUCTURE
+    ↓
+FUNCTIONS
+    ↓
+LINEAGE
+    ↓
+RISKS
+    ↓
+EVIDENCE
+    ↓
+DECISION
+```
+
+OrgTrace AI превращает сравнение организационных документов в прослеживаемый процесс анализа функций и ответственности.
+
+---
+
+# The Core Difference
+
+OrgTrace AI — это не:
+
+> «чат с документами»
+
+и не:
 
 > «найди различия между двумя файлами».
 
-Главный объект анализа — **функция организации**.
+Главный вопрос системы:
 
-Система отвечает на вопрос:
+> **Что произошло с этой функцией от версии ДО к версии ПОСЛЕ, кто теперь отвечает за неё, какой потенциальный риск возник и какими исходными положениями документов это подтверждается?**
 
-> **Что произошло с этой функцией от версии ДО к версии ПОСЛЕ, кто теперь отвечает за неё, есть ли потенциальный риск и какими исходными положениями документов это подтверждается?**
+---
 
-Основная ценность проекта:
+## OrgTrace AI
 
-**Сравнение структуры + трассировка функций + выявление рисков + Evidence + Human Review.**
-
-То есть:
-
-> **OrgTrace AI показывает не только что изменилось, а судьбу функции и доказательства каждого существенного вывода.**
+**Track the fate of every function.
+Trace every conclusion back to evidence.**
