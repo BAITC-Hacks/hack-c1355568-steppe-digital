@@ -157,3 +157,24 @@ select { border: 1px solid #c7d2d9; border-radius: 6px; padding: .55rem; backgro
 .result-views summary { cursor: pointer; }
 .result-views details { margin-bottom: .7rem; }
 .result-views article button, .result-views td button { margin: .3rem; }
+
+.result-nav{display:flex;flex-wrap:wrap;gap:8px;margin:30px 0 24px}
+.result-nav button[aria-pressed=true]{background:var(--accent);color:white;border-color:var(--accent)}
+.result-filters{display:flex;flex-wrap:wrap;gap:18px;margin:20px 0}
+.result-filters label{display:flex;flex-direction:column;gap:8px;font-size:12px;flex:1;min-width:200px}
+.result-filters input,.result-filters select{font:inherit;font-size:14px;padding:12px;border:1px solid var(--border);border-radius:6px;background:white;color:var(--ink)}
+.result-filters input:focus-visible,.result-filters select:focus-visible,.table-scroll:focus-visible{outline:3px solid #45b9b8;outline-offset:3px}
+main{min-width:0}
+.table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:8px;background:white}
+.table-scroll table{width:100%;min-width:720px;border-collapse:collapse;table-layout:fixed;font-size:13px}
+.table-scroll caption{text-align:left;padding:16px;color:var(--muted)}
+.table-scroll th{text-align:left;background:var(--soft);padding:16px}
+.table-scroll td{vertical-align:top;border-top:1px solid var(--border);padding:18px;overflow-wrap:anywhere;line-height:1.6}
+.comparison-function{padding:10px 0}
+.comparison-function+.comparison-function{border-top:1px solid var(--border)}
+.comparison-function button{display:block;margin-top:12px;font-size:12px}
+.comparison-function small{display:block}
+.conclusion-section{margin:16px 0;padding:22px;background:white;border:1px solid var(--border);border-radius:8px}
+.conclusion-section>p{white-space:pre-wrap}
+.conclusion-link{display:block;text-align:left;width:100%;margin:10px 0}
+.conclusion-link small{display:block;margin-top:8px}
