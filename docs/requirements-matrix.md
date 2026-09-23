@@ -8,6 +8,8 @@ Priority: MUST — обязательное требование; SHOULD — р�
 
 ## 1. Official Requirements
 
+Независимая приёмка `c45e2a3` (2026-09-23): [runtime-validation](qa/runtime-validation.md). REQ-25 / S01–S06 PASS на synthetic с реальными HTTP results и source verification; REQ-01/02 и DOCX ingestion подтверждены в ограниченном browser smoke. Общая приёмка REQ-06–REQ-16 остаётся открытой: на реальных DOCX №8/№9 units/functions/findings пусты. Статусы плановой таблицы TODO сохранены; результаты относятся только к указанной ревизии и наборам, не ко всем документам/форматам.
+
 | ID | Requirement | Priority | Owner | Test ID | Status | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
 | REQ-01 | Загружать документы состояния ДО реорганизации. | MUST | Разработка загрузки | T-01 | TODO | Нет — тест не выполнен |
