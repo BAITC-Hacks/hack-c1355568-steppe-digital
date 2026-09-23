@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Document, Packer, Paragraph } from "docx";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { runAnalysis } from "./pipeline";
@@ -55,4 +55,49 @@ describe("source-backed runtime pipeline", () => {
     const r = await analyze(["1. Отдел альфа", "1.1. Формирует отчёт.", "2. Общие положения", "2.1. Утверждает бюджет."], ["1. Отдел альфа", "1.1. Формирует отчёт."]);
     expect(r.functions.filter(f => f.side === "before")).toHaveLength(1);
   });
+  it("extracts lettered units and explicit role owners without leaking into rights or siblings", async () => {
+    const lines = ["3.4. Структура:", "а. Департамент качества.", "б) Центр исследований.",
+      "5.1. Директор департамента качества:", "5.1.1. Организует проверку продукции.",
+      "5.2. Начальник центра исследований:", "5.2.1. Формирует отчёт по исследованиям.",
+      "5.3. Руководитель отдела имеет право:", "5.3.1. Утверждает бюджет.",
+      "6. Общие положения", "6.1. Контролирует расходы.",
+      "7. Главный аудитор информирует совет по следующим вопросам:", "7.1. Формирует отчёт."];
+    const r = await analyze(lines, lines);
+    expect(r.units.filter(u => u.side === "before").map(u => u.name)).toEqual([
+      "Департамент качества", "Центр исследований", "Директор департамента качества", "Начальник центра исследований"]);
+    const functions = r.functions.filter(f => f.side === "before");
+    expect(functions).toHaveLength(2);
+    expect(r.units.find(u => u.id === functions[0].unitId)?.name).toBe("Директор департамента качества");
+    expect(functions[0].evidence[0].locator.section).toBe("5.1.1");
+    expect(functions[0].evidence.some(e => e.locator.section === "5.1")).toBe(true);
+    expect(r.lineage.every(l => l.status === "UNCHANGED")).toBe(true);
+  });
+  it("keeps a collective title literal and does not assign its functions to a listed department", async () => {
+    const lines = ["1. Структура:", "а. Департамент качества.", "2. Директоры департаментов и Директоры направлений качества:",
+      "2.1. Организуют проверки качества.", "Работники не имеют права:", "а. Контролировать расходы."];
+    const r = await analyze(lines, lines);
+    expect(r.functions).toHaveLength(2);
+    expect(r.units.find(u => u.id === r.functions[0].unitId)?.name).toBe("Директоры департаментов и Директоры направлений качества");
+    expect(r.warnings.join()).toContain("Групповой владелец");
+  });
+
+  it("extracts owners and source-backed functions from DOCX copies of revision 8/9 TXT exports", async () => {
+    const texts = await Promise.all(["before", "after"].map(async side => {
+      const dir = `data/samples/${side}`;
+      const name = (await readdir(dir)).find(n => n.endsWith(".docx.txt"))!;
+      return (await readFile(path.join(dir, name), "utf8")).replace(/^\uFEFF/u, "").split(/\r?\n/u).filter(t => t.trim());
+    }));
+    const r = await analyze(texts[0], texts[1]);
+    expect(r.isMock).toBe(false);
+    expect(["before", "after"].map(side => r.units.filter(u => u.side === side).length)).toEqual([6, 8]);
+    expect(["before", "after"].map(side => r.functions.filter(f => f.side === side).length)).toEqual([40, 40]);
+    for (const f of r.functions) {
+      expect(f.evidence[0].fragmentText).toContain(f.text);
+      const owner = r.units.find(u => u.id === f.unitId)!;
+      expect(owner.evidence.some(e => f.evidence.some(fe => fe.fragmentId === e.fragmentId))).toBe(true);
+    }
+    expect(r.summary.findingsByType.LOSS).toBe(0);
+    expect(r.lineage.some(l => l.status === "TRANSFERRED")).toBe(true);
+  });
+
 });

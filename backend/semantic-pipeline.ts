@@ -41,23 +41,33 @@ export function extract(result: AnalysisResult, fragments: Fragment[]): Assignme
   for (const document of result.documents) {
     let owner: Unit | undefined;
     let section: string | undefined;
+    let lastNumber: string | undefined;
     for (const fragment of fragments.filter(f => f.documentId === document.id)) {
       for (const line of fragment.text.split(/\n/u).filter(x => x.trim())) {
-        const text = body(line);
-        const number = line.match(/^\s*(\d+(?:\.\d+)*)[.\s]/u)?.[1];
-        const heading = text.match(/^((?:Департамент|Управление|Отдел|Служба|Центр|Блок)\s+[^:;.!?]+?)(?:\s*:\s*)?$/u);
-        if (heading && !/\b(?:осуществляет|обеспечивает|подчиняется|является)\b/iu.test(text)) {
+        // Strip list markers only for extraction; comparison rules remain unchanged.
+        const text = body(line.trim().replace(/^(?:[а-яёa-z][.)]|\d+(?:\.\d+)*[.)]?)\s*/iu, ""));
+        const number = line.match(/^\s*(\d+(?:\.\d+)*)[.)\s]/u)?.[1];
+        if (number) lastNumber = number;
+        // A role owns only its explicit heading's descendants, never the next section.
+        if (number && section && !number.startsWith(`${section}.`) && number !== section) { owner = undefined; section = undefined; }
+        const department = text.match(/^((?:Департамент|Управление|Отдел|Служба|Центр|Блок)\s+[^:;.!?]+?)$/iu);
+        const position = /:\s*$/u.test(line) ? text.match(/^((?:Директор(?:ы)?|Начальник|Руководитель|Главный аудитор)(?:\s+[^:;.!?]+)?)$/iu) : null;
+        const heading = department ?? position;
+        const predicate = /(?:^|\s)(?:осуществля[а-яё]*|обеспечива[а-яё]*|подчиня[а-яё]*|явля[а-яё]*|находится|обязан[а-яё]*|име[а-яё]* право|не име[а-яё]*|руководит|состоит)(?:\s|$)/iu.test(text)
+          || text.split(/\s+/u).some(word => actionText(word) && /(?:ет|ёт|ют|ит|ят|ут)$/iu.test(word));
+        if (heading && !predicate) {
           const name = heading[1].trim();
           owner = result.units.find(u => u.side === fragment.side && u.normalizedName === normalized(name));
           if (!owner) {
             owner = { id: `unit-${id(fragment.side, name)}`, side: fragment.side, name, normalizedName: normalized(name), evidence: [evidence(fragment, line)] };
             result.units.push(owner);
           } else owner.evidence.push(evidence(fragment, line));
-          section = number;
+          section = number ?? lastNumber;
+          if (/^Директоры /iu.test(name)) result.warnings.push(`Групповой владелец «${name}» сохранён дословно без распределения обязанностей между участниками; требуется проверка области действия.`);
           continue;
         }
-        // A new sibling/ancestor heading ends ownership; it must not leak to unrelated sections.
-        if (number && section && !number.startsWith(`${section}.`) && number !== section) { owner = undefined; section = undefined; }
+        // Unrecognized unnumbered headings (including rights/prohibitions) stop inheritance.
+        if (!number && /:\s*$/u.test(line) && !actionText(text)) { owner = undefined; section = undefined; }
         if (owner && actionText(text) && !/^(?:не |имеет право|имеют право)/iu.test(text)) assignments.push({ fragment, unit: owner, text });
       }
     }
