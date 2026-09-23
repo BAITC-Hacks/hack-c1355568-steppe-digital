@@ -375,7 +375,7 @@ Expected-results не передаются pipeline до получения ACTU
 
 # QA и техническая проверка
 
-Последний проверенный application candidate v0.2 прошёл:
+Проверенный main application `c11483263674cdc93f95b702f11eec210bfae6ed` прошёл:
 
 * **46 / 46 automated tests — PASS**
 * TypeScript typecheck — PASS
@@ -383,7 +383,7 @@ Expected-results не передаются pipeline до получения ACTU
 * production build — PASS
 * synthetic S01–S06 — PASS
 * original DOCX 8/9 smoke — PASS
-* browser flow Results → Finding → Evidence → Conclusion — PASS
+* browser flow Structure → Function Lineage → Finding → Evidence → Conclusion → Human Review — PASS
 * `isMock=false`
 
 Также отдельно проверялись:
@@ -410,7 +410,7 @@ docs/submission/fallback-demo.md
 
 ## Требования
 
-* Node.js;
+* Node.js >=22.12 (проверено на 24.19.0);
 * npm.
 
 ## Установка зависимостей
@@ -435,6 +435,41 @@ npm run build
 ```
 
 ---
+
+## Воспроизведение проверенного режима
+
+```sh
+git clone --branch main https://github.com/BAITC-Hacks/hack-c1355568-steppe-digital.git
+cd hack-c1355568-steppe-digital
+npm ci
+```
+
+PowerShell:
+
+```powershell
+$env:NEXT_PUBLIC_USE_MOCK = "false"
+$env:ORGTRACE_AI = "false"
+npm run build
+npm run start -- --hostname 127.0.0.1 --port 3000
+```
+
+Bash: `export NEXT_PUBLIC_USE_MOCK=false ORGTRACE_AI=false`, затем `npm run build` и `npm run start -- --hostname 127.0.0.1 --port 3000`.
+
+Откройте `http://127.0.0.1:3000`. Нужен один длительно работающий Next.js-процесс, отдельная БД и API key для проверенного режима не нужны. Jobs сохраняются локально в `.data/`.
+
+Загрузите оригинальную редакцию №8 в ДО, №9 в ПОСЛЕ; private DOCX предоставляет организатор. Альтернатива: `eval/synthetic/inputs/before.docx` и `after.docx` — явно синтетический набор, обработанный реальным backend. Не загружайте expected/baseline как вход. TXT exports не подменяют проверку оригинальных DOCX.
+
+## Подтверждённые форматы
+
+| Формат | Результат | Evidence и границы |
+| --- | --- | --- |
+| DOCX | PASS | ORIGINAL 8/9: 491/490 fragments, document/source и locators; analysis и browser results smoke PASS |
+| PDF | PASS | Реальный parse fixture из backend/ingest.test.ts: 1 непустой fragment, documentId/documentName, страница 1, пункт 3.1; пустая страница 2 даёт предупреждение |
+| XLSX | PASS | Реальный parse fixture: 2 непустых fragments, documentId/documentName, лист «Структура», строки 1/2 |
+
+PDF/XLSX прошли acceptance validator и parser без падения. Это parser PASS, не полный semantic E2E этих форматов. OCR не заявлен. DOCX 8/9 и synthetic загрузки последнего smoke выполнены multipart API; browser проверял результаты и сохранение Human Review. File chooser отдельно не перепроверялся.
+
+[Final QA summary](docs/qa/release-final-summary.md) · [Requirements matrix](docs/requirements-matrix.md) · [Demo checklist](docs/submission/demo-checklist.md) · [Fallback](docs/submission/fallback-demo.md).
 
 # Demo Flow
 
@@ -539,7 +574,7 @@ OrgTrace AI — это **рабочий хакатонный прототип**,
 Текущие ограничения:
 
 1. Semantic engine преимущественно deterministic / rule-based.
-2. Live LLM reasoning не является необходимой частью проверенного pipeline.
+2. Проверенный режим deterministic/rule-based; live LLM/embeddings не проверялся.
 3. Качество extraction зависит от структуры и формулировок документов.
 4. Сложные формулировки владельцев функций могут быть неоднозначными.
 5. Часть diagnostic findings требует Human Review.
@@ -556,37 +591,15 @@ OrgTrace AI — это **рабочий хакатонный прототип**,
 
 # Release
 
-Финальная ветка хакатона:
+Основная сдаваемая ветка: **`main`**.
 
-```text
-release/hackathon-final
-```
+Tested main application SHA: **`c11483263674cdc93f95b702f11eec210bfae6ed`**.
 
-Финальный SHA сдаваемой версии:
+Финальный docs-only commit не меняет application code. Exact packaging SHA установленной версии: `git rev-parse HEAD`. Новые тесты при финализации документации не запускались; результаты относятся к указанному проверенному application SHA.
 
-```text
-c823ccf7770e992a2817a9756f7d527be4ec9052
-```
+Проверенный fallback: `release/hackathon-final` → `c823ccf7770e992a2817a9756f7d527be4ec9052`. Более ранний fallback: `release/hackathon-demo` → `29c34a406706c03f3904d989760b31c7175bf439`. Они сохранены отдельно и не являются основной сдаваемой веткой.
 
-Проверенный application candidate v0.2:
-
-```text
-1776156aef950eb04447b8557c5934e9a0d9bbd4
-```
-
-Application code в финальной версии идентичен проверенному application candidate.
-
-Все последующие изменения после его проверки относятся только к документации и submission package.
-
-Для резервного восстановления сохранён предыдущий independently verified release:
-
-```text
-release/hackathon-demo
-```
-
-Статус финальной версии:
-
-**READY TO SUBMIT**
+**MAIN READY TO SUBMIT**
 
 ---
 
