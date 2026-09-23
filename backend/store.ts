@@ -1,7 +1,7 @@
 import { mkdir, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
-import { AnalysisJobSchema, AnalysisResultSchema, ReviewInputSchema, type AnalysisJob, type AnalysisResult, type ReviewInput, type Stage } from "@/shared/contract";
+import { CONTRACT_VERSION, AnalysisJobSchema, AnalysisResultSchema, ReviewInputSchema, type AnalysisJob, type AnalysisResult, type ReviewInput, type Stage } from "@/shared/contract";
 import { AppError } from "./errors";
 import { atomicJson, dataDirectory } from "./files";
 import { createStages } from "./stages";
@@ -21,7 +21,7 @@ export class JobStore {
       const raw = JSON.parse(await readFile(this.filename(id), "utf8"));
       if (raw.id === id && Array.isArray(raw.stages) && raw.stages.length === 7 && !raw.stages.some((s: { key?: string }) => s.key === "clauses")) {
         // Retain the old file unchanged; expose an actionable terminal response for this ID.
-        this.jobs.set(id, { id, status: "failed", error: "Анализ создан по контракту v0.1.0. Загрузите документы повторно для v0.2.0.", stages: createStages() });
+        this.jobs.set(id, { id, status: "failed", error: `Анализ создан по контракту v0.1.0. Загрузите документы повторно для v${CONTRACT_VERSION}.`, stages: createStages() });
         continue;
       }
       const parsed = AnalysisJobSchema.safeParse(raw);

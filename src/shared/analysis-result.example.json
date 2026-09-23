@@ -231,7 +231,8 @@
       ],
       "status": "UNCHANGED",
       "rationale": "Формулировка функции сохранена.",
-      "candidatesChecked": []
+      "candidatesChecked": [],
+      "method": "rule"
     },
     {
       "id": "lineage-registry",
@@ -246,7 +247,8 @@
           "functionId": "archive-after",
           "reason": "Архивирование документов не эквивалентно ведению реестра."
         }
-      ]
+      ],
+      "method": "text_similarity"
     }
   ],
   "findings": [
@@ -290,7 +292,8 @@
       "verified": true,
       "review": {
         "status": "NOT_REVIEWED"
-      }
+      },
+      "method": "text_similarity"
     },
     {
       "id": "finding-preserved",
@@ -361,7 +364,8 @@
       "verified": true,
       "review": {
         "status": "NOT_REVIEWED"
-      }
+      },
+      "method": "rule"
     }
   ],
   "conclusion": {
@@ -463,5 +467,23 @@
       "similarity": 0,
       "method": "fuzzy"
     }
-  ]
+  ],
+  "analysisMode": {
+    "aiEnabled": false,
+    "embeddingsUsed": false,
+    "llmUsed": false,
+    "llmCalls": 0,
+    "llmCached": 0,
+    "embeddingCalls": 0,
+    "embeddingCached": 0,
+    "fallbacks": [
+      {
+        "stage": "alignment",
+        "reason": "Embeddings и смысловое сопоставление пунктов не выполнялись: сравнение пунктов основано только на точном совпадении и текстовом сходстве."
+      }
+    ],
+    "warnings": [
+      "DEMO / MOCK DATA: пример режима анализа без модели. Счётчики не отражают реальные обращения к провайдеру."
+    ]
+  }
 }

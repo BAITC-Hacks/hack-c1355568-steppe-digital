@@ -954,7 +954,8 @@
       ],
       "status": "UNCHANGED",
       "rationale": "Синтетическое сопоставление для проверки интерфейса.",
-      "candidatesChecked": []
+      "candidatesChecked": [],
+      "method": "rule"
     },
     {
       "id": "lineage-1",
@@ -966,7 +967,8 @@
       ],
       "status": "MODIFIED",
       "rationale": "Синтетическое сопоставление для проверки интерфейса.",
-      "candidatesChecked": []
+      "candidatesChecked": [],
+      "method": "embedding"
     },
     {
       "id": "lineage-2",
@@ -978,7 +980,8 @@
       ],
       "status": "TRANSFERRED",
       "rationale": "Синтетическое сопоставление для проверки интерфейса.",
-      "candidatesChecked": []
+      "candidatesChecked": [],
+      "method": "llm"
     },
     {
       "id": "lineage-3",
@@ -988,7 +991,8 @@
       ],
       "status": "NEW",
       "rationale": "Синтетическое сопоставление для проверки интерфейса.",
-      "candidatesChecked": []
+      "candidatesChecked": [],
+      "method": "rule"
     },
     {
       "id": "lineage-4",
@@ -1031,7 +1035,8 @@
           "functionId": "a-new",
           "reason": "Другой предмет функции: развитие."
         }
-      ]
+      ],
+      "method": "llm"
     },
     {
       "id": "lineage-5",
@@ -1074,7 +1079,8 @@
           "functionId": "a-new",
           "reason": "Другой предмет функции: развитие."
         }
-      ]
+      ],
+      "method": "text_similarity"
     },
     {
       "id": "lineage-6",
@@ -1084,7 +1090,8 @@
       ],
       "status": "NEW",
       "rationale": "Синтетическое сопоставление для проверки интерфейса.",
-      "candidatesChecked": []
+      "candidatesChecked": [],
+      "method": "rule"
     },
     {
       "id": "lineage-7",
@@ -1094,7 +1101,8 @@
       ],
       "status": "NEW",
       "rationale": "Синтетическое сопоставление для проверки интерфейса.",
-      "candidatesChecked": []
+      "candidatesChecked": [],
+      "method": "rule"
     },
     {
       "id": "lineage-8",
@@ -1104,7 +1112,8 @@
       ],
       "status": "NEW",
       "rationale": "Синтетическое сопоставление для проверки интерфейса.",
-      "candidatesChecked": []
+      "candidatesChecked": [],
+      "method": "rule"
     },
     {
       "id": "lineage-9",
@@ -1114,7 +1123,8 @@
       ],
       "status": "NEW",
       "rationale": "Синтетическое сопоставление для проверки интерфейса.",
-      "candidatesChecked": []
+      "candidatesChecked": [],
+      "method": "rule"
     }
   ],
   "findings": [
@@ -1166,7 +1176,8 @@
             "reason": "Другой предмет функции: закупки."
           }
         ]
-      }
+      },
+      "method": "llm"
     },
     {
       "id": "loss-2",
@@ -1216,7 +1227,8 @@
             "reason": "Другой предмет функции: закупки."
           }
         ]
-      }
+      },
+      "method": "text_similarity"
     },
     {
       "id": "dup-1",
@@ -1263,7 +1275,8 @@
       "verified": true,
       "review": {
         "status": "NOT_REVIEWED"
-      }
+      },
+      "method": "rule"
     },
     {
       "id": "dup-2",
@@ -1310,7 +1323,8 @@
       "verified": true,
       "review": {
         "status": "NOT_REVIEWED"
-      }
+      },
+      "method": "rule"
     },
     {
       "id": "conflict-1",
@@ -1356,7 +1370,8 @@
       "verified": true,
       "review": {
         "status": "NOT_REVIEWED"
-      }
+      },
+      "method": "llm"
     },
     {
       "id": "reorg-1",
@@ -1425,7 +1440,8 @@
       "verified": true,
       "review": {
         "status": "NOT_REVIEWED"
-      }
+      },
+      "method": "rule"
     },
     {
       "id": "preserve-1",
@@ -1472,7 +1488,8 @@
       "verified": true,
       "review": {
         "status": "NOT_REVIEWED"
-      }
+      },
+      "method": "rule"
     },
     {
       "id": "diagnostic-1",
@@ -1501,7 +1518,8 @@
       "verified": false,
       "review": {
         "status": "NOT_REVIEWED"
-      }
+      },
+      "method": "embedding"
     }
   ],
   "conclusion": {
@@ -1770,5 +1788,20 @@
       "similarity": 0,
       "method": "fuzzy"
     }
-  ]
+  ],
+  "analysisMode": {
+    "aiEnabled": true,
+    "embeddingsUsed": true,
+    "llmUsed": true,
+    "llmCalls": 4,
+    "llmCached": 2,
+    "embeddingCalls": 3,
+    "embeddingCached": 0,
+    "chatModel": "demo-chat-model",
+    "embeddingModel": "demo-embedding-model",
+    "fallbacks": [],
+    "warnings": [
+      "DEMO / MOCK DATA: режим анализа синтетический. Эти счётчики не отражают реальные обращения к модели."
+    ]
+  }
 }

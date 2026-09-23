@@ -1,6 +1,17 @@
-# API OrgTrace AI — v0.2.0
+# API OrgTrace AI — v0.3.0
 
 Источник истины — [Zod-схемы и TypeScript-типы](../../src/shared/contract.ts). [Синтетический пример](../../src/shared/analysis-result.example.json) и frontend mock обновлены синхронно. Backend находится в `backend/`, frontend — в `src/`; это одно Next.js-приложение и один origin.
+
+## Изменения v0.3.0
+
+Аддитивно к v0.2.0; обязательные поля, enum и refinements v0.2.0 не менялись, поэтому существующие клиенты и fixtures остаются валидными.
+
+| Добавлено | Где | Обязательность |
+| --- | --- | --- |
+| `AnalysisResult.analysisMode` | телеметрия прогона: применялись ли embeddings и LLM, счётчики вызовов, fallbacks, предупреждения режима | опционально |
+| `FunctionLineage.method`, `Finding.method` | происхождение записи: `rule`, `text_similarity`, `embedding`, `llm` | опционально |
+
+Оба поля — только происхождение и телеметрия: status, priority, confidence, verified, summary и заключение они не меняют. Отсутствие поля означает «сервер не сообщил», а не значение по умолчанию.
 
 ## Что реализовано
 
@@ -65,7 +76,7 @@ Review statuses: `NOT_REVIEWED`, `CONFIRMED`, `REJECTED`, `NEEDS_CHECK`. Comment
 
 Ошибки HTTP: `{ error: string }`, безопасный текст. 400 — параметры/пустая форма, 404 — ID, 409 — review до завершения, 413 — лимит, 415 — формат/Content-Type, 500 — внутренняя ошибка. Provider/config failures во время pipeline становятся failed job. Секреты, stack trace и provider payload не возвращаются.
 
-## Объекты v0.2.0
+## Объекты v0.3.0
 
 Полное машинно-проверяемое описание и refinements — в `src/shared/contract.ts`; все массивы обязательны. Связи разрешаются внутри результата, стороны проверяются, повторные IDs запрещены.
 
@@ -75,12 +86,13 @@ Review statuses: `NOT_REVIEWED`, `CONFIRMED`, `REJECTED`, `NEEDS_CHECK`. Comment
 | `ClauseAlignment` | `id`, `beforeClauseId?`, `afterClauseId?`, `status`, `similarity`, `method` |
 | `Unit` | `id`, `side`, `name`, `normalizedName`, `kind`, `abbreviation?`, `parentUnitId?`, `parentName?`, `evidence` |
 | `OrgFunction` | `id`, `unitId`, `side`, `text`, `action`, `object`, `process`, `role`, `category`, `clauseId`, `evidence` |
-| `FunctionLineage` | `id`, `beforeFunctionIds`, `afterFunctionIds`, `status`, `rationale`, `beforeClauseNumber?`, `afterClauseNumber?`, `candidatesChecked` |
-| `Finding` | `id`, `type`, `reviewPriority`, `confidence`, `title`, `explanation`, `unitIds`, `functionIds`, `evidence`, `searchTrace?`, `recommendation`, `verified`, `review` |
+| `FunctionLineage` | `id`, `beforeFunctionIds`, `afterFunctionIds`, `status`, `rationale`, `beforeClauseNumber?`, `afterClauseNumber?`, `candidatesChecked`, `method?` |
+| `Finding` | `id`, `type`, `reviewPriority`, `confidence`, `title`, `explanation`, `unitIds`, `functionIds`, `evidence`, `searchTrace?`, `recommendation`, `verified`, `review`, `method?` |
 | `Evidence` | `fragmentId`, `documentName`, `side`, `locator`, `quote`, `fragmentText`, `verified` |
 | `DocumentInfo` | `id`, `name`, `side`, `docType`, `fragmentCount`, `warnings` |
 | `UnitChange` | `id`, `beforeUnitIds`, `afterUnitIds`, `status`, `rationale`, `evidence` |
-| `AnalysisResult` | `id`, `isMock`, `documents`, `summary`, `clauses`, `alignments`, `units`, `unitChanges`, `functions`, `lineage`, `findings`, `conclusion`, `warnings` |
+| `AnalysisResult` | `id`, `isMock`, `documents`, `summary`, `clauses`, `alignments`, `units`, `unitChanges`, `functions`, `lineage`, `findings`, `conclusion`, `warnings`, `analysisMode?` |
+| `AnalysisMode` | `aiEnabled`, `embeddingsUsed`, `llmUsed`, `llmCalls`, `llmCached`, `embeddingCalls`, `embeddingCached`, `chatModel?`, `embeddingModel?`, `fallbacks`, `warnings` |
 
 `Clause.kind`: `heading`, `clause`, `item`, `toc`, `empty`. Номер строковый, может быть пустым у ненумерованного текста. Буква не перенумеровывается, повторные номера различаются ID. Оглавление, заголовки и пустые пункты не участвуют в alignment; каждый содержательный пункт участвует ровно один раз. Исходный текст сохраняется.
 
@@ -91,6 +103,10 @@ Unit kind: `block`, `department`, `position`, `center`. Parent с той же с
 Function category: `function` / `right`, роль `execute`, `control`, `approve`, `audit`, `support`, `other`. Запреты не извлекаются как разрешения. Lineage: `UNCHANGED`, `TRANSFERRED`, `MODIFIED`, `NEW`, `POSSIBLE_LOSS`. NEW без BEFORE, POSSIBLE_LOSS без AFTER. При множественных функциях UI берёт все номера через `clauseId`. Перенос с изменениями остаётся TRANSFERRED.
 
 Finding types: `LOSS`, `DUPLICATION`, `CONFLICT`, `REORGANIZATION`, `SCOPE_CHANGE`, `BROKEN_REFERENCE`, `UNDEFINED_ROLE`, `AMBIGUITY`. Документные дефекты могут не иметь function/unit IDs. Priority `HIGH`, `MEDIUM`, `LOW` — очередь проверки: потеря права MEDIUM, функции HIGH. Confidence `high`, `medium`, `low` — не процент. Новые находки изначально NEEDS_CHECK; зависимые от неоднозначных заголовков не выше medium.
+
+`AnalysisMethod` (`FunctionLineage.method`, `Finding.method`): `rule`, `text_similarity`, `embedding`, `llm` — как именно получена запись. Это происхождение, а не уверенность: на status, priority, confidence, verified и счётчики оно не влияет. `ClauseAlignment.method` отображается на этот словарь как `exact → rule`, `fuzzy → text_similarity`, `embedding → embedding`, `llm → llm` (`src/shared/method.ts`). Поле опционально: отсутствие означает «сервер не сообщил метод», и UI не подставляет значение по умолчанию.
+
+`AnalysisResult.analysisMode` — телеметрия прогона, которой владеет сервер. `llmCalls` и `embeddingCalls` считают успешные обращения к провайдеру, `llmCached` и `embeddingCached` — ответы из кэша; счётчики собираются per-run, поэтому параллельные анализы не смешиваются. Схема требует `llmUsed === llmCalls + llmCached > 0` и `embeddingsUsed === embeddingCalls + embeddingCached > 0`, а при `aiEnabled: false` запрещает любое использование модели: заявить непроизошедший вызов нельзя. `fallbacks = { stage, reason }[]` фиксирует этапы, отработавшие в резервном режиме (например, alignment без embeddings при выключенном AI); `warnings` — пояснения к режиму, отдельно от `AnalysisResult.warnings`. Поле опционально; его отсутствие UI показывает как неизвестный режим, а не как «AI применялся». Фиксация fallback ничего не меняет в анализе — он уже выполнен по тому же пути.
 
 `locator = { page?, section?, row?, label }`: страницы/строки с единицы; section, например `5.5.8` или `2.3.3 д`. `fragmentText` берётся из registry, не из LLM. Quote проверяется до публикации; verified finding требует все verified evidence. `searchTrace = { checkedCount, topCandidates: { functionId, reason }[] }`. Отсутствие эквивалента — ограниченный поиск, не вымышленная цитата ПОСЛЕ.
 

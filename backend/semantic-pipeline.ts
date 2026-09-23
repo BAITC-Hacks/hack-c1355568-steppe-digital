@@ -1,4 +1,4 @@
-import { ConclusionKeySchema, type AnalysisResult, type Evidence, type Finding, type OrgFunction, type Unit } from "@/shared/contract";
+import { ConclusionKeySchema, type AnalysisMethod, type AnalysisResult, type Evidence, type Finding, type OrgFunction, type Unit } from "@/shared/contract";
 import type { Fragment } from "./ingest";
 import { hash } from "./files";
 import { content, type ParsedClauses } from "./clauses";
@@ -123,20 +123,20 @@ export function match(result: AnalysisResult) {
     const b = group.filter(f => f.side === "before"), a = group.filter(f => f.side === "after");
     const sameOwner = b.every(f => a.some(g => result.unitChanges.some(c => c.beforeUnitIds.includes(f.unitId) && c.afterUnitIds.includes(g.unitId))));
     const status = !b.length ? "NEW" : !a.length ? "POSSIBLE_LOSS" : sameOwner ? "UNCHANGED" : "TRANSFERRED";
-    result.lineage.push({ id: `lineage-${id(k)}`, beforeFunctionIds: b.map(f => f.id), afterFunctionIds: a.map(f => f.id), status,
+    result.lineage.push({ id: `lineage-${id(k)}`, beforeFunctionIds: b.map(f => f.id), afterFunctionIds: a.map(f => f.id), status, method: "rule",
       rationale: !b.length ? "Предшественник не найден в извлечённых функциях ДО." : !a.length ? "Эквивалент по языковым правилам не найден среди ВСЕХ извлечённых функций ПОСЛЕ. Это возможная потеря в пределах корпуса, не доказательство исчезновения обязанности." : sameOwner ? "Сохранены действие и объект функции у сопоставленного владельца." : "Эквивалентная функция найдена у другого владельца ПОСЛЕ; потеря не объявляется.",
       candidatesChecked: b.length ? after.map(f => ({ functionId: f.id, score: similarity(b[0].text, f.text), reason: equivalent(b[0].text, f.text) ? "Совпадают нормализованные действие, объект и ограничения." : "Эквивалентность не установлена; проверьте смысл и частичное покрытие." })).sort((a, b) => b.score - a.score).slice(0, 5).map(c => ({ functionId: c.functionId, reason: `similarity=${c.score.toFixed(3)}. ${c.reason}` })) : [] });
   }
 }
 export function findings(result: AnalysisResult, fragments: Fragment[]) {
-  const add = (type: Finding["type"], title: string, explanation: string, functions: OrgFunction[], units: Unit[], ev: Evidence[], verified = true, searchTrace?: Finding["searchTrace"]) => {
+  const add = (type: Finding["type"], title: string, explanation: string, functions: OrgFunction[], units: Unit[], ev: Evidence[], verified = true, searchTrace?: Finding["searchTrace"], method: AnalysisMethod = "rule") => {
     result.findings.push({ id: `finding-${id(type, ...functions.map(f => f.id), ...units.map(u => u.id))}`, type, title, explanation,
       reviewPriority: type === "REORGANIZATION" ? "LOW" : type === "DUPLICATION" ? "MEDIUM" : "HIGH", confidence: "medium",
       functionIds: [...new Set(functions.map(f => f.id))], unitIds: [...new Set([...functions.map(f => f.unitId), ...units.map(u => u.id)])],
-      evidence: [...new Map(ev.map(e => [`${e.fragmentId}:${e.quote}`, e])).values()], verified, ...(searchTrace ? { searchTrace } : {}),
+      evidence: [...new Map(ev.map(e => [`${e.fragmentId}:${e.quote}`, e])).values()], verified, method, ...(searchTrace ? { searchTrace } : {}),
       recommendation: "Проверьте указанные пункты и полноту закрепления ответственности с владельцами подразделений.", review: { status: "NEEDS_CHECK" } });
   };
-  for (const c of result.unitChanges.filter(c => c.status !== "PRESERVED")) add("REORGANIZATION", "Изменение структуры", c.rationale, [], result.units.filter(u => [...c.beforeUnitIds, ...c.afterUnitIds].includes(u.id)), c.evidence);
+  for (const c of result.unitChanges.filter(c => c.status !== "PRESERVED")) add("REORGANIZATION", "Изменение структуры", c.rationale, [], result.units.filter(u => [...c.beforeUnitIds, ...c.afterUnitIds].includes(u.id)), c.evidence, true, undefined, c.status === "RENAMED" ? "text_similarity" : "rule");
   const after = result.functions.filter(f => f.side === "after");
   const incomplete = result.documents.some(d => !d.fragmentCount || d.warnings.some(w => /отсутствует|не удалось|неподдерживаем/u.test(w)));
   for (const l of result.lineage.filter(l => l.status === "POSSIBLE_LOSS")) {
@@ -145,7 +145,7 @@ export function findings(result: AnalysisResult, fragments: Fragment[]) {
     const rawCoverage = fragments.some(f => f.side === "after" && f.text.split(/\n/u).some(line => equivalent(b[0].text, body(line))));
     const partial = after.some(f => similarity(b[0].text, f.text) >= 0.45);
     const verified = !incomplete && !rawCoverage && !partial && after.length > 0;
-    add("LOSS", `Возможная потеря: ${b[0].text}`, `${l.rationale} Проверено функций ПОСЛЕ: ${after.length}; дополнительно просмотрены все исходные фрагменты ПОСЛЕ.${!verified ? " Диагностический кандидат: неполный охват или возможное частичное покрытие; исключён из подтверждённых счётчиков." : ""}`, b, [], b.flatMap(f => f.evidence), verified, { checkedCount: after.length, topCandidates: l.candidatesChecked });
+    add("LOSS", `Возможная потеря: ${b[0].text}`, `${l.rationale} Проверено функций ПОСЛЕ: ${after.length}; дополнительно просмотрены все исходные фрагменты ПОСЛЕ.${!verified ? " Диагностический кандидат: неполный охват или возможное частичное покрытие; исключён из подтверждённых счётчиков." : ""}`, b, [], b.flatMap(f => f.evidence), verified, { checkedCount: after.length, topCandidates: l.candidatesChecked }, "text_similarity");
   }
   const groups = new Map<string, OrgFunction[]>();
   for (const f of after) groups.set(key(f.text), [...(groups.get(key(f.text)) ?? []), f]);

@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 import { readFile } from "node:fs/promises";
+import { AsyncLocalStorage } from "node:async_hooks";
 import path from "node:path";
 import { atomicJson, cacheDirectory, hash } from "./files";
 import { AppError } from "./errors";
@@ -10,22 +11,35 @@ export { validateQuote } from "@/shared/quote";
 export const EMBEDDING_MODEL = "text-embedding-3-small";
 const CACHE_VERSION = "orgtrace-llm-v1";
 
+type Kind = "chat" | "embeddings";
+export type LlmUsage = { chat: { calls: number; cached: number; model?: string }; embeddings: { calls: number; cached: number; model?: string } };
+export const newUsage = (): LlmUsage => ({ chat: { calls: 0, cached: 0 }, embeddings: { calls: 0, cached: 0 } });
+// Per-run scope: telemetry of concurrent analyses must never be mixed, and no call signature changes for it.
+const usageStore = new AsyncLocalStorage<LlmUsage>();
+export const withUsage = <T>(usage: LlmUsage, run: () => Promise<T>): Promise<T> => usageStore.run(usage, run);
+function record(kind: Kind, model: string, outcome: "calls" | "cached") {
+  const usage = usageStore.getStore();
+  if (!usage) return;
+  usage[kind][outcome]++; usage[kind].model = model;
+}
+
 function client(): OpenAI {
   if (!process.env.OPENAI_API_KEY) throw new AppError(503, "OpenAI не настроен: отсутствует ключ API.");
-  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 30_000, maxRetries: 0 });
+  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 120_000, maxRetries: 0 });
 }
 function stable(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(stable).join(",")}]`;
   if (value && typeof value === "object") return `{${Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => `${JSON.stringify(k)}:${stable(v)}`).join(",")}}`;
   return JSON.stringify(value) ?? "null";
 }
-async function cached<T>(key: unknown, schema: z.ZodType<T>, operation: () => Promise<unknown>): Promise<T> {
+async function cached<T>(kind: Kind, model: string, key: unknown, schema: z.ZodType<T>, operation: () => Promise<unknown>): Promise<T> {
   const filename = path.join(cacheDirectory(), `${hash(stable({ version: CACHE_VERSION, key }))}.json`);
-  try { return schema.parse(JSON.parse(await readFile(filename, "utf8"))); } catch { /* Miss or invalid entry; revalidate new output. */ }
+  try { const hit = schema.parse(JSON.parse(await readFile(filename, "utf8"))); record(kind, model, "cached"); return hit; } catch { /* Miss or invalid entry; revalidate new output. */ }
   let lastError: unknown;
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const result = schema.parse(await operation());
+      record(kind, model, "calls");
       await atomicJson(filename, result);
       return result;
     } catch (error) {
@@ -47,7 +61,7 @@ export async function structuredChat<T>(options: {
   if (!model) throw new AppError(503, "OpenAI не настроен: выберите модель.");
   const format = zodResponseFormat(options.schema, options.schemaName);
   const messages = [{ role: "system" as const, content: options.system }, { role: "user" as const, content: options.input }];
-  return cached({ operation: "chat", model, messages, format, promptVersion: options.promptVersion }, options.schema, async () => {
+  return cached("chat", model, { operation: "chat", model, messages, format, promptVersion: options.promptVersion }, options.schema, async () => {
     const response = await client().chat.completions.parse({ model, messages, response_format: format });
     const message = response.choices[0]?.message;
     if (!message || message.refusal || !message.parsed) throw new Error("InvalidStructuredOutput");
@@ -60,7 +74,7 @@ export async function embed(input: string[]): Promise<number[][]> {
   const model = process.env.OPENAI_EMBEDDING_MODEL || EMBEDDING_MODEL;
   const schema = z.array(z.array(z.number().finite()).min(1)).length(input.length)
     .refine(vectors => vectors.every(v => v.length === vectors[0]?.length));
-  return cached({ operation: "embeddings", model, input, encodingFormat: "float" }, schema, async () => {
+  return cached("embeddings", model, { operation: "embeddings", model, input, encodingFormat: "float" }, schema, async () => {
     const response = await client().embeddings.create({ model, input, encoding_format: "float" });
     return response.data.sort((a, b) => a.index - b.index).map(item => item.embedding);
   });

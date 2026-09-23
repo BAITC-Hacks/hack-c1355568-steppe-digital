@@ -1,4 +1,5 @@
-import { FindingTypeSchema, UnitStatusSchema, LineageStatusSchema, AlignmentStatusSchema, ConclusionKeySchema, type AnalysisResult, type Clause, type OrgFunction, type Unit, type Finding } from "@/shared/contract";
+import { FindingTypeSchema, UnitStatusSchema, LineageStatusSchema, AlignmentStatusSchema, ConclusionKeySchema, type AnalysisMethod, type AnalysisResult, type Clause, type OrgFunction, type Unit, type Finding } from "@/shared/contract";
+import { methodOfAlignment } from "@/shared/method";
 import { content, normalize, similarity, evidenceFor, locatorNumber, type ParsedClauses } from "./clauses";
 import { hash } from "./files";
 
@@ -110,16 +111,19 @@ export function traceFunctions(result: AnalysisResult, parsed: ParsedClauses) {
     const alignment = result.alignments.find(a => a.beforeClauseId === clauseId);
     const pool = result.functions.filter(f => f.side === "after" && !used.has(f.id) && f.category === before[0].category && (!reserved.has(f.clauseId) || reserved.get(f.clauseId) === clauseId));
     let after = pool.filter(f => f.clauseId === alignment?.afterClauseId);
+    let method: AnalysisMethod = methodOfAlignment(alignment);
     const ranked = result.functions.filter(f => f.side === "after" && f.category === before[0].category).map(f => ({ f, score: similarity(before[0].text, f.text) })).sort((a, b) => b.score - a.score || a.f.id.localeCompare(b.f.id));
     const available = ranked.find(({ f }) => pool.some(candidate => candidate.id === f.id));
-    if (!after.length && alignment?.method !== "llm" && available && available.score >= 0.72) after = pool.filter(f => f.clauseId === available.f.clauseId);
+    if (!after.length && alignment?.method !== "llm" && available && available.score >= 0.72) { after = pool.filter(f => f.clauseId === available.f.clauseId); method = "text_similarity"; }
+    // Without a match the decision rests on the similarity ranking above, unless a model already judged the pair.
+    if (!after.length && method !== "embedding" && method !== "llm") method = "text_similarity";
     after.forEach(f => used.add(f.id));
     const sameOwners = before.every(b => after.some(a => result.unitChanges.some(u => u.beforeUnitIds.includes(b.unitId) && u.afterUnitIds.includes(a.unitId))));
     const status = !after.length ? "POSSIBLE_LOSS" : !sameOwners ? "TRANSFERRED" : (normalize(before[0].text) === normalize(after[0].text) || alignment?.status === "COSMETIC") ? "UNCHANGED" : "MODIFIED";
     const c = parsed.clauses.find(c => c.id === clauseId)!;
     const ac = after[0] && parsed.clauses.find(c => c.id === after[0].clauseId);
     result.lineage.push({ id: `lineage-${uid(clauseId)}`, beforeFunctionIds: before.map(f => f.id), afterFunctionIds: after.map(f => f.id), status,
-      ...(c.number ? { beforeClauseNumber: locatorNumber(c) } : {}), ...(ac?.number ? { afterClauseNumber: locatorNumber(ac) } : {}),
+      ...(c.number ? { beforeClauseNumber: locatorNumber(c) } : {}), ...(ac?.number ? { afterClauseNumber: locatorNumber(ac) } : {}), method,
       rationale: status === "POSSIBLE_LOSS" ? "В извлечённых функциях ПОСЛЕ соответствие не найдено. Это кандидат: требуется проверка общих обязанностей и других владельцев."
         : status === "TRANSFERRED" ? "Сопоставлено содержание пунктов при изменении владельца. Содержательные отличия и область группового заголовка требуют проверки."
         : status === "UNCHANGED" ? "Содержание сохранено у сопоставленного владельца; номера могут различаться." : "У сопоставленного владельца изменена формулировка. Проверьте область, периодичность и условия.",
@@ -127,7 +131,7 @@ export function traceFunctions(result: AnalysisResult, parsed: ParsedClauses) {
   }
   for (const clauseId of new Set(result.functions.filter(f => f.side === "after" && !used.has(f.id)).map(f => f.clauseId))) {
     const after = result.functions.filter(f => f.clauseId === clauseId && !used.has(f.id));
-    result.lineage.push({ id: `lineage-${uid(clauseId)}`, beforeFunctionIds: [], afterFunctionIds: after.map(f => f.id), status: "NEW", ...(parsed.clauses.find(c => c.id === clauseId)?.number ? { afterClauseNumber: locatorNumber(parsed.clauses.find(c => c.id === clauseId)!) } : {}), rationale: "Предшественник в извлечённых функциях ДО не сопоставлен; проверьте общий контекст.", candidatesChecked: [] });
+    result.lineage.push({ id: `lineage-${uid(clauseId)}`, beforeFunctionIds: [], afterFunctionIds: after.map(f => f.id), status: "NEW", ...(parsed.clauses.find(c => c.id === clauseId)?.number ? { afterClauseNumber: locatorNumber(parsed.clauses.find(c => c.id === clauseId)!) } : {}), rationale: "Предшественник в извлечённых функциях ДО не сопоставлен; проверьте общий контекст.", candidatesChecked: [], method: "rule" });
   }
 }
 
@@ -139,15 +143,16 @@ export function addFinding(result: AnalysisResult, input: Omit<Finding, "id" | "
 export function checkDocuments(result: AnalysisResult, parsed: ParsedClauses) {
   const clauses = parsed.clauses.filter(c => c.side === "after" && ["clause", "item"].includes(c.kind));
   for (const c of clauses) {
-    const base = { reviewPriority: "MEDIUM" as const, confidence: "medium" as const, unitIds: [], functionIds: [], recommendation: "Проверьте формулировку и уточните документ у ответственного сотрудника." };
+    const base = { reviewPriority: "MEDIUM" as const, confidence: "medium" as const, unitIds: [], functionIds: [], method: "rule" as const, recommendation: "Проверьте формулировку и уточните документ у ответственного сотрудника." };
     if (ambiguous(content(c))) addFinding(result, { ...base, type: "AMBIGUITY", title: `Неоднозначный круг директоров: ${locatorNumber(c)}`, explanation: "Неясно, относится ли уточнение департаментов ко всем перечисленным директорам или только к директорам направлений.", evidence: [evidenceFor(c, parsed)] });
     for (const match of c.text.matchAll(/(?:п\.\s*| и )(\d+\.\d+\.\d+)/gu)) {
       const target = clauses.find(p => p.documentId === c.documentId && p.number === match[1] && !p.letter);
       const beforeAlignment = result.alignments.find(a => a.afterClauseId === c.id);
       const bc = parsed.clauses.find(p => p.id === beforeAlignment?.beforeClauseId);
       const oldTarget = bc && parsed.clauses.find(p => p.documentId === bc.documentId && p.number === match[1] && !p.letter);
-      const moved = oldTarget && result.alignments.find(a => a.beforeClauseId === oldTarget.id)?.afterClauseId;
-      if (!target || (moved && moved !== target.id)) addFinding(result, { ...base, type: "BROKEN_REFERENCE", title: `Проверить ссылку ${locatorNumber(c)} → ${match[1]}`,
+      const movedAlignment = oldTarget && result.alignments.find(a => a.beforeClauseId === oldTarget.id);
+      const moved = movedAlignment?.afterClauseId;
+      if (!target || (moved && moved !== target.id)) addFinding(result, { ...base, type: "BROKEN_REFERENCE", title: `Проверить ссылку ${locatorNumber(c)} → ${match[1]}`, method: target ? methodOfAlignment(movedAlignment || undefined) : "rule",
         explanation: !target ? "Целевой пункт не найден в этом документе." : "Ссылка сохранила номер, но прежнее содержание цели сопоставлено с другим пунктом. Возможна неактуализированная ссылка после перенумерации.",
         evidence: [evidenceFor(c, parsed), ...(target ? [evidenceFor(target, parsed)] : []), ...(oldTarget ? [evidenceFor(oldTarget, parsed)] : []), ...parsed.clauses.filter(p => p.documentId === c.documentId && p.number === target?.parentNumber && p.kind === "clause").map(p => evidenceFor(p, parsed)), ...(moved ? parsed.clauses.filter(p => p.id === moved).map(p => evidenceFor(p, parsed)) : [])] });
     }
@@ -156,14 +161,14 @@ export function checkDocuments(result: AnalysisResult, parsed: ParsedClauses) {
   }
   for (const unit of result.units.filter(u => u.kind === "position")) {
     const reporting = unit.evidence.filter(e => /подчиняются/u.test(e.quote));
-    if (reporting.length > 1) addFinding(result, { type: "AMBIGUITY", title: `Несколько связей подчинения: ${unit.name}`, reviewPriority: "MEDIUM", confidence: "medium", unitIds: [unit.id], functionIds: [], evidence: reporting,
+    if (reporting.length > 1) addFinding(result, { type: "AMBIGUITY", title: `Несколько связей подчинения: ${unit.name}`, reviewPriority: "MEDIUM", confidence: "medium", unitIds: [unit.id], functionIds: [], evidence: reporting, method: "rule",
       explanation: "Должность упомянута в нескольких отношениях подчинения. Функциональное и административное руководство могут различаться; сам факт не доказывает конфликт.", recommendation: "Уточните вид каждой связи и полномочия руководителей." });
   }
 }
 export function deriveFindings(result: AnalysisResult, parsed: ParsedClauses) {
   for (const change of result.unitChanges.filter(c => c.status !== "PRESERVED")) {
     const names = [...change.beforeUnitIds, ...change.afterUnitIds].map(id => result.units.find(u => u.id === id)!.name).join(" → ");
-    addFinding(result, { type: "REORGANIZATION", title: `${change.status === "CREATED" ? "Появление" : "Удаление из перечня"}: ${names}`, explanation: change.rationale, unitIds: [...change.beforeUnitIds, ...change.afterUnitIds], functionIds: [], evidence: change.evidence, reviewPriority: "LOW", confidence: "medium", recommendation: "Проверьте соответствие должностей и передачу их обязанностей." });
+    addFinding(result, { type: "REORGANIZATION", title: `${change.status === "CREATED" ? "Появление" : "Удаление из перечня"}: ${names}`, explanation: change.rationale, unitIds: [...change.beforeUnitIds, ...change.afterUnitIds], functionIds: [], evidence: change.evidence, reviewPriority: "LOW", confidence: "medium", method: "rule", recommendation: "Проверьте соответствие должностей и передачу их обязанностей." });
   }
   for (const l of result.lineage.filter(l => l.status !== "UNCHANGED")) {
     const functions = [...l.beforeFunctionIds, ...l.afterFunctionIds].map(id => result.functions.find(f => f.id === id)!);
@@ -173,7 +178,7 @@ export function deriveFindings(result: AnalysisResult, parsed: ParsedClauses) {
     addFinding(result, { type: loss ? "LOSS" : l.status === "TRANSFERRED" ? "REORGANIZATION" : "SCOPE_CHANGE", title: `${loss ? "Возможная потеря" : l.status === "TRANSFERRED" ? "Передача ответственности" : "Изменение формулировки"}: ${l.beforeClauseNumber ?? "—"} → ${l.afterClauseNumber ?? "—"}`, explanation: l.rationale + (uncertain ? " Область действия группового заголовка неоднозначна." : ""),
       reviewPriority: loss && functions[0].category === "function" ? "HIGH" : "MEDIUM", confidence: loss || uncertain ? "low" : "medium", unitIds: [...new Set(functions.map(f => f.unitId))], functionIds: functions.map(f => f.id), evidence: [...new Map(ev.map(e => [e.fragmentId, e])).values()],
       // A textual search is not a semantic loss proof. Keep these candidates diagnostic.
-      verified: !loss && ev.every(e => e.verified), ...(loss ? { searchTrace: { checkedCount: result.functions.filter(f => f.side === "after" && f.category === functions[0].category).length, topCandidates: l.candidatesChecked } } : {}), recommendation: loss ? "Проверьте общие обязанности, перенос к другому владельцу и непроанализированные документы." : "Проверьте смысл изменения и круг ответственных лиц." });
+      method: l.method, verified: !loss && ev.every(e => e.verified), ...(loss ? { searchTrace: { checkedCount: result.functions.filter(f => f.side === "after" && f.category === functions[0].category).length, topCandidates: l.candidatesChecked } } : {}), recommendation: loss ? "Проверьте общие обязанности, перенос к другому владельцу и непроанализированные документы." : "Проверьте смысл изменения и круг ответственных лиц." });
   }
   const after = result.functions.filter(f => f.side === "after");
   for (let i = 0; i < after.length; i++) for (let j = i + 1; j < after.length; j++) {
@@ -181,7 +186,7 @@ export function deriveFindings(result: AnalysisResult, parsed: ParsedClauses) {
     if (a.clauseId === b.clauseId || a.category !== b.category) continue;
     const ua = result.units.find(u => u.id === a.unitId)!, ub = result.units.find(u => u.id === b.unitId)!;
     if (ua.kind === "block" || ub.kind === "block" || ua.parentUnitId === ub.id || ub.parentUnitId === ua.id) continue;
-    if (a.unitId !== b.unitId && normalize(a.text) === normalize(b.text)) addFinding(result, { type: "DUPLICATION", title: `Совпадающая формулировка: ${ua.name} / ${ub.name}`, explanation: "Дословное совпадение обязанностей разных владельцев; общая формулировка может быть штатным распределением, поэтому это диагностический кандидат.", unitIds: [a.unitId, b.unitId], functionIds: [a.id, b.id], evidence: [...a.evidence, ...b.evidence], reviewPriority: "MEDIUM", confidence: "low", verified: false, recommendation: "Уточните объекты ответственности и исключите нормальное распределение общей обязанности." });
+    if (a.unitId !== b.unitId && normalize(a.text) === normalize(b.text)) addFinding(result, { type: "DUPLICATION", title: `Совпадающая формулировка: ${ua.name} / ${ub.name}`, explanation: "Дословное совпадение обязанностей разных владельцев; общая формулировка может быть штатным распределением, поэтому это диагностический кандидат.", unitIds: [a.unitId, b.unitId], functionIds: [a.id, b.id], evidence: [...a.evidence, ...b.evidence], reviewPriority: "MEDIUM", confidence: "low", verified: false, method: "rule", recommendation: "Уточните объекты ответственности и исключите нормальное распределение общей обязанности." });
   }
 }
 export function summarize(result: AnalysisResult) {

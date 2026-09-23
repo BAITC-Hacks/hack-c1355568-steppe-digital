@@ -3,7 +3,7 @@ import { mkdtemp, readdir, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { z } from "zod";
-import { embed, structuredChat } from "./llm";
+import { embed, newUsage, structuredChat, withUsage } from "./llm";
 
 const calls = vi.hoisted(() => ({ parse: vi.fn(), embeddings: vi.fn() }));
 vi.mock("openai", () => {
@@ -42,6 +42,18 @@ describe("cached AI helpers (mock transport; no network)", () => {
     calls.parse.mockRejectedValue(new Error("private-provider-response"));
     await expect(structuredChat(request)).rejects.toMatchObject({ status: 502 });
     expect(calls.parse).toHaveBeenCalledTimes(3); expect(await readdir(directory)).toEqual([]);
+  });
+  it("counts provider requests and cache hits separately, per run", async () => {
+    calls.parse.mockResolvedValue({ choices: [{ message: { parsed: { fragmentId: "f1", quote: "synthetic" } } }] });
+    calls.embeddings.mockResolvedValue({ data: [{ index: 0, embedding: [1, 0] }] });
+    const first = newUsage();
+    await withUsage(first, async () => { await structuredChat(request); await structuredChat(request); await embed(["first"]); });
+    expect(first).toMatchObject({ chat: { calls: 1, cached: 1, model: "unit-test-model" }, embeddings: { calls: 1, cached: 0 } });
+    // A second run reports its own usage: a warm cache is never reported as a fresh provider request.
+    const second = newUsage();
+    await withUsage(second, async () => { await structuredChat(request); });
+    expect(second).toMatchObject({ chat: { calls: 0, cached: 1 }, embeddings: { calls: 0, cached: 0 } });
+    expect(calls.parse).toHaveBeenCalledTimes(1);
   });
   it("fails with an actionable error when model configuration is missing", async () => {
     vi.stubEnv("OPENAI_MODEL", "");

@@ -2,3 +2,6 @@ export const findingLabels = { LOSS: "Возможная потеря", DUPLICAT
 export const alignmentLabels = { IDENTICAL: "Без изменений", COSMETIC: "Косметические", SUBSTANTIVE: "Существенные", ONLY_BEFORE: "Только ДО", ONLY_AFTER: "Только ПОСЛЕ" };
 export const unitLabels = { PRESERVED: "Сохранено", RENAMED: "Переименовано", MERGED: "Объединено", SPLIT: "Разделено", CREATED: "Создано", REMOVED: "Удалено" };
 export const lineageLabels = { UNCHANGED: "Сохранена", TRANSFERRED: "Передана", MODIFIED: "Изменена", NEW: "Новая", POSSIBLE_LOSS: "Возможная потеря" };
+export const methodLabels = { rule: "Правило", text_similarity: "Текстовое сходство", embedding: "Семантическое сходство", llm: "ИИ" };
+export const methodHints = { rule: "Детерминированное правило по тексту и структуре документа.", text_similarity: "Сравнение нормализованных формулировок без модели.", embedding: "Близость векторных представлений (embeddings).", llm: "Интерпретация языковой модели, проверенная по дословной цитате." };
+export const stageLabels = { ingest: "Загрузка и разбор", clauses: "Разбор пунктов", alignment: "Сопоставление пунктов", checks: "Проверки документа", units: "Подразделения", functions: "Функции", lineage: "Связи функций", findings: "Замечания", verify: "Проверка источников", conclusion: "Заключение" };

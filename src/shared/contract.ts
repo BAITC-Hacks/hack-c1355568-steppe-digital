@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { validateQuote } from "./quote";
 
-export const CONTRACT_VERSION = "0.2.0";
+export const CONTRACT_VERSION = "0.3.0";
 export const SideSchema = z.enum(["before", "after"]);
 export const DocumentTypeSchema = z.enum(["structure", "regulation", "job_description", "order", "other"]);
 export const UnitStatusSchema = z.enum(["PRESERVED", "RENAMED", "MERGED", "SPLIT", "CREATED", "REMOVED"]);
@@ -11,6 +11,8 @@ export const RoleSchema = z.enum(["execute", "control", "approve", "audit", "sup
 export const ReviewPrioritySchema = z.enum(["HIGH", "MEDIUM", "LOW"]);
 export const ConfidenceSchema = z.enum(["high", "medium", "low"]);
 export const ReviewStatusSchema = z.enum(["NOT_REVIEWED", "CONFIRMED", "REJECTED", "NEEDS_CHECK"]);
+/** How a record was established. Provenance only: it never affects status, priority or counters. */
+export const AnalysisMethodSchema = z.enum(["rule", "text_similarity", "embedding", "llm"]);
 export const StageKeySchema = z.enum(["ingest", "clauses", "alignment", "units", "functions", "lineage", "checks", "findings", "verify", "conclusion"]);
 export const StageStatusSchema = z.enum(["pending", "running", "done", "failed"]);
 export const JobStatusSchema = z.enum(["queued", "running", "done", "failed"]);
@@ -71,6 +73,7 @@ export const CandidateSchema = z.strictObject({ functionId: id, reason: text });
 export const FunctionLineageSchema = z.strictObject({
   id, beforeFunctionIds: z.array(id), afterFunctionIds: z.array(id), status: LineageStatusSchema,
   rationale: text, beforeClauseNumber: text.optional(), afterClauseNumber: text.optional(), candidatesChecked: z.array(CandidateSchema),
+  method: AnalysisMethodSchema.optional(),
 }).refine(l => {
   const b = l.beforeFunctionIds.length, a = l.afterFunctionIds.length;
   if (l.status === "NEW") return b === 0 && a > 0;
@@ -88,7 +91,7 @@ export const FindingSchema = z.strictObject({
   id, type: FindingTypeSchema, reviewPriority: ReviewPrioritySchema, confidence: ConfidenceSchema,
   title: text, explanation: text, unitIds: z.array(id), functionIds: z.array(id),
   evidence: z.array(EvidenceSchema), searchTrace: SearchTraceSchema.optional(),
-  recommendation: text, verified: z.boolean(), review: ReviewSchema,
+  recommendation: text, verified: z.boolean(), review: ReviewSchema, method: AnalysisMethodSchema.optional(),
 }).superRefine((f, ctx) => {
   if (f.verified && (!f.evidence.length || f.evidence.some(e => !e.verified))) {
     ctx.addIssue({ code: "custom", message: "Verified findings require verified evidence for every claim" });
@@ -109,12 +112,26 @@ export const ConclusionSchema = z.strictObject({ sections: z.array(ConclusionSec
   "Conclusion must have the six sections in contract order",
 );
 
+export const AnalysisFallbackSchema = z.strictObject({ stage: StageKeySchema, reason: text });
+/** Server-owned run telemetry: which techniques actually ran. Derived from real calls, never from intent. */
+export const AnalysisModeSchema = z.strictObject({
+  aiEnabled: z.boolean(), embeddingsUsed: z.boolean(), llmUsed: z.boolean(),
+  llmCalls: count, llmCached: count, embeddingCalls: count, embeddingCached: count,
+  chatModel: text.optional(), embeddingModel: text.optional(),
+  fallbacks: z.array(AnalysisFallbackSchema), warnings: z.array(text),
+}).superRefine((m, ctx) => {
+  const issue = (message: string) => ctx.addIssue({ code: "custom", message });
+  if (m.llmUsed !== (m.llmCalls + m.llmCached > 0)) issue("llmUsed must match the recorded LLM call count");
+  if (m.embeddingsUsed !== (m.embeddingCalls + m.embeddingCached > 0)) issue("embeddingsUsed must match the recorded embedding call count");
+  if (!m.aiEnabled && (m.llmUsed || m.embeddingsUsed)) issue("Disabled AI cannot report model usage");
+});
+
 export const AnalysisResultSchema = z.strictObject({
   id, isMock: z.boolean(), documents: z.array(DocumentInfoSchema), summary: SummarySchema,
   clauses: z.array(ClauseSchema), alignments: z.array(ClauseAlignmentSchema),
   units: z.array(UnitSchema), unitChanges: z.array(UnitChangeSchema), functions: z.array(OrgFunctionSchema),
   lineage: z.array(FunctionLineageSchema), findings: z.array(FindingSchema), conclusion: ConclusionSchema,
-  warnings: z.array(text),
+  warnings: z.array(text), analysisMode: AnalysisModeSchema.optional(),
 }).superRefine((r, ctx) => {
   const issue = (message: string) => ctx.addIssue({ code: "custom", message });
   for (const items of [r.documents, r.clauses, r.alignments, r.units, r.unitChanges, r.functions, r.lineage, r.findings]) {
@@ -209,6 +226,9 @@ export type OrgFunction = z.infer<typeof OrgFunctionSchema>;
 export type FunctionLineage = z.infer<typeof FunctionLineageSchema>;
 export type Finding = z.infer<typeof FindingSchema>;
 export type Summary = z.infer<typeof SummarySchema>;
+export type AnalysisMethod = z.infer<typeof AnalysisMethodSchema>;
+export type AnalysisFallback = z.infer<typeof AnalysisFallbackSchema>;
+export type AnalysisMode = z.infer<typeof AnalysisModeSchema>;
 export type Conclusion = z.infer<typeof ConclusionSchema>;
 export type AnalysisResult = z.infer<typeof AnalysisResultSchema>;
 export type AnalysisJob = z.infer<typeof AnalysisJobSchema>;
