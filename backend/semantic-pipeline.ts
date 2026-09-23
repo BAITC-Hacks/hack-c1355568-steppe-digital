@@ -1,6 +1,7 @@
 import { ConclusionKeySchema, type AnalysisResult, type Evidence, type Finding, type OrgFunction, type Unit } from "@/shared/contract";
 import type { Fragment } from "./ingest";
 import { hash } from "./files";
+import { content, type ParsedClauses } from "./clauses";
 
 const id = (...values: string[]) => hash(values.join("\0")).slice(0, 24);
 const body = (text: string) => text.trim().replace(/^(?:\d+(?:\.\d+)*[.)]?|[а-я]\))\s*/iu, "").replace(/[.;:]$/u, "").trim();
@@ -59,7 +60,7 @@ export function extract(result: AnalysisResult, fragments: Fragment[]): Assignme
           const name = heading[1].trim();
           owner = result.units.find(u => u.side === fragment.side && u.normalizedName === normalized(name));
           if (!owner) {
-            owner = { id: `unit-${id(fragment.side, name)}`, side: fragment.side, name, normalizedName: normalized(name), evidence: [evidence(fragment, line)] };
+            owner = { id: `unit-${id(fragment.side, name)}`, side: fragment.side, name, normalizedName: normalized(name), kind: position ? "position" : /^Центр/iu.test(name) ? "center" : /^Блок/iu.test(name) ? "block" : "department", evidence: [evidence(fragment, line)] };
             result.units.push(owner);
           } else owner.evidence.push(evidence(fragment, line));
           section = number ?? lastNumber;
@@ -75,12 +76,14 @@ export function extract(result: AnalysisResult, fragments: Fragment[]): Assignme
   if (!result.units.length) result.warnings.push("Не распознаны явные заголовки подразделений. Текущий извлекатель поддерживает разделы с названием подразделения и следующими за ним функциями; полнота анализа не подтверждена.");
   return assignments;
 }
-export function extractFunctions(result: AnalysisResult, assignments: Assignment[]) {
+export function extractFunctions(result: AnalysisResult, assignments: Assignment[], parsed: ParsedClauses) {
   for (const { fragment, unit, text } of assignments) {
     const existing = result.functions.find(f => f.unitId === unit.id && normalized(f.text) === normalized(text));
     if (existing) { existing.evidence.push(evidence(fragment)); continue; }
+    const clause = parsed.clauses.find(c => parsed.sources.get(c.id)?.fragment.id === fragment.id && normalized(content(c)) === normalized(text));
+    if (!clause) throw new Error("FunctionClauseNotFound");
     const words = text.split(/\s/u);
-    result.functions.push({ id: `function-${id(unit.id, text)}`, unitId: unit.id, side: fragment.side, text,
+    result.functions.push({ id: `function-${id(unit.id, text)}`, unitId: unit.id, side: fragment.side, text, clauseId: clause.id, category: "function",
       action: words[0], object: words.slice(1).join(" ") || text, process: key(words.slice(1).join(" ")) || key(text), role: role(text), evidence: [evidence(fragment), ...unit.evidence] });
   }
 }

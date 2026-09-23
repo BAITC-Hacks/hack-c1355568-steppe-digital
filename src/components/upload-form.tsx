@@ -30,15 +30,15 @@ function FileZone({ title, side, files, onChange, disabled }: {
   const [dragging, setDragging] = useState(false);
   function add(incoming: File[]) {
     if (disabled) return;
-    const rejected = incoming.filter(file => !/\.(pdf|docx|xlsx)$/i.test(file.name) || file.size === 0);
-    setErrors(rejected.map(file => `${file.name}: ${file.size === 0 ? "файл пуст" : "допустимы только PDF, DOCX и XLSX"}.`));
+    const rejected = incoming.filter(file => !/\.(txt|pdf|docx|xlsx)$/i.test(file.name) || file.size === 0);
+    setErrors(rejected.map(file => `${file.name}: ${file.size === 0 ? "файл пуст" : "допустимы только TXT, PDF, DOCX и XLSX"}.`));
     const accepted = incoming.filter(file => !rejected.includes(file));
     onChange([...files, ...accepted.filter(file => !files.some(existing => existing.name === file.name && existing.size === file.size && existing.lastModified === file.lastModified))]);
   }
   return <section className="upload-panel"><div className="panel-title"><span className="side-label">{side}</span><h2>{title}</h2><span className="muted">{files.length}</span></div>
     <div className={`drop-zone ${dragging ? "dragging" : ""}`} onDragOver={event => { event.preventDefault(); if (!disabled) setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={event => { event.preventDefault(); setDragging(false); add(Array.from(event.dataTransfer.files)); }}>
       <span className="upload-icon" aria-hidden="true">↑</span><strong>Перетащите документы сюда</strong><span className="muted">или выберите на компьютере</span>
-      <label className={`file-picker ${disabled ? "disabled" : ""}`} htmlFor={id}>Выбрать файлы<input id={id} type="file" multiple accept=".pdf,.docx,.xlsx" disabled={disabled} onChange={event => { add(Array.from(event.target.files ?? [])); event.target.value = ""; }} /></label><small>PDF · DOCX · XLSX</small>
+      <label className={`file-picker ${disabled ? "disabled" : ""}`} htmlFor={id}>Выбрать файлы<input id={id} type="file" multiple accept=".txt,.pdf,.docx,.xlsx" disabled={disabled} onChange={event => { add(Array.from(event.target.files ?? [])); event.target.value = ""; }} /></label><small>TXT · PDF · DOCX · XLSX</small>
     </div>
     {!!errors.length && <div role="alert" className="error">{errors.map((error, index) => <p key={index}>{error}</p>)}</div>}
     <ul className="file-list">{files.map((file, index) => <li key={`${file.name}-${file.size}-${file.lastModified}`}><span className="file-format">{file.name.split(".").pop()?.toUpperCase()}</span><span className="file-name">{file.name}<small>{new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 1 }).format(file.size / 1024)} КБ</small></span><button type="button" className="icon-button" aria-label={`Удалить ${file.name} из набора ${side}`} disabled={disabled} onClick={() => onChange(files.filter((_, i) => i !== index))}>×</button></li>)}</ul>

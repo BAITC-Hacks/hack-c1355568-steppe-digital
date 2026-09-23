@@ -15,7 +15,7 @@ vi.mock("next/server", () => ({ after: (task: () => Promise<void>) => { tasks.pu
 let directory: string;
 beforeEach(async () => {
   directory = await mkdtemp(path.join(os.tmpdir(), "orgtrace-api-"));
-  vi.stubEnv("ORGTRACE_DATA_DIR", directory); tasks.length = 0;
+  vi.stubEnv("ORGTRACE_DATA_DIR", directory); vi.stubEnv("ORGTRACE_AI", "false"); tasks.length = 0;
 });
 afterEach(async () => { vi.unstubAllEnvs(); await rm(directory, { recursive: true, force: true }); });
 function uploadRequest(corrupt = false) {
@@ -41,7 +41,8 @@ describe("API integration with real parsing and disk persistence", () => {
     expect(job.status).toBe("done"); expect(job.result?.isMock).toBe(false);
     expect(job.result?.documents.map(d => d.fragmentCount)).toEqual([1, 1]);
     expect(job.result?.findings).toEqual([]);
-    expect(job.stages.every(s => s.status === "done")).toBe(true);
+    expect(job.stages).toHaveLength(10);
+    expect(job.result?.warnings.join()).toContain("структура не определена");
     expect(polled.headers.get("Cache-Control")).toBe("no-store");
   });
   it("persists failed ingest without claiming later stages completed", async () => {

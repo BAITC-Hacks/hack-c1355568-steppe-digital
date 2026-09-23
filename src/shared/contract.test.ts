@@ -21,6 +21,12 @@ describe("shared result contract", () => {
     const brokenConclusion = structuredClone(example); brokenConclusion.conclusion.sections[0].findingIds = ["invented"];
     for (const invalid of [brokenRef, brokenCount, brokenConclusion]) expect(AnalysisResultSchema.safeParse(invalid).success).toBe(false);
   });
+  it("rejects missing clause references, reused alignment clauses and incorrect alignment counts", () => {
+    const missing = structuredClone(example); missing.functions[0].clauseId = "invented-clause";
+    const duplicate = structuredClone(example); duplicate.alignments.push({ ...duplicate.alignments[0], id: "duplicate-pair" });
+    const counts = structuredClone(example); counts.summary.alignmentsByStatus.SUBSTANTIVE = 999;
+    for (const value of [missing, duplicate, counts]) expect(AnalysisResultSchema.safeParse(value).success).toBe(false);
+  });
   it("rejects a verified finding with a fabricated citation", () => {
     const invalid = structuredClone(example); invalid.findings[0].evidence[0].quote = "выдуманная функция";
     expect(AnalysisResultSchema.safeParse(invalid).success).toBe(false);

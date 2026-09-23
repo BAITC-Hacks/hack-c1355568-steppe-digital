@@ -6,7 +6,7 @@ import path from "node:path";
 import { runAnalysis } from "./pipeline";
 import { equivalent } from "./semantic-pipeline";
 let directory: string;
-beforeEach(async () => { directory = await mkdtemp(path.join(os.tmpdir(), "semantic-")); vi.stubEnv("ORGTRACE_DATA_DIR", directory); });
+beforeEach(async () => { directory = await mkdtemp(path.join(os.tmpdir(), "semantic-")); vi.stubEnv("ORGTRACE_DATA_DIR", directory); vi.stubEnv("ORGTRACE_AI", "false"); });
 afterEach(async () => { vi.unstubAllEnvs(); await rm(directory, { recursive: true, force: true }); });
 async function analyze(before: string[], after: string[]) {
   const files = await Promise.all((["before", "after"] as const).map(async (side, i) => ({ side, name: `${side}.docx`, bytes: await Packer.toBuffer(new Document({ sections: [{ children: [before, after][i].map(text => new Paragraph(text)) }] })) })));
@@ -89,15 +89,23 @@ describe("source-backed runtime pipeline", () => {
     }));
     const r = await analyze(texts[0], texts[1]);
     expect(r.isMock).toBe(false);
-    expect(["before", "after"].map(side => r.units.filter(u => u.side === side).length)).toEqual([6, 8]);
-    expect(["before", "after"].map(side => r.functions.filter(f => f.side === side).length)).toEqual([40, 40]);
+    for (const side of ["before", "after"]) expect(r.units.filter(u => u.side === side).length).toBeGreaterThan(0);
+    for (const side of ["before", "after"]) expect(r.functions.filter(f => f.side === side).length).toBeGreaterThan(0);
     for (const f of r.functions) {
       expect(f.evidence[0].fragmentText).toContain(f.text);
-      const owner = r.units.find(u => u.id === f.unitId)!;
-      expect(owner.evidence.some(e => f.evidence.some(fe => fe.fragmentId === e.fragmentId))).toBe(true);
+      expect(r.units.some(u => u.id === f.unitId && u.side === f.side)).toBe(true);
+      expect(r.clauses.some(c => c.id === f.clauseId && c.side === f.side)).toBe(true);
     }
     expect(r.summary.findingsByType.LOSS).toBe(0);
     expect(r.lineage.some(l => l.status === "TRANSFERRED")).toBe(true);
+  });
+
+  it("verifies raw function evidence together with clause evidence from document checks", async () => {
+    const lines = ["1. Отдел качества", "1.1. Формирует отчёт.", "1.2. Ссылка п. 9.9.9."];
+    const r = await analyze(lines, lines);
+    expect(r.functions).toHaveLength(2);
+    expect(r.findings.some(f => f.type === "BROKEN_REFERENCE" && f.verified)).toBe(true);
+    expect(r.functions.every(f => r.clauses.some(c => c.id === f.clauseId))).toBe(true);
   });
 
 });

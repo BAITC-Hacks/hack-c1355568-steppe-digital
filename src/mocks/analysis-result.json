@@ -41,7 +41,18 @@
       "LOSS": 2,
       "DUPLICATION": 2,
       "CONFLICT": 1,
-      "REORGANIZATION": 2
+      "REORGANIZATION": 2,
+      "SCOPE_CHANGE": 0,
+      "BROKEN_REFERENCE": 0,
+      "UNDEFINED_ROLE": 0,
+      "AMBIGUITY": 0
+    },
+    "alignmentsByStatus": {
+      "IDENTICAL": 0,
+      "COSMETIC": 0,
+      "SUBSTANTIVE": 3,
+      "ONLY_BEFORE": 2,
+      "ONLY_AFTER": 5
     }
   },
   "units": [
@@ -63,7 +74,8 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел учёта.",
           "verified": true
         }
-      ]
+      ],
+      "kind": "department"
     },
     {
       "id": "a0-0",
@@ -83,7 +95,8 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел учёта.",
           "verified": true
         }
-      ]
+      ],
+      "kind": "department"
     },
     {
       "id": "b1-0",
@@ -103,7 +116,8 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел кадров.",
           "verified": true
         }
-      ]
+      ],
+      "kind": "department"
     },
     {
       "id": "a1-0",
@@ -123,7 +137,8 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Служба персонала.",
           "verified": true
         }
-      ]
+      ],
+      "kind": "department"
     },
     {
       "id": "b2-0",
@@ -143,7 +158,8 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел закупок.",
           "verified": true
         }
-      ]
+      ],
+      "kind": "department"
     },
     {
       "id": "b2-1",
@@ -163,7 +179,8 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел снабжения.",
           "verified": true
         }
-      ]
+      ],
+      "kind": "department"
     },
     {
       "id": "a2-0",
@@ -183,7 +200,8 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Дирекция ресурсов.",
           "verified": true
         }
-      ]
+      ],
+      "kind": "department"
     },
     {
       "id": "b3-0",
@@ -203,7 +221,8 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Операционный отдел.",
           "verified": true
         }
-      ]
+      ],
+      "kind": "department"
     },
     {
       "id": "a3-0",
@@ -223,7 +242,8 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел исполнения.",
           "verified": true
         }
-      ]
+      ],
+      "kind": "department"
     },
     {
       "id": "a3-1",
@@ -243,7 +263,8 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Отдел контроля.",
           "verified": true
         }
-      ]
+      ],
+      "kind": "department"
     },
     {
       "id": "a4-0",
@@ -263,7 +284,8 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Служба развития.",
           "verified": true
         }
-      ]
+      ],
+      "kind": "department"
     },
     {
       "id": "b5-0",
@@ -283,7 +305,8 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. В структуру входит Архивный отдел.",
           "verified": true
         }
-      ]
+      ],
+      "kind": "department"
     }
   ],
   "unitChanges": [
@@ -603,7 +626,9 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Ведёт реестр основных средств.",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-b-account"
     },
     {
       "id": "a-account",
@@ -627,7 +652,9 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Ведёт реестр основных средств.",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-a-account"
     },
     {
       "id": "b-hiring",
@@ -651,7 +678,9 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Оформляет приём сотрудников.",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-b-hiring"
     },
     {
       "id": "a-hiring",
@@ -675,7 +704,9 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Оформляет приём сотрудников с электронной подписью.",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-a-hiring"
     },
     {
       "id": "b-purchase",
@@ -699,7 +730,9 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Формирует годовой план закупок.",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-b-purchase"
     },
     {
       "id": "a-purchase",
@@ -723,7 +756,9 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Формирует годовой план закупок.",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-a-purchase"
     },
     {
       "id": "b-loss1",
@@ -747,7 +782,9 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Обеспечивает экспертизу ценности архивных документов.",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-b-loss1"
     },
     {
       "id": "b-loss2",
@@ -771,7 +808,9 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Ведёт реестр аварийных обращений.",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-b-loss2"
     },
     {
       "id": "a-duplicate1",
@@ -795,7 +834,9 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Формирует годовой план закупок.",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-a-duplicate1"
     },
     {
       "id": "a-report1",
@@ -819,7 +860,9 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Составляет ежемесячный отчёт об исполнении договоров.",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-a-report1"
     },
     {
       "id": "a-report2",
@@ -843,7 +886,9 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Составляет ежемесячный отчёт об исполнении договоров.",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-a-report2"
     },
     {
       "id": "a-approve",
@@ -867,7 +912,9 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Утверждает годовой план закупок.",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-a-approve"
     },
     {
       "id": "a-new",
@@ -891,7 +938,9 @@
           "fragmentText": "СИНТЕТИЧЕСКИЙ УЧЕБНЫЙ ДОКУМЕНТ. Готовит предложения по новым направлениям деятельности.",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-a-new"
     }
   ],
   "lineage": [
@@ -1514,5 +1563,212 @@
   "warnings": [
     "Синтетический учебный пример. Все названия и фрагменты вымышлены.",
     "Неподтверждённый диагностический кандидат исключён из итогов."
+  ],
+  "clauses": [
+    {
+      "id": "clause-b-account",
+      "side": "before",
+      "documentId": "doc-before",
+      "number": "п. 19",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "Ведёт реестр основных средств.",
+      "kind": "clause"
+    },
+    {
+      "id": "clause-a-account",
+      "side": "after",
+      "documentId": "doc-after",
+      "number": "п. 20",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "Ведёт реестр основных средств.",
+      "kind": "clause"
+    },
+    {
+      "id": "clause-b-hiring",
+      "side": "before",
+      "documentId": "doc-before",
+      "number": "п. 21",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "Оформляет приём сотрудников.",
+      "kind": "clause"
+    },
+    {
+      "id": "clause-a-hiring",
+      "side": "after",
+      "documentId": "doc-after",
+      "number": "п. 22",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "Оформляет приём сотрудников с электронной подписью.",
+      "kind": "clause"
+    },
+    {
+      "id": "clause-b-purchase",
+      "side": "before",
+      "documentId": "doc-before",
+      "number": "п. 23",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "Формирует годовой план закупок.",
+      "kind": "clause"
+    },
+    {
+      "id": "clause-a-purchase",
+      "side": "after",
+      "documentId": "doc-after",
+      "number": "п. 24",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "Формирует годовой план закупок.",
+      "kind": "clause"
+    },
+    {
+      "id": "clause-b-loss1",
+      "side": "before",
+      "documentId": "doc-before",
+      "number": "п. 25",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "Обеспечивает экспертизу ценности архивных документов.",
+      "kind": "clause"
+    },
+    {
+      "id": "clause-b-loss2",
+      "side": "before",
+      "documentId": "doc-before",
+      "number": "п. 26",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "Ведёт реестр аварийных обращений.",
+      "kind": "clause"
+    },
+    {
+      "id": "clause-a-duplicate1",
+      "side": "after",
+      "documentId": "doc-after",
+      "number": "п. 27",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "Формирует годовой план закупок.",
+      "kind": "clause"
+    },
+    {
+      "id": "clause-a-report1",
+      "side": "after",
+      "documentId": "doc-after",
+      "number": "п. 28",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "Составляет ежемесячный отчёт об исполнении договоров.",
+      "kind": "clause"
+    },
+    {
+      "id": "clause-a-report2",
+      "side": "after",
+      "documentId": "doc-after",
+      "number": "п. 29",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "Составляет ежемесячный отчёт об исполнении договоров.",
+      "kind": "clause"
+    },
+    {
+      "id": "clause-a-approve",
+      "side": "after",
+      "documentId": "doc-after",
+      "number": "п. 30",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "Утверждает годовой план закупок.",
+      "kind": "clause"
+    },
+    {
+      "id": "clause-a-new",
+      "side": "after",
+      "documentId": "doc-after",
+      "number": "п. 31",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "Готовит предложения по новым направлениям деятельности.",
+      "kind": "clause"
+    }
+  ],
+  "alignments": [
+    {
+      "id": "alignment-lineage-0",
+      "beforeClauseId": "clause-b-account",
+      "afterClauseId": "clause-a-account",
+      "status": "SUBSTANTIVE",
+      "similarity": 0.7,
+      "method": "fuzzy"
+    },
+    {
+      "id": "alignment-lineage-1",
+      "beforeClauseId": "clause-b-hiring",
+      "afterClauseId": "clause-a-hiring",
+      "status": "SUBSTANTIVE",
+      "similarity": 0.7,
+      "method": "fuzzy"
+    },
+    {
+      "id": "alignment-lineage-2",
+      "beforeClauseId": "clause-b-purchase",
+      "afterClauseId": "clause-a-purchase",
+      "status": "SUBSTANTIVE",
+      "similarity": 0.7,
+      "method": "fuzzy"
+    },
+    {
+      "id": "alignment-clause-b-loss1",
+      "beforeClauseId": "clause-b-loss1",
+      "status": "ONLY_BEFORE",
+      "similarity": 0,
+      "method": "fuzzy"
+    },
+    {
+      "id": "alignment-clause-b-loss2",
+      "beforeClauseId": "clause-b-loss2",
+      "status": "ONLY_BEFORE",
+      "similarity": 0,
+      "method": "fuzzy"
+    },
+    {
+      "id": "alignment-clause-a-duplicate1",
+      "afterClauseId": "clause-a-duplicate1",
+      "status": "ONLY_AFTER",
+      "similarity": 0,
+      "method": "fuzzy"
+    },
+    {
+      "id": "alignment-clause-a-report1",
+      "afterClauseId": "clause-a-report1",
+      "status": "ONLY_AFTER",
+      "similarity": 0,
+      "method": "fuzzy"
+    },
+    {
+      "id": "alignment-clause-a-report2",
+      "afterClauseId": "clause-a-report2",
+      "status": "ONLY_AFTER",
+      "similarity": 0,
+      "method": "fuzzy"
+    },
+    {
+      "id": "alignment-clause-a-approve",
+      "afterClauseId": "clause-a-approve",
+      "status": "ONLY_AFTER",
+      "similarity": 0,
+      "method": "fuzzy"
+    },
+    {
+      "id": "alignment-clause-a-new",
+      "afterClauseId": "clause-a-new",
+      "status": "ONLY_AFTER",
+      "similarity": 0,
+      "method": "fuzzy"
+    }
   ]
 }

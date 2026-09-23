@@ -43,7 +43,18 @@
       "LOSS": 1,
       "DUPLICATION": 0,
       "CONFLICT": 0,
-      "REORGANIZATION": 1
+      "REORGANIZATION": 1,
+      "SCOPE_CHANGE": 0,
+      "BROKEN_REFERENCE": 0,
+      "UNDEFINED_ROLE": 0,
+      "AMBIGUITY": 0
+    },
+    "alignmentsByStatus": {
+      "IDENTICAL": 0,
+      "COSMETIC": 0,
+      "SUBSTANTIVE": 1,
+      "ONLY_BEFORE": 1,
+      "ONLY_AFTER": 0
     }
   },
   "units": [
@@ -65,7 +76,8 @@
           "fragmentText": "1. Отдел договорной работы",
           "verified": true
         }
-      ]
+      ],
+      "kind": "department"
     },
     {
       "id": "unit-after",
@@ -85,7 +97,8 @@
           "fragmentText": "1. Отдел договорной работы",
           "verified": true
         }
-      ]
+      ],
+      "kind": "department"
     }
   ],
   "unitChanges": [
@@ -150,7 +163,9 @@
           "fragmentText": "3. ведение реестра договоров",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-registry-before"
     },
     {
       "id": "archive-before",
@@ -174,7 +189,9 @@
           "fragmentText": "2. архивирование договорной документации",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-archive-before"
     },
     {
       "id": "archive-after",
@@ -198,7 +215,9 @@
           "fragmentText": "2. архивирование договорной документации",
           "verified": true
         }
-      ]
+      ],
+      "category": "function",
+      "clauseId": "clause-archive-after"
     }
   ],
   "lineage": [
@@ -395,5 +414,54 @@
   },
   "warnings": [
     "DEMO / MOCK DATA — полностью синтетический пример для интеграции интерфейса, не результат ИИ."
+  ],
+  "clauses": [
+    {
+      "id": "clause-registry-before",
+      "side": "before",
+      "documentId": "doc-before",
+      "number": "3",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "ведение реестра договоров",
+      "kind": "clause"
+    },
+    {
+      "id": "clause-archive-before",
+      "side": "before",
+      "documentId": "doc-before",
+      "number": "2",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "архивирование договорной документации",
+      "kind": "clause"
+    },
+    {
+      "id": "clause-archive-after",
+      "side": "after",
+      "documentId": "doc-after",
+      "number": "2",
+      "sectionNumber": "",
+      "sectionTitle": "Синтетический пример",
+      "text": "архивирование договорной документации",
+      "kind": "clause"
+    }
+  ],
+  "alignments": [
+    {
+      "id": "alignment-lineage-archive",
+      "beforeClauseId": "clause-archive-before",
+      "afterClauseId": "clause-archive-after",
+      "status": "SUBSTANTIVE",
+      "similarity": 0.7,
+      "method": "fuzzy"
+    },
+    {
+      "id": "alignment-clause-registry-before",
+      "beforeClauseId": "clause-registry-before",
+      "status": "ONLY_BEFORE",
+      "similarity": 0,
+      "method": "fuzzy"
+    }
   ]
 }

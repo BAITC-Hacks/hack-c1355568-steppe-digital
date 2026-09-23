@@ -18,7 +18,13 @@ export class JobStore {
     for (const file of await readdir(this.directory)) {
       const id = file.replace(/\.json$/u, "");
       if (!file.endsWith(".json") || !validId.test(id)) continue;
-      const parsed = AnalysisJobSchema.safeParse(JSON.parse(await readFile(this.filename(id), "utf8")));
+      const raw = JSON.parse(await readFile(this.filename(id), "utf8"));
+      if (raw.id === id && Array.isArray(raw.stages) && raw.stages.length === 7 && !raw.stages.some((s: { key?: string }) => s.key === "clauses")) {
+        // Retain the old file unchanged; expose an actionable terminal response for this ID.
+        this.jobs.set(id, { id, status: "failed", error: "Анализ создан по контракту v0.1.0. Загрузите документы повторно для v0.2.0.", stages: createStages() });
+        continue;
+      }
+      const parsed = AnalysisJobSchema.safeParse(raw);
       if (!parsed.success || parsed.data.id !== id) throw new AppError(500, "Хранилище заданий повреждено. Проверьте локальные данные.");
       const job = parsed.data;
       if (job.status === "queued" || job.status === "running") {

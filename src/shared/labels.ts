@@ -1,0 +1,4 @@
+export const findingLabels = { LOSS: "Возможная потеря", DUPLICATION: "Дублирование", CONFLICT: "Потенциальный конфликт", REORGANIZATION: "Реорганизация", SCOPE_CHANGE: "Изменение области ответственности", BROKEN_REFERENCE: "Некорректная ссылка", UNDEFINED_ROLE: "Неопределённая роль", AMBIGUITY: "Неоднозначность" };
+export const alignmentLabels = { IDENTICAL: "Без изменений", COSMETIC: "Косметические", SUBSTANTIVE: "Существенные", ONLY_BEFORE: "Только ДО", ONLY_AFTER: "Только ПОСЛЕ" };
+export const unitLabels = { PRESERVED: "Сохранено", RENAMED: "Переименовано", MERGED: "Объединено", SPLIT: "Разделено", CREATED: "Создано", REMOVED: "Удалено" };
+export const lineageLabels = { UNCHANGED: "Сохранена", TRANSFERRED: "Передана", MODIFIED: "Изменена", NEW: "Новая", POSSIBLE_LOSS: "Возможная потеря" };
