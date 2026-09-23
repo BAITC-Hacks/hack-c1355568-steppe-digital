@@ -1,0 +1,58 @@
+1. AI Agent "Organizational Structure and Functions Analysis"
+Goal: develop a prototype AI agent that compares organizational and functional documents, identifies possible loss or duplication of functions, and produces an explainable conclusion with references to the source documents.
+2. Problem
+When departments are reorganized, organizational structures, regulations and other annexes to administrative documents have to be compared manually.
+Key risks: loss of functions, duplication of functions, overlapping areas of responsibility and potential conflicts of interest. In addition, it may be necessary to check functions for compliance with external requirements and to compare the structure with the practice of other operators.
+3. User and Scenario
+Primary user – an employee of the unit conducting the analysis of organizational changes.
+Scenario: the user uploads a set of "before" and "after" reorganization documents – the agent identifies the changed units – compares their functions – shows the identified deviations and sources – produces a final conclusion.
+4. Task
+Develop a prototype AI agent for intelligent comparison of organizational structures and unit functions, capable of identifying deviations and producing explainable conclusions.
+5. Input → Output
+Input: organizational structures, regulations on structural units, job descriptions, administrative documents and their annexes, internal regulatory documents. Formats: Word, PDF, Excel.
+Output: a list of transformed/retained units, a function comparison table, identified losses and duplications, potential conflicts of interest, references to supporting clauses of the documents, and brief recommendations.
+6. Data
+The organizer provides a test set of documents for comparison. To check compliance with external requirements, specific regulatory documents, standards and requirements followed by the units may also be provided.
+Where possible, open data on the organizational structures of other operators is provided for benchmarking. The data volume and access method are specified separately by the organizer.
+7. Must have
+1) Determine from the annexes which structural units were reorganized, which were retained and which were created.
+2) Compare the functions of transformed and existing units and identify potential loss of functions.
+3) Compare the functions of units with each other and identify possible duplication of functions and conflicts of interest.
+4) For each finding, show the supporting source: the document and the relevant fragment/clause.
+5) Produce a final analytical conclusion in a form that is clear to the user.
+8. Optional
+1) Comparison of unit tasks and functions with the provided legislation, standards and regulatory requirements.
+2) Comparison of the organizational structures of transformed/created departments with those of other operators.
+3) Recommendations on redistributing functions and eliminating identified overlaps.
+9. Constraints
+AI findings are advisory and must be verified by the responsible employee. The agent must not make statements that are not supported by the provided documents. Traceability to the source must be maintained for every significant finding.
+10. Deliverables
+A working prototype, an interface for uploading documents and viewing results, a repository with source code, a README with launch instructions, and a brief description of the solution architecture.
+11. Simple Solution Check
+The team demonstrates the solution on a control set of documents with several known changes: a unit reorganization, a lost function and duplicated functions. The check is whether the agent detected these cases and cited the correct sources.
+________________
+
+
+
+
+Criterion
+	What is evaluated
+	Points
+	Compliance with the task and functionality
+	The assessment considers how well the solution meets the assigned task and enables the main stated scenario to be implemented.
+	25
+	Technical implementation
+	The quality of the solution’s technical implementation is assessed, including the selected approach, architecture, interaction between components, and use of AI/agentic AI and other technologies. The consistency of the actual implementation with the stated project logic is taken into account.
+	25
+	README and reproducibility
+	The assessment considers whether the documentation makes it possible to understand the project structure, technologies used, launch procedure, and main operating scenario. The possibility of reproducing and checking the solution based on the repository materials is also taken into account.
+	25
+	Value and applicability of the solution
+	The assessment considers how well the solution addresses the stated problem. The practical applicability of the proposed approach is taken into account.
+	15
+	Development potential and originality of the approach
+	The assessment considers the potential for further development of the solution and its use at a broader scale, as well as the presence of well-founded unconventional or original approaches to implementing the task.
+	10
+	Total
+	—
+	100
