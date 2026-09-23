@@ -7,3 +7,4 @@ node_modules/
 coverage/
 *.tsbuildinfo
 .DS_Store
+eval/source-docs/private/
