@@ -1,5 +1,6 @@
-# hack-c1355568-steppe-digital
-Hackathon team repository for Steppe digital
+# OrgTrace AI
+
+**ИИ-система для анализа организационной структуры и функционала до и после реорганизации**
 
 # OrgTrace AI
 
