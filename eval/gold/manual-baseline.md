@@ -10,8 +10,8 @@ Originals were found in `C:\Users\User\Downloads\` and copied unchanged to `eval
 
 | Alias | File in private directory | Identity | SHA-256 |
 | --- | --- | --- | --- |
-| B | Положение_о_внутреннем_аудите_редакция_8_обезличено.docx | Edition No8; protocol No13, 25 June 2021 | a91fb0f5e81ea323a7ff1f3a6205eb2631a487d9e7122f136f70577d0c410e98 |
-| A | Положение_о_внутреннем_аудите_редакция_9_обезличено.docx | Edition No9; protocol No7, 23 December 2022 | 043853e555b8eb90b294186ee0dba33d89997827185c6be67db6fdaf3dc2a8ef |
+| B | Положение_о_внутреннем_аудите_редакция_8_обезличено.docx | Edition No8; protocol [обезличено], date [обезличено] | a91fb0f5e81ea323a7ff1f3a6205eb2631a487d9e7122f136f70577d0c410e98 |
+| A | Положение_о_внутреннем_аудите_редакция_9_обезличено.docx | Edition No9; protocol [обезличено], date [обезличено] | 043853e555b8eb90b294186ee0dba33d89997827185c6be67db6fdaf3dc2a8ef |
 | C | HackAlem AI_ ИИ-агент «Анализ организационной структуры и функционала».docx | Official case, sections 1–11 and evaluation table | c06dc6c9db53e309555fd3c43b7b149ff3daf4b402490826658ea7bfd3656fd8 |
 
 The complete main-document text of A, including sections 1–14 and the appendix listing, was checked for alternative owners and equivalent functions. B/A were compared across the complete extracted text. There are 491/490 nonempty body paragraphs respectively; C has 53. No tracked insertions/deletions, images, text boxes or embedded files were found in these DOCX packages. The appendix lists a code-of-ethics DOCX but does not supply its contents. Referenced staffing schedules, information sheets, audit plans, assurance maps and other internal regulations are not supplied.
