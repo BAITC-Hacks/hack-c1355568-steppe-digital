@@ -4,7 +4,7 @@ import mockResult from "../mocks/analysis-result.json";
 
 // Backend integration requirements are recorded in docs/product/FRONTEND_HANDOFF.md.
 export const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
-const DEMO_PREFIX = "orgtrace:demo:v1:";
+const DEMO_PREFIX = "orgtrace:demo:v2:";
 
 function abort(signal?: AbortSignal) { signal?.throwIfAborted(); }
 
@@ -38,11 +38,11 @@ function saveDemo(job: AnalysisJob) {
 export async function createAnalysis(before: File[], after: File[], signal?: AbortSignal): Promise<{ id: string }> {
   abort(signal);
   if (!before.length || !after.length) throw new Error("Добавьте документы ДО и ПОСЛЕ.");
-  if ([...before, ...after].some(file => !/\.(pdf|docx|xlsx)$/i.test(file.name) || !file.size)) throw new Error("Выберите непустые PDF, DOCX или XLSX.");
+  if ([...before, ...after].some(file => !/\.(txt|pdf|docx|xlsx)$/i.test(file.name) || !file.size)) throw new Error("Выберите непустые TXT, PDF, DOCX или XLSX.");
   if (USE_MOCK) {
     const id = `demo-${crypto.randomUUID()}`;
     const result = AnalysisResultSchema.parse({ ...structuredClone(mockResult), id });
-    const stages = (["ingest", "units", "functions", "lineage", "findings", "verify", "conclusion"] as const).map(key => ({ key, label: "Демонстрационный пример", status: "done", detail: "Загружен готовый синтетический пример. Этот этап анализа не выполнялся." }));
+    const stages = (["ingest", "clauses", "alignment", "units", "functions", "lineage", "checks", "findings", "verify", "conclusion"] as const).map(key => ({ key, label: "Демонстрационный пример", status: "done", detail: "Загружен готовый синтетический пример. Этот этап анализа не выполнялся." }));
     const job = AnalysisJobSchema.parse({ id, status: "done", stages, result });
     // No pretend processing: the pre-authored synthetic example loads immediately.
     saveDemo(job);

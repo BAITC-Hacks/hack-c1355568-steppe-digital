@@ -141,3 +141,19 @@ main{padding:25px}
 .drawer-top{flex-wrap:wrap}
 h1{letter-spacing:-.8px}
 }
+
+.result-views { margin: 2rem 0; padding: 1.5rem; background: #fff; border: 1px solid #dce3e7; border-radius: 16px; }
+.result-views .tabs { flex-wrap: wrap; }
+.view-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; margin: 1rem 0; }
+select { border: 1px solid #c7d2d9; border-radius: 6px; padding: .55rem; background: white; color: #192e3b; max-width: 100%; }
+.clause-row { border-top: 1px solid #dce3e7; padding: 1.1rem 0; }
+.clause-text { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.7; }
+.clause-row small { overflow-wrap: anywhere; }
+.removed-word { background: #ffe1dd; color: #80251a; text-decoration: line-through; }
+.added-word { background: #d5f2e2; color: #174c32; }
+.table-scroll { overflow-x: auto; }
+.result-views table { border-collapse: collapse; width: 100%; table-layout: fixed; min-width: 680px; }
+.result-views th, .result-views td { border-bottom: 1px solid #dce3e7; padding: 1rem; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.result-views summary { cursor: pointer; }
+.result-views details { margin-bottom: .7rem; }
+.result-views article button, .result-views td button { margin: .3rem; }

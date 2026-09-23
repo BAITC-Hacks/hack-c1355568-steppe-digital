@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import example from "@/shared/analysis-result.example.json";
@@ -28,6 +28,14 @@ describe("persistent jobs and review", () => {
     const restored = await new JobStore(directory).get(job.id);
     expect(restored.status).toBe("failed"); expect(restored.stages[0].status).toBe("failed");
     expect(restored.stages[1].status).toBe("pending");
+  });
+  it("isolates old seven-stage jobs without losing their original files", async () => {
+    const id = "11111111-1111-4111-8111-111111111111";
+    await writeFile(path.join(directory, `${id}.json`), JSON.stringify({ id, status: "done", stages: ["ingest", "units", "functions", "lineage", "findings", "verify", "conclusion"].map(key => ({ key, status: "done" })) }));
+    const store = new JobStore(directory);
+    const old = await store.get(id);
+    expect(old.status).toBe("failed"); expect(old.error).toContain("v0.1.0");
+    expect((await store.create()).status).toBe("queued");
   });
   it("rejects unknown IDs and reviews before completion", async () => {
     const store = new JobStore(directory); const job = await store.create();

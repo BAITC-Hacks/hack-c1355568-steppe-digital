@@ -4,7 +4,7 @@ OrgTrace AI — рекомендательный AI-аудитор реорга�
 
 Обязательно полностью читать `docs/case/case.txt`, `docs/plan/PLAN.md` и `docs/research/DATA_ANALYSIS.md`. Кейс — источник истины: не редактировать, не переводить и не переписывать; противоречия сообщать.
 Обновляемая документация и отчёты — на русском; identifiers, fields, paths и enum — на английском. Это правило заменяет прежнее требование English в исторических prompts для новых задач по текущему плану.
-Основной контроль — `data/samples/before/` (редакция 8) и `data/samples/after/` (редакция 9). Содержимое и имена исходников сохранять; синтетический набор вторичен. Новые этапы/поля в плане — целевая спецификация, не утверждение о поддержке в текущем API.
+Основной контроль — `data/samples/before/` (редакция 8) и `data/samples/after/` (редакция 9). Содержимое и имена исходников сохранять; синтетический набор вторичен. Действующий контракт — v0.2.0; фактические возможности и ограничения описаны в `docs/api/CONTRACT.md`, план включает дальнейшее развитие.
 
 | Направление / ветка | Пути ответственности |
 | --- | --- |
@@ -29,3 +29,13 @@ OrgTrace AI — рекомендательный AI-аудитор реорга�
 - Выполнять релевантные тесты, typecheck и lint, frontend также build. Для задачи только с документацией проверить diff, ссылки и источники; проверки кода обозначить `NOT RUN`, а не «пройдены».
 - Последние 45 минут — только исправления, проверки, push и отправка; последний час вся команда остаётся в зоне.
 - Завершать задачу отчётом: изменённые файлы; команды с exit codes или `NOT RUN` и причиной; блокеры; запросы другим направлениям.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

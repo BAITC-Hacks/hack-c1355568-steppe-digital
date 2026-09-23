@@ -1,17 +1,17 @@
 import { z } from "zod";
 import { validateQuote } from "./quote";
 
-export const CONTRACT_VERSION = "0.1.0";
+export const CONTRACT_VERSION = "0.2.0";
 export const SideSchema = z.enum(["before", "after"]);
 export const DocumentTypeSchema = z.enum(["structure", "regulation", "job_description", "order", "other"]);
 export const UnitStatusSchema = z.enum(["PRESERVED", "RENAMED", "MERGED", "SPLIT", "CREATED", "REMOVED"]);
 export const LineageStatusSchema = z.enum(["UNCHANGED", "TRANSFERRED", "MODIFIED", "NEW", "POSSIBLE_LOSS"]);
-export const FindingTypeSchema = z.enum(["LOSS", "DUPLICATION", "CONFLICT", "REORGANIZATION"]);
+export const FindingTypeSchema = z.enum(["LOSS", "DUPLICATION", "CONFLICT", "REORGANIZATION", "SCOPE_CHANGE", "BROKEN_REFERENCE", "UNDEFINED_ROLE", "AMBIGUITY"]);
 export const RoleSchema = z.enum(["execute", "control", "approve", "audit", "support", "other"]);
 export const ReviewPrioritySchema = z.enum(["HIGH", "MEDIUM", "LOW"]);
 export const ConfidenceSchema = z.enum(["high", "medium", "low"]);
 export const ReviewStatusSchema = z.enum(["NOT_REVIEWED", "CONFIRMED", "REJECTED", "NEEDS_CHECK"]);
-export const StageKeySchema = z.enum(["ingest", "units", "functions", "lineage", "findings", "verify", "conclusion"]);
+export const StageKeySchema = z.enum(["ingest", "clauses", "alignment", "units", "functions", "lineage", "checks", "findings", "verify", "conclusion"]);
 export const StageStatusSchema = z.enum(["pending", "running", "done", "failed"]);
 export const JobStatusSchema = z.enum(["queued", "running", "done", "failed"]);
 export const ConclusionKeySchema = z.enum(["orgChanges", "functionPreservation", "possibleLosses", "duplication", "conflicts", "needsHumanReview"]);
@@ -33,8 +33,21 @@ export const DocumentInfoSchema = z.strictObject({
   id, name: text, side: SideSchema, docType: DocumentTypeSchema,
   fragmentCount: count, warnings: z.array(text),
 });
+export const AlignmentStatusSchema = z.enum(["IDENTICAL", "COSMETIC", "SUBSTANTIVE", "ONLY_BEFORE", "ONLY_AFTER"]);
+export const ClauseSchema = z.strictObject({
+  id, side: SideSchema, documentId: id, number: z.string(), letter: text.optional(),
+  parentNumber: text.optional(), sectionNumber: z.string(), sectionTitle: z.string(), text,
+  kind: z.enum(["heading", "clause", "item", "toc", "empty"]),
+});
+export const ClauseAlignmentSchema = z.strictObject({
+  id, beforeClauseId: id.optional(), afterClauseId: id.optional(), status: AlignmentStatusSchema,
+  similarity: z.number().min(0).max(1), method: z.enum(["exact", "fuzzy", "embedding", "llm"]),
+}).refine(a => a.status === "ONLY_BEFORE" ? !!a.beforeClauseId && !a.afterClauseId
+  : a.status === "ONLY_AFTER" ? !!a.afterClauseId && !a.beforeClauseId : !!a.beforeClauseId && !!a.afterClauseId,
+  "Alignment sides disagree with status");
 export const UnitSchema = z.strictObject({
   id, side: SideSchema, name: text, normalizedName: text,
+  kind: z.enum(["block", "department", "position", "center"]), abbreviation: text.optional(), parentUnitId: id.optional(),
   parentName: text.optional(), evidence: z.array(EvidenceSchema),
 });
 export const UnitChangeSchema = z.strictObject({
@@ -52,12 +65,12 @@ export const UnitChangeSchema = z.strictObject({
 }, "Unit status and relationship cardinality disagree");
 export const OrgFunctionSchema = z.strictObject({
   id, unitId: id, side: SideSchema, text, action: text, object: text, process: text,
-  role: RoleSchema, evidence: z.array(EvidenceSchema),
+  role: RoleSchema, category: z.enum(["function", "right"]), clauseId: id, evidence: z.array(EvidenceSchema),
 });
 export const CandidateSchema = z.strictObject({ functionId: id, reason: text });
 export const FunctionLineageSchema = z.strictObject({
   id, beforeFunctionIds: z.array(id), afterFunctionIds: z.array(id), status: LineageStatusSchema,
-  rationale: text, candidatesChecked: z.array(CandidateSchema),
+  rationale: text, beforeClauseNumber: text.optional(), afterClauseNumber: text.optional(), candidatesChecked: z.array(CandidateSchema),
 }).refine(l => {
   const b = l.beforeFunctionIds.length, a = l.afterFunctionIds.length;
   if (l.status === "NEW") return b === 0 && a > 0;
@@ -87,7 +100,8 @@ export const FindingSchema = z.strictObject({
 export const SummarySchema = z.strictObject({
   unitsByStatus: z.strictObject({ PRESERVED: count, RENAMED: count, MERGED: count, SPLIT: count, CREATED: count, REMOVED: count }),
   functionsByStatus: z.strictObject({ UNCHANGED: count, TRANSFERRED: count, MODIFIED: count, NEW: count, POSSIBLE_LOSS: count }),
-  findingsByType: z.strictObject({ LOSS: count, DUPLICATION: count, CONFLICT: count, REORGANIZATION: count }),
+  findingsByType: z.record(FindingTypeSchema, count),
+  alignmentsByStatus: z.record(AlignmentStatusSchema, count),
 });
 export const ConclusionSectionSchema = z.strictObject({ key: ConclusionKeySchema, title: text, text, findingIds: z.array(id) });
 export const ConclusionSchema = z.strictObject({ sections: z.array(ConclusionSectionSchema) }).refine(
@@ -97,14 +111,27 @@ export const ConclusionSchema = z.strictObject({ sections: z.array(ConclusionSec
 
 export const AnalysisResultSchema = z.strictObject({
   id, isMock: z.boolean(), documents: z.array(DocumentInfoSchema), summary: SummarySchema,
+  clauses: z.array(ClauseSchema), alignments: z.array(ClauseAlignmentSchema),
   units: z.array(UnitSchema), unitChanges: z.array(UnitChangeSchema), functions: z.array(OrgFunctionSchema),
   lineage: z.array(FunctionLineageSchema), findings: z.array(FindingSchema), conclusion: ConclusionSchema,
   warnings: z.array(text),
 }).superRefine((r, ctx) => {
   const issue = (message: string) => ctx.addIssue({ code: "custom", message });
-  for (const items of [r.documents, r.units, r.unitChanges, r.functions, r.lineage, r.findings]) {
+  for (const items of [r.documents, r.clauses, r.alignments, r.units, r.unitChanges, r.functions, r.lineage, r.findings]) {
     if (new Set(items.map(x => x.id)).size !== items.length) issue("IDs must be unique within each collection");
   }
+  const clauses = new Map(r.clauses.map(c => [c.id, c]));
+  const usedClauses = new Set<string>();
+  for (const c of r.clauses) if (!r.documents.some(d => d.id === c.documentId && d.side === c.side)) issue("Clause document is missing or wrong-side");
+  for (const a of r.alignments) for (const [ref, side] of [[a.beforeClauseId, "before"], [a.afterClauseId, "after"]] as const) {
+    if (!ref) continue;
+    const c = clauses.get(ref);
+    if (!c || c.side !== side || !["clause", "item"].includes(c.kind)) issue("Invalid alignment clause reference");
+    if (usedClauses.has(ref)) issue("Clause aligned more than once");
+    usedClauses.add(ref);
+  }
+  for (const c of r.clauses) if (["clause", "item"].includes(c.kind) && !usedClauses.has(c.id)) issue("Clause missing from alignment");
+  for (const status of AlignmentStatusSchema.options) if (r.summary.alignmentsByStatus[status] !== r.alignments.filter(a => a.status === status).length) issue("Incorrect alignment summary");
   const units = new Map(r.units.map(u => [u.id, u]));
   const functions = new Map(r.functions.map(f => [f.id, f]));
   const findings = new Map(r.findings.map(f => [f.id, f]));
@@ -119,7 +146,18 @@ export const AnalysisResultSchema = z.strictObject({
       if (usedUnits.has(ref)) issue("Unit occurs in multiple changes"); usedUnits.add(ref);
     }
   }
-  for (const f of r.functions) checkIds([f.unitId], units, f.side);
+  for (const u of r.units) {
+    const seen = new Set([u.id]); let parent = u.parentUnitId;
+    while (parent) {
+      const ancestor = units.get(parent);
+      if (!ancestor || ancestor.side !== u.side || seen.has(parent)) { issue("Invalid unit parent"); break; }
+      seen.add(parent); parent = ancestor.parentUnitId;
+    }
+  }
+  for (const f of r.functions) {
+    checkIds([f.unitId], units, f.side);
+    if (clauses.get(f.clauseId)?.side !== f.side) issue("Function clause missing or wrong-side");
+  }
   for (const l of r.lineage) {
     checkIds(l.beforeFunctionIds, functions, "before"); checkIds(l.afterFunctionIds, functions, "after");
     checkIds(l.candidatesChecked.map(c => c.functionId), functions, "after");
@@ -179,3 +217,6 @@ export type StageKey = z.infer<typeof StageKeySchema>;
 export type ReviewInput = z.infer<typeof ReviewInputSchema>;
 export type CreateAnalysisResponse = z.infer<typeof CreateAnalysisResponseSchema>;
 export type ApiError = z.infer<typeof ApiErrorSchema>;
+
+export type Clause = z.infer<typeof ClauseSchema>;
+export type ClauseAlignment = z.infer<typeof ClauseAlignmentSchema>;

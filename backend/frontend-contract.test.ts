@@ -16,7 +16,7 @@ vi.mock("next/server", () => ({ after: (task: () => Promise<void>) => { tasks.pu
 let directory: string;
 beforeEach(async () => {
   directory = await mkdtemp(path.join(os.tmpdir(), "orgtrace-frontend-contract-"));
-  vi.stubEnv("ORGTRACE_DATA_DIR", directory); vi.stubEnv("NEXT_PUBLIC_USE_MOCK", "false");
+  vi.stubEnv("ORGTRACE_DATA_DIR", directory); vi.stubEnv("ORGTRACE_AI", "false"); vi.stubEnv("NEXT_PUBLIC_USE_MOCK", "false");
   tasks.length = 0; vi.resetModules();
 });
 afterEach(async () => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); await rm(directory, { recursive: true, force: true }); });

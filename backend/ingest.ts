@@ -20,7 +20,7 @@ export function validateUploads(inputs: UploadInput[]): void {
   const names = new Set<string>();
   for (const f of inputs) {
     if (!f.name.trim() || f.name.length > 255 || /[\\/\u0000-\u001f]/u.test(f.name)) throw new AppError(400, "Недопустимое имя файла.");
-    if (!['.docx', '.pdf', '.xlsx'].includes(path.extname(f.name).toLowerCase())) throw new AppError(415, "Поддерживаются только PDF, DOCX и XLSX.");
+    if (!['.txt', '.docx', '.pdf', '.xlsx'].includes(path.extname(f.name).toLowerCase())) throw new AppError(415, "Поддерживаются TXT, PDF, DOCX и XLSX.");
     if (!f.bytes.byteLength) throw new AppError(400, "Загружен пустой файл.");
     if (f.bytes.byteLength > LIMITS.fileBytes) throw new AppError(413, "Файл превышает 10 MiB.");
     const key = `${f.side}:${f.name}`;
@@ -54,7 +54,12 @@ export async function ingestDocument(input: UploadInput): Promise<IngestedDocume
   };
   try {
     const extension = path.extname(input.name).toLowerCase();
-    if (extension === ".pdf") {
+    if (extension === ".txt") {
+      const raw = new TextDecoder("utf-8", { fatal: true }).decode(input.bytes);
+      for (const [index, line] of raw.split(/\r?\n/u).entries()) {
+        add(line, { label: `Строка ${index + 1}`, row: index + 1 });
+      }
+    } else if (extension === ".pdf") {
       if (!Buffer.from(input.bytes.subarray(0, 5)).equals(Buffer.from("%PDF-"))) throw new Error("Invalid PDF");
       const { getDocument } = await import("pdfjs-dist/legacy/build/pdf.mjs");
       const task = getDocument({ data: new Uint8Array(input.bytes), useSystemFonts: true, isEvalSupported: false, verbosity: 0 });
@@ -76,6 +81,7 @@ export async function ingestDocument(input: UploadInput): Promise<IngestedDocume
     } else if (extension === ".docx") {
       if (input.bytes[0] !== 0x50 || input.bytes[1] !== 0x4b) throw new Error("Invalid DOCX");
       const extracted = await mammoth.extractRawText({ buffer: Buffer.from(input.bytes) });
+      document.warnings.push("DOCX: автоматическая нумерация Word может отсутствовать в извлечённом тексте; проверьте локаторы.");
       if (extracted.messages.length) document.warnings.push("Парсер DOCX сообщил о неподдерживаемых элементах; проверьте полноту извлечения.");
       for (const [index, paragraph] of extracted.value.split(/\n\s*\n/u).entries()) {
         const section = clause(paragraph);
@@ -103,7 +109,7 @@ export async function ingestDocument(input: UploadInput): Promise<IngestedDocume
           add(text, { row: row + 1, ...(section ? { section } : {}), label: `${sheetName}, строка ${row + 1}` });
         }
       }
-    } else throw new AppError(415, "Поддерживаются только PDF, DOCX и XLSX.");
+    } else throw new AppError(415, "Поддерживаются TXT, PDF, DOCX и XLSX.");
   } catch (error) {
     if (error instanceof AppError) throw error;
     // Do not pass parser internals or partial text off as a complete document.

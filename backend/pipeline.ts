@@ -1,60 +1,64 @@
 import path from "node:path";
-import { AnalysisResultSchema, ConclusionKeySchema, StageKeySchema, type AnalysisResult, type Stage, type StageKey } from "@/shared/contract";
+import { AnalysisResultSchema, StageKeySchema, type AnalysisResult, type Stage, type StageKey } from "@/shared/contract";
 import { ingestDocument, validateUploads, type Fragment, type UploadInput } from "./ingest";
 import { AppError, publicError } from "./errors";
 import { atomicJson, dataDirectory } from "./files";
 import { STAGE_LABELS } from "./stages";
 import type { JobStore } from "./store";
+import { parseClauses, alignClauses, type ParsedClauses } from "./clauses";
+import { extractUnits, extractFunctions, traceFunctions, checkDocuments, deriveFindings, summarize, conclude } from "./regulation";
+import { refineAlignment, tagChangedRoles } from "./semantic";
 
 export const EMPTY_SUMMARY = {
   unitsByStatus: { PRESERVED: 0, RENAMED: 0, MERGED: 0, SPLIT: 0, CREATED: 0, REMOVED: 0 },
   functionsByStatus: { UNCHANGED: 0, TRANSFERRED: 0, MODIFIED: 0, NEW: 0, POSSIBLE_LOSS: 0 },
-  findingsByType: { LOSS: 0, DUPLICATION: 0, CONFLICT: 0, REORGANIZATION: 0 },
-} as const;
-const sectionTitles = ["Изменения структуры", "Сохранение функций", "Возможные потери", "Дублирование", "Конфликты", "Требуется проверка человеком"];
+  findingsByType: { LOSS: 0, DUPLICATION: 0, CONFLICT: 0, REORGANIZATION: 0, SCOPE_CHANGE: 0, BROKEN_REFERENCE: 0, UNDEFINED_ROLE: 0, AMBIGUITY: 0 },
+  alignmentsByStatus: { IDENTICAL: 0, COSMETIC: 0, SUBSTANTIVE: 0, ONLY_BEFORE: 0, ONLY_AFTER: 0 },
+};
 export type RunAnalysisInput = { id: string; files: UploadInput[]; onStage?: (stage: Stage) => Promise<void> };
 
-/** Real ingestion; semantic stages are explicitly stubbed until the next backend task. */
 export async function runAnalysis({ id, files, onStage }: RunAnalysisInput): Promise<AnalysisResult> {
   validateUploads(files);
   if (!/^[a-zA-Z0-9-]+$/u.test(id)) throw new AppError(400, "Некорректный идентификатор анализа.");
   const result: AnalysisResult = {
-    id, isMock: true, documents: [], summary: structuredClone(EMPTY_SUMMARY), units: [], unitChanges: [],
+    id, isMock: false, documents: [], summary: structuredClone(EMPTY_SUMMARY), clauses: [], alignments: [], units: [], unitChanges: [],
     functions: [], lineage: [], findings: [], conclusion: { sections: [] },
-    warnings: ["DEMO / MOCK DATA: файлы разобраны, но семантические этапы являются заглушками. Это не результат ИИ-аудита."],
+    warnings: ["Извлечение владельцев настроено на структуру положений БВА. Сопоставление функций — кандидаты по содержанию; косвенное покрытие и переименования требуют проверки. Не является полным юридическим аудитом."],
   };
   const fragments: Fragment[] = [];
+  let parsed: ParsedClauses = { clauses: [], sources: new Map(), warnings: [] };
   const stage = async (key: StageKey, status: Stage["status"], detail: string) => onStage?.({ key, status, label: STAGE_LABELS[key], detail });
   for (const key of StageKeySchema.options) {
-    const stub = ["units", "functions", "lineage", "findings"].includes(key);
-    await stage(key, "running", stub ? "Заглушка: семантический анализ ещё не реализован." : "Выполняется.");
+    await stage(key, "running", "Выполняется.");
     try {
       if (key === "ingest") {
         for (const file of files) {
-          const parsed = await ingestDocument(file);
-          result.documents.push(parsed.document); fragments.push(...parsed.fragments);
-          result.warnings.push(...parsed.document.warnings.map(w => `${parsed.document.name}: ${w}`));
+          const document = await ingestDocument(file);
+          result.documents.push(document.document); fragments.push(...document.fragments);
+          result.warnings.push(...document.document.warnings.map(w => `${document.document.name}: ${w}`));
         }
         await atomicJson(path.join(dataDirectory(), "fragments", `${id}.json`), fragments);
-        for (const side of ["before", "after"] as const) {
-          if (!fragments.some(f => f.side === side)) throw new AppError(422, `На стороне ${side === "before" ? "ДО" : "ПОСЛЕ"} нет читаемого текста. Предоставьте документы с текстовым слоем.`);
-        }
+        for (const side of ["before", "after"] as const) if (!fragments.some(f => f.side === side)) throw new AppError(422, `На стороне ${side === "before" ? "ДО" : "ПОСЛЕ"} нет читаемого текста. Предоставьте документы с текстовым слоем.`);
       }
+      if (key === "clauses") { parsed = parseClauses(fragments); result.clauses = parsed.clauses; result.warnings.push(...parsed.warnings); }
+      if (key === "alignment") { result.alignments = alignClauses(result.clauses); await refineAlignment(result, parsed); }
+      if (key === "units") extractUnits(result, parsed);
+      if (key === "functions") { extractFunctions(result, parsed); await tagChangedRoles(result, parsed); }
+      if (key === "lineage") traceFunctions(result, parsed);
+      if (key === "checks") checkDocuments(result, parsed);
+      if (key === "findings") deriveFindings(result, parsed);
       if (key === "verify") {
-        // The scaffold has no semantic claims. Still enforce all existing references/counts.
-        const withSections = { ...result, conclusion: { sections: emptySections() } };
-        AnalysisResultSchema.parse(withSections);
+        // Validate every source against the actual ingest registry, not merely model text.
+        const evidence = [...result.units, ...result.unitChanges, ...result.functions, ...result.findings].flatMap(x => x.evidence);
+        for (const e of evidence) if (!fragments.some(f => e.fragmentId.startsWith(`${f.id}:`) && f.text === e.fragmentText && f.side === e.side && f.documentName === e.documentName && f.text.includes(e.quote))) throw new AppError(500, "Источник не прошёл проверку исходного фрагмента.");
+        summarize(result); conclude(result); AnalysisResultSchema.parse(result);
       }
-      if (key === "conclusion") result.conclusion.sections = emptySections();
-      await stage(key, "done", key === "ingest" ? `Документов: ${result.documents.length}; фрагментов: ${fragments.length}.` : stub ? "Заглушка завершена; выводы не сформированы." : key === "conclusion" ? "Показаны ограничения каркаса; аналитическое заключение не сформировано." : "Контракт проверен; семантических выводов пока нет.");
-    } catch (error) {
-      await stage(key, "failed", publicError(error)); throw error;
-    }
+      if (key === "conclusion") conclude(result);
+      const detail = { ingest: `Документов: ${result.documents.length}; фрагментов: ${fragments.length}.`, clauses: `Пунктов и заголовков: ${result.clauses.length}.`, alignment: `Записей сравнения: ${result.alignments.length}.`, units: `Сущностей: ${result.units.length}.`, functions: `Функций и полномочий: ${result.functions.length}.`, lineage: `Связей: ${result.lineage.length}.`, checks: "Ссылки, названия ролей и неоднозначные связи проверены.", findings: `Замечаний и кандидатов: ${result.findings.length}.`, verify: "Цитаты, ссылки и счётчики проверены.", conclusion: "Сформированы разделы с ограничениями и ссылками на замечания." };
+      await stage(key, "done", detail[key]);
+    } catch (error) { await stage(key, "failed", publicError(error)); throw error; }
   }
   return AnalysisResultSchema.parse(result);
-}
-function emptySections() {
-  return ConclusionKeySchema.options.map((key, index) => ({ key, title: sectionTitles[index], text: "DEMO / MOCK DATA — этап анализа пока не реализован. Выводы отсутствуют.", findingIds: [] }));
 }
 export async function executeAnalysis(id: string, files: UploadInput[], store: JobStore): Promise<void> {
   try {
